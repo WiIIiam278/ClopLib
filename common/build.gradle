@@ -8,16 +8,3 @@ dependencies {
 
     compileOnly 'org.jetbrains:annotations:24.1.0'
 }
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = 'net.william278.cloplib'
-            artifactId = "cloplib-common"
-            version = "$rootProject.version"
-            artifact shadowJar
-            artifact javadocJar
-            artifact sourcesJar
-        }
-    }
-}

@@ -9,16 +9,3 @@ dependencies {
     compileOnly 'org.spigotmc:spigot-api:1.16.5-R0.1-SNAPSHOT'
     compileOnly 'org.jetbrains:annotations:24.1.0'
 }
-
-publishing {
-    publications {
-        mavenJava(MavenPublication) {
-            groupId = 'net.william278.cloplib'
-            artifactId = "cloplib-bukkit"
-            version = "$rootProject.version"
-            artifact shadowJar
-            artifact javadocJar
-            artifact sourcesJar
-        }
-    }
-}

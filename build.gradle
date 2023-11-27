@@ -109,6 +109,29 @@ subprojects {
                 }
             }
         }
+
+        if (['common'].contains(project.name)) {
+            publications {
+                mavenJava(MavenPublication) {
+                    artifactId = "cloplib-common"
+                    artifact shadowJar
+                    artifact sourcesJar
+                    artifact javadocJar
+                }
+            }
+        }
+
+        if (['bukkit'].contains(project.name)) {
+            publications {
+                mavenJava(MavenPublication) {
+                    artifactId = "cloplib-bukkit"
+                    artifact shadowJar
+                    artifact sourcesJar
+                    artifact javadocJar
+                }
+            }
+        }
+
     }
 
     jar.dependsOn shadowJar
