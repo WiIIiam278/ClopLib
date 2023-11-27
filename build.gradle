@@ -112,7 +112,7 @@ subprojects {
 
         publications {
             mavenJava(MavenPublication) {
-                groupId = 'net.william278.cloplib'
+                groupId = "net.william278.cloplib.$project.name"
                 artifactId = "cloplib-$project.name"
                 version = "$rootProject.version"
                 artifact shadowJar
