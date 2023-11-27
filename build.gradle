@@ -112,7 +112,7 @@ subprojects {
 
         if (['common'].contains(project.name)) {
             publications {
-                mavenJava(MavenPublication) {
+                mavenJavaCommon(MavenPublication) {
                     artifactId = "cloplib-common"
                     artifact shadowJar
                     artifact sourcesJar
@@ -123,7 +123,7 @@ subprojects {
 
         if (['bukkit'].contains(project.name)) {
             publications {
-                mavenJava(MavenPublication) {
+                mavenJavaBukkit(MavenPublication) {
                     artifactId = "cloplib-bukkit"
                     artifact shadowJar
                     artifact sourcesJar
