@@ -1,0 +1,11 @@
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+    }
+}
+
+rootProject.name = 'ClopLib'
+include(
+        'common',
+        'bukkit'
+)

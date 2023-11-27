@@ -1,0 +1,144 @@
+import org.apache.tools.ant.filters.ReplaceTokens
+
+plugins {
+    id 'org.cadixdev.licenser' version '0.6.1' apply false
+    id 'com.github.johnrengelman.shadow' version '8.1.1'
+    id 'org.ajoberstar.grgit' version '5.2.1'
+    id 'maven-publish'
+    id 'java'
+}
+
+group 'net.william278'
+version "$ext.library_version${versionMetadata()}"
+description "$ext.library_description"
+defaultTasks 'licenseFormat', 'build'
+
+allprojects {
+    apply plugin: 'com.github.johnrengelman.shadow'
+    apply plugin: 'org.cadixdev.licenser'
+    apply plugin: 'java'
+
+    compileJava.options.encoding = 'UTF-8'
+    compileJava.options.release.set 16
+    javadoc.options.encoding = 'UTF-8'
+    javadoc.options.addStringOption('Xdoclint:none', '-quiet')
+
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+        maven { url 'https://repo.william278.net/releases/' }
+    }
+
+    dependencies {
+        testImplementation 'org.junit.jupiter:junit-jupiter-api:5.10.1'
+        testImplementation 'org.junit.jupiter:junit-jupiter-params:5.10.1'
+        testImplementation 'org.junit.jupiter:junit-jupiter-engine:5.10.1'
+    }
+
+    test {
+        useJUnitPlatform()
+    }
+
+    license {
+        header = rootProject.file('HEADER')
+        include '**/*.java'
+        newLine = true
+    }
+
+    processResources {
+        filesMatching(['**/*.json', '**/*.yml']) {
+            filter ReplaceTokens as Class, beginToken: '${', endToken: '}',
+                    tokens: rootProject.ext.properties
+        }
+    }
+}
+
+subprojects {
+    version rootProject.version
+    archivesBaseName = "${rootProject.name}-${project.name.capitalize()}"
+
+    jar {
+        from '../LICENSE'
+    }
+
+    shadowJar {
+        destinationDirectory.set(file("$rootDir/target"))
+        archiveClassifier.set('')
+    }
+
+    // API publishing
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
+    sourcesJar {
+        destinationDirectory.set(file("$rootDir/target"))
+    }
+    javadocJar {
+        destinationDirectory.set(file("$rootDir/target"))
+    }
+    shadowJar.dependsOn(sourcesJar, javadocJar)
+
+    publishing {
+        repositories {
+            if (System.getenv("RELEASES_MAVEN_USERNAME") != null) {
+                maven {
+                    name = "william278-releases"
+                    url = "https://repo.william278.net/releases"
+                    credentials {
+                        username = System.getenv("RELEASES_MAVEN_USERNAME")
+                        password = System.getenv("RELEASES_MAVEN_PASSWORD")
+                    }
+                    authentication {
+                        basic(BasicAuthentication)
+                    }
+                }
+            }
+            if (System.getenv("SNAPSHOTS_MAVEN_USERNAME") != null) {
+                maven {
+                    name = "william278-snapshots"
+                    url = "https://repo.william278.net/snapshots"
+                    credentials {
+                        username = System.getenv("SNAPSHOTS_MAVEN_USERNAME")
+                        password = System.getenv("SNAPSHOTS_MAVEN_PASSWORD")
+                    }
+                    authentication {
+                        basic(BasicAuthentication)
+                    }
+                }
+            }
+        }
+
+        publications {
+            mavenJava(MavenPublication) {
+                groupId = 'net.william278.cloplib'
+                artifactId = $ "cloplib-${project.name}"
+                version = "$rootProject.version"
+                artifact shadowJar
+                artifact javadocJar
+                artifact sourcesJar
+            }
+        }
+    }
+
+    jar.dependsOn shadowJar
+    clean.delete "$rootDir/target"
+}
+
+logger.lifecycle("Building ClopLib ${version} by William278")
+
+@SuppressWarnings('GrMethodMayBeStatic')
+def versionMetadata() {
+    // Get if there is a tag for this commit
+    def tag = grgit.tag.list().find { it.commit.id == grgit.head().id }
+    if (tag != null) {
+        return ''
+    }
+
+    // Otherwise, get the last commit hash and if it's a clean head
+    if (grgit == null) {
+        return '-' + System.getenv("GITHUB_RUN_NUMBER") ? 'build.' + System.getenv("GITHUB_RUN_NUMBER") : 'unknown'
+    }
+    return '-' + grgit.head().abbreviatedId + (grgit.status().clean ? '' : '-indev')
+}
