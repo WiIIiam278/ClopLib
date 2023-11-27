@@ -13,6 +13,37 @@ version "$ext.library_version${versionMetadata()}"
 description "$ext.library_description"
 defaultTasks 'licenseFormat', 'build'
 
+publishing {
+    repositories {
+        if (System.getenv("RELEASES_MAVEN_USERNAME") != null) {
+            maven {
+                name = "william278-releases"
+                url = "https://repo.william278.net/releases"
+                credentials {
+                    username = System.getenv("RELEASES_MAVEN_USERNAME")
+                    password = System.getenv("RELEASES_MAVEN_PASSWORD")
+                }
+                authentication {
+                    basic(BasicAuthentication)
+                }
+            }
+        }
+        if (System.getenv("SNAPSHOTS_MAVEN_USERNAME") != null) {
+            maven {
+                name = "william278-snapshots"
+                url = "https://repo.william278.net/snapshots"
+                credentials {
+                    username = System.getenv("SNAPSHOTS_MAVEN_USERNAME")
+                    password = System.getenv("SNAPSHOTS_MAVEN_PASSWORD")
+                }
+                authentication {
+                    basic(BasicAuthentication)
+                }
+            }
+        }
+    }
+}
+
 allprojects {
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'org.cadixdev.licenser'
@@ -52,37 +83,6 @@ allprojects {
                     tokens: rootProject.ext.properties
         }
     }
-
-    publishing {
-        repositories {
-            if (System.getenv("RELEASES_MAVEN_USERNAME") != null) {
-                maven {
-                    name = "william278-releases"
-                    url = "https://repo.william278.net/releases"
-                    credentials {
-                        username = System.getenv("RELEASES_MAVEN_USERNAME")
-                        password = System.getenv("RELEASES_MAVEN_PASSWORD")
-                    }
-                    authentication {
-                        basic(BasicAuthentication)
-                    }
-                }
-            }
-            if (System.getenv("SNAPSHOTS_MAVEN_USERNAME") != null) {
-                maven {
-                    name = "william278-snapshots"
-                    url = "https://repo.william278.net/snapshots"
-                    credentials {
-                        username = System.getenv("SNAPSHOTS_MAVEN_USERNAME")
-                        password = System.getenv("SNAPSHOTS_MAVEN_PASSWORD")
-                    }
-                    authentication {
-                        basic(BasicAuthentication)
-                    }
-                }
-            }
-        }
-    }
 }
 
 subprojects {
@@ -115,7 +115,9 @@ subprojects {
         if (['common'].contains(project.name)) {
             publications {
                 mavenJavaCommon(MavenPublication) {
-                    artifactId = "cloplib-common"
+                    groupId = 'net.william278.cloplib'
+                    artifactId = 'cloplib-common'
+                    version = "$rootProject.version"
                     artifact shadowJar
                     artifact sourcesJar
                     artifact javadocJar
@@ -126,7 +128,9 @@ subprojects {
         if (['bukkit'].contains(project.name)) {
             publications {
                 mavenJavaBukkit(MavenPublication) {
-                    artifactId = "cloplib-bukkit"
+                    groupId = 'net.william278.cloplib'
+                    artifactId = 'cloplib-bukkit'
+                    version = "$rootProject.version"
                     artifact shadowJar
                     artifact sourcesJar
                     artifact javadocJar
