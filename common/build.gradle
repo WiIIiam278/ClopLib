@@ -1,9 +1,23 @@
 plugins {
     id 'java-library'
+    id 'maven-publish'
 }
 
 dependencies {
     api 'net.william278:annotaml:2.0.7'
 
     compileOnly 'org.jetbrains:annotations:24.1.0'
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            groupId = 'net.william278.cloplib'
+            artifactId = "cloplib-common"
+            version = "$rootProject.version"
+            artifact shadowJar
+            artifact javadocJar
+            artifact sourcesJar
+        }
+    }
 }
