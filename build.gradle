@@ -52,33 +52,6 @@ allprojects {
                     tokens: rootProject.ext.properties
         }
     }
-}
-
-subprojects {
-    version rootProject.version
-    archivesBaseName = "${rootProject.name}-${project.name.capitalize()}"
-
-    jar {
-        from '../LICENSE'
-    }
-
-    shadowJar {
-        destinationDirectory.set(file("$rootDir/target"))
-        archiveClassifier.set('')
-    }
-
-    // API publishing
-    java {
-        withSourcesJar()
-        withJavadocJar()
-    }
-    sourcesJar {
-        destinationDirectory.set(file("$rootDir/target"))
-    }
-    javadocJar {
-        destinationDirectory.set(file("$rootDir/target"))
-    }
-    shadowJar.dependsOn(sourcesJar, javadocJar)
 
     publishing {
         repositories {
@@ -109,7 +82,36 @@ subprojects {
                 }
             }
         }
+    }
+}
 
+subprojects {
+    version rootProject.version
+    archivesBaseName = "${rootProject.name}-${project.name.capitalize()}"
+
+    jar {
+        from '../LICENSE'
+    }
+
+    shadowJar {
+        destinationDirectory.set(file("$rootDir/target"))
+        archiveClassifier.set('')
+    }
+
+    // API publishing
+    java {
+        withSourcesJar()
+        withJavadocJar()
+    }
+    sourcesJar {
+        destinationDirectory.set(file("$rootDir/target"))
+    }
+    javadocJar {
+        destinationDirectory.set(file("$rootDir/target"))
+    }
+    shadowJar.dependsOn(sourcesJar, javadocJar)
+
+    publishing {
         if (['common'].contains(project.name)) {
             publications {
                 mavenJavaCommon(MavenPublication) {
