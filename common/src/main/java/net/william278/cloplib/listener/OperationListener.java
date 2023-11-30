@@ -27,7 +27,7 @@ import org.jetbrains.annotations.NotNull;
 /**
  * Represents a listener for handling {@link Operation operations} that take place on the server
  */
-public abstract class OperationListener {
+public interface OperationListener {
 
     /**
      * Get the {@link Handler} for this listener
@@ -36,7 +36,7 @@ public abstract class OperationListener {
      * @since 1.0
      */
     @NotNull
-    public abstract Handler getHandler();
+    Handler getHandler();
 
     /**
      * Get the {@link TypeChecker} for this listener
@@ -45,6 +45,6 @@ public abstract class OperationListener {
      * @since 1.0
      */
     @NotNull
-    public abstract TypeChecker getTypeChecker();
+    TypeChecker getTypeChecker();
 
 }

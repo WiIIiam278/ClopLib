@@ -60,12 +60,4 @@ public interface Handler {
     boolean cancelNature(@NotNull OperationWorld world,
                          @NotNull OperationPosition position1, @NotNull OperationPosition position2);
 
-    /**
-     * Get the {@link TypeChecker} for this handler
-     *
-     * @return the {@link TypeChecker}
-     */
-    @NotNull
-    TypeChecker getTypeChecker();
-
 }

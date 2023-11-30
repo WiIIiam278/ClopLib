@@ -34,7 +34,7 @@ import java.util.Objects;
 /**
  * A listener for Bukkit events that can be used to cancel operations
  */
-public abstract class BukkitOperationListener extends OperationListener implements BukkitInteractListener,
+public abstract class BukkitOperationListener implements OperationListener, BukkitInteractListener,
         BukkitEntityDamageListener, BukkitPlaceListener, BukkitBreakListener, BukkitBlockMoveListener,
         BukkitPortalListener, BukkitMoveListener, BukkitEntityListener, BukkitFireListener {
 
