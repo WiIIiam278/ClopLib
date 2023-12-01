@@ -32,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
  * A listener for Bukkit events that can be used to cancel operations
@@ -43,7 +43,7 @@ public abstract class BukkitOperationListener implements OperationListener, Bukk
 
     private final Handler handler;
     private final TypeChecker checker;
-    private final Map<String, Consumer<OperationPosition>> inspectionHandlers;
+    private final Map<String, BiConsumer<OperationUser, OperationPosition>> inspectionHandlers;
 
     public BukkitOperationListener(@NotNull Handler handler, @NotNull TypeChecker checker) {
         this.handler = handler;
@@ -91,7 +91,7 @@ public abstract class BukkitOperationListener implements OperationListener, Bukk
     }
 
     @Override
-    public void setInspectorCallback(@NotNull String material, @NotNull Consumer<OperationPosition> callback) {
+    public void setInspectorCallback(@NotNull String material, @NotNull BiConsumer<OperationUser, OperationPosition> callback) {
         if (material.startsWith("minecraft:")) {
             material = material.substring(10);
         }
@@ -100,7 +100,7 @@ public abstract class BukkitOperationListener implements OperationListener, Bukk
 
     @Override
     @NotNull
-    public Map<String, Consumer<OperationPosition>> getInspectionHandlers() {
+    public Map<String, BiConsumer<OperationUser, OperationPosition>> getInspectionHandlers() {
         return inspectionHandlers;
     }
 

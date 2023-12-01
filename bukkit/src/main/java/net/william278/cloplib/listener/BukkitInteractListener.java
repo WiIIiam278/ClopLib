@@ -22,6 +22,7 @@ package net.william278.cloplib.listener;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
+import net.william278.cloplib.operation.OperationUser;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -38,7 +39,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public interface BukkitInteractListener extends BukkitListener {
 
@@ -135,10 +136,10 @@ public interface BukkitInteractListener extends BukkitListener {
         e.setUseItemInHand(Event.Result.DENY);
 
         // Execute the callback
-        final Consumer<OperationPosition> callback = getInspectionHandlers().get(item);
-        final Block location = e.getPlayer().getTargetBlockExact(getInspectionDistance(), FluidCollisionMode.NEVER);
-        if (location != null) {
-            callback.accept(getPosition(location.getLocation()));
+        final BiConsumer<OperationUser, OperationPosition> callback = getInspectionHandlers().get(item);
+        final Block block = e.getPlayer().getTargetBlockExact(getInspectionDistance(), FluidCollisionMode.NEVER);
+        if (block != null) {
+            callback.accept(getUser(e.getPlayer()), getPosition(block.getLocation()));
         }
         return true;
     }

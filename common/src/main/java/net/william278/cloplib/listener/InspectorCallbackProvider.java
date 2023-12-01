@@ -20,10 +20,11 @@
 package net.william278.cloplib.listener;
 
 import net.william278.cloplib.operation.OperationPosition;
+import net.william278.cloplib.operation.OperationUser;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 /**
  * An interface for providing callbacks for inspection actions.
@@ -58,7 +59,7 @@ public interface InspectorCallbackProvider {
      * @since 1.0
      */
     @NotNull
-    Map<String, Consumer<OperationPosition>> getInspectionHandlers();
+    Map<String, BiConsumer<OperationUser, OperationPosition>> getInspectionHandlers();
 
     /**
      * Sets a callback for use handling inspection actions
@@ -67,6 +68,6 @@ public interface InspectorCallbackProvider {
      * @param callback the callback to set
      * @since 1.0
      */
-    void setInspectorCallback(@NotNull String material, @NotNull Consumer<OperationPosition> callback);
+    void setInspectorCallback(@NotNull String material, @NotNull BiConsumer<OperationUser, OperationPosition> callback);
 
 }
