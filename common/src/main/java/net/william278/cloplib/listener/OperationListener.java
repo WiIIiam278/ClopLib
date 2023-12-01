@@ -19,15 +19,15 @@
 
 package net.william278.cloplib.listener;
 
+import net.william278.cloplib.handler.Handler;
 import net.william278.cloplib.handler.TypeChecker;
 import net.william278.cloplib.operation.Operation;
-import net.william278.cloplib.handler.Handler;
 import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a listener for handling {@link Operation operations} that take place on the server
  */
-public interface OperationListener {
+public interface OperationListener extends InspectorCallbackProvider {
 
     /**
      * Get the {@link Handler} for this listener

@@ -19,7 +19,10 @@
 
 package net.william278.cloplib.handler;
 
-import net.william278.cloplib.operation.*;
+import net.william278.cloplib.operation.Operation;
+import net.william278.cloplib.operation.OperationPosition;
+import net.william278.cloplib.operation.OperationUser;
+import net.william278.cloplib.operation.OperationWorld;
 import org.jetbrains.annotations.NotNull;
 
 /**

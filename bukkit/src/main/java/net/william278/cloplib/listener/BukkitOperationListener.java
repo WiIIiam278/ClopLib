@@ -29,7 +29,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  * A listener for Bukkit events that can be used to cancel operations
@@ -40,10 +43,12 @@ public abstract class BukkitOperationListener implements OperationListener, Bukk
 
     private final Handler handler;
     private final TypeChecker checker;
+    private final Map<String, Consumer<OperationPosition>> inspectionHandlers;
 
     public BukkitOperationListener(@NotNull Handler handler, @NotNull TypeChecker checker) {
         this.handler = handler;
         this.checker = checker;
+        this.inspectionHandlers = new HashMap<>();
     }
 
     public BukkitOperationListener(@NotNull Handler handler, @NotNull JavaPlugin plugin) {
@@ -84,4 +89,19 @@ public abstract class BukkitOperationListener implements OperationListener, Bukk
     public TypeChecker getTypeChecker() {
         return checker;
     }
+
+    @Override
+    public void setInspectorCallback(@NotNull String material, @NotNull Consumer<OperationPosition> callback) {
+        if (material.startsWith("minecraft:")) {
+            material = material.substring(10);
+        }
+        inspectionHandlers.put(material, callback);
+    }
+
+    @Override
+    @NotNull
+    public Map<String, Consumer<OperationPosition>> getInspectionHandlers() {
+        return inspectionHandlers;
+    }
+
 }

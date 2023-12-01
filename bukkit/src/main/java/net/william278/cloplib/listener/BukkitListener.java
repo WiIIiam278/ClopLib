@@ -33,7 +33,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public interface BukkitListener extends Listener {
+public interface BukkitListener extends Listener, InspectorCallbackProvider {
 
     @NotNull
     OperationPosition getPosition(@NotNull Location location);

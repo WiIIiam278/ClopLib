@@ -20,7 +20,9 @@
 package net.william278.cloplib.listener;
 
 import net.william278.cloplib.operation.Operation;
+import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
+import org.bukkit.FluidCollisionMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Sign;
@@ -35,6 +37,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.function.Consumer;
 
 public interface BukkitInteractListener extends BukkitListener {
 
@@ -112,11 +116,31 @@ public interface BukkitInteractListener extends BukkitListener {
     default boolean handleItemInteraction(@NotNull PlayerInteractEvent e) {
         // Check if the user was allowed to perform an action using an item in their main hand
         if (e.useItemInHand() != Event.Result.DENY) {
-            return handleSpawnEggs(e);
+            return handleInspectionCallbacks(e) || handleSpawnEggs(e);
         }
 
         // Otherwise, the event was handled provided the user didn't right-click a block
         return e.getAction() != Action.RIGHT_CLICK_BLOCK;
+    }
+
+    // Handle claim inspection callbacks
+    default boolean handleInspectionCallbacks(@NotNull PlayerInteractEvent e) {
+        final String item = e.getPlayer().getInventory().getItemInMainHand().getType().getKey().getKey();
+        if (!getInspectionHandlers().containsKey(item)) {
+            return false;
+        }
+
+        // Consume the interact event
+        e.setUseInteractedBlock(Event.Result.DENY);
+        e.setUseItemInHand(Event.Result.DENY);
+
+        // Execute the callback
+        final Consumer<OperationPosition> callback = getInspectionHandlers().get(item);
+        final Block location = e.getPlayer().getTargetBlockExact(getInspectionDistance(), FluidCollisionMode.NEVER);
+        if (location != null) {
+            callback.accept(getPosition(location.getLocation()));
+        }
+        return true;
     }
 
     // Returns true if a spawn egg operation was handled
