@@ -50,7 +50,7 @@ allprojects {
     apply plugin: 'java'
 
     compileJava.options.encoding = 'UTF-8'
-    compileJava.options.release.set 16
+    compileJava.options.release.set 17
     javadoc.options.encoding = 'UTF-8'
     javadoc.options.addStringOption('Xdoclint:none', '-quiet')
 
@@ -58,7 +58,7 @@ allprojects {
         mavenLocal()
         mavenCentral()
         maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
-        maven { url 'https://repo.william278.net/releases/' }
+        maven { url 'https://jitpack.io/' }
     }
 
     dependencies {

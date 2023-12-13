@@ -46,6 +46,7 @@ public interface ChunkHandler extends Handler {
      * @param from the {@link OperationChunk} the {@link OperationUser} is moving from
      * @param to   the {@link OperationChunk} the {@link OperationUser} is moving to
      * @return whether the movement should be canceled
+     * @since 1.0
      */
     boolean cancelChunkChange(@NotNull OperationUser user, @NotNull OperationChunk from, @NotNull OperationChunk to);
 

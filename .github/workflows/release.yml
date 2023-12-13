@@ -15,10 +15,10 @@ jobs:
     steps:
       - name: 'Checkout for CI 🛎️'
         uses: actions/checkout@v3
-      - name: 'Set up JDK 16 📦'
+      - name: 'Set up JDK 17 📦'
         uses: actions/setup-java@v3
         with:
-          java-version: '16'
+          java-version: '17'
           distribution: 'temurin'
       - name: 'Build with Gradle 🏗️'
         uses: gradle/gradle-build-action@v2

@@ -19,6 +19,7 @@
 
 package net.william278.cloplib.operation;
 
+import lombok.Getter;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Arrays;
@@ -29,6 +30,7 @@ import java.util.Optional;
  * <p>
  * Some operations are silent by default, meaning that they will not notify a player when they are canceled.
  */
+@Getter
 public enum OperationType {
 
     /**
@@ -207,6 +209,11 @@ public enum OperationType {
      */
     CONTAINER_OPEN;
 
+    /**
+     * Indicates whether by default this operation should not notify a player when it is canceled
+     *
+     * @since 1.0
+     */
     private final boolean silent;
 
     OperationType(final boolean silent) {
@@ -215,16 +222,6 @@ public enum OperationType {
 
     OperationType() {
         this.silent = false;
-    }
-
-    /**
-     * Indicates whether by default this operation should not notify a player when it is canceled
-     *
-     * @return true if the operation should be silenced
-     * @since 1.0
-     */
-    public boolean isSilent() {
-        return this.silent;
     }
 
     /**

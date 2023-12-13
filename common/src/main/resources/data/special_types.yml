@@ -1,5 +1,5 @@
 # Internal resource config containing lists of special block and entity types
-farm_blocks:
+farmBlocks:
   - carrots
   - potatoes
   - beetroots
@@ -35,7 +35,7 @@ farm_blocks:
   - pitcher_crop
   - pitcher_pod
 
-pressure_sensitive_blocks:
+pressureSensitiveBlocks:
   - polished_blackstone_pressure_plate
   - acacia_pressure_plate
   - birch_pressure_plate
@@ -53,7 +53,7 @@ pressure_sensitive_blocks:
   - big_dripleaf_stem
   - small_dripleaf
 
-griefing_mobs:
+griefingMobs:
   - wither_skull
   - wither
   - ender_dragon

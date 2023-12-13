@@ -19,6 +19,9 @@
 
 package net.william278.cloplib.listener;
 
+import com.google.common.collect.Maps;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 import net.william278.cloplib.handler.Handler;
 import net.william278.cloplib.handler.SpecialTypeChecker;
 import net.william278.cloplib.handler.TypeChecker;
@@ -29,7 +32,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -37,6 +39,8 @@ import java.util.function.BiConsumer;
 /**
  * A listener for Bukkit events that can be used to cancel operations
  */
+@Getter
+@AllArgsConstructor
 public abstract class BukkitOperationListener implements OperationListener, BukkitInteractListener,
         BukkitEntityDamageListener, BukkitPlaceListener, BukkitBreakListener, BukkitBlockMoveListener,
         BukkitPortalListener, BukkitMoveListener, BukkitEntityListener, BukkitFireListener {
@@ -45,17 +49,15 @@ public abstract class BukkitOperationListener implements OperationListener, Bukk
     private final TypeChecker checker;
     private final Map<String, BiConsumer<OperationUser, OperationPosition>> inspectionHandlers;
 
-    public BukkitOperationListener(@NotNull Handler handler, @NotNull TypeChecker checker) {
-        this.handler = handler;
-        this.checker = checker;
-        this.inspectionHandlers = new HashMap<>();
-    }
-
     public BukkitOperationListener(@NotNull Handler handler, @NotNull JavaPlugin plugin) {
-        this(handler, SpecialTypeChecker.load(Objects.requireNonNull(
-                plugin.getResource("data/special_types.yml"),
-                "Failed to load special types file")
-        ));
+        this(
+                handler,
+                SpecialTypeChecker.load(Objects.requireNonNull(
+                        plugin.getResource("data/special_types.yml"),
+                        "Failed to load special types file")
+                ),
+                Maps.newHashMap()
+        );
     }
 
     /**
@@ -78,18 +80,13 @@ public abstract class BukkitOperationListener implements OperationListener, Bukk
     @NotNull
     public abstract OperationUser getUser(@NotNull Player player);
 
-    @NotNull
-    @Override
-    public final Handler getHandler() {
-        return handler;
-    }
-
-    @NotNull
-    @Override
-    public TypeChecker getTypeChecker() {
-        return checker;
-    }
-
+    /**
+     * Set the callback for when a player inspects a block while holding something
+     *
+     * @param material the material the user must be holding to trigger the callback
+     * @param callback the callback to set
+     * @since 1.0
+     */
     @Override
     public void setInspectorCallback(@NotNull String material, @NotNull BiConsumer<OperationUser, OperationPosition> callback) {
         if (material.startsWith("minecraft:")) {
@@ -98,10 +95,5 @@ public abstract class BukkitOperationListener implements OperationListener, Bukk
         inspectionHandlers.put(material, callback);
     }
 
-    @Override
-    @NotNull
-    public Map<String, BiConsumer<OperationUser, OperationPosition>> getInspectionHandlers() {
-        return inspectionHandlers;
-    }
 
 }

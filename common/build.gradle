@@ -4,7 +4,10 @@ plugins {
 }
 
 dependencies {
-    api 'net.william278:annotaml:2.0.7'
+    api 'com.github.Exlll.ConfigLib:configlib-yaml:v4.3.0'
 
     compileOnly 'org.jetbrains:annotations:24.1.0'
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
 }
