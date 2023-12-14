@@ -45,6 +45,6 @@ public interface OperationListener extends InspectorCallbackProvider {
      * @since 1.0
      */
     @NotNull
-    TypeChecker getTypeChecker();
+    TypeChecker getChecker();
 
 }
