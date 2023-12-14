@@ -29,13 +29,14 @@ import org.jetbrains.annotations.NotNull;
 import java.io.InputStream;
 import java.util.List;
 
+@SuppressWarnings("FieldMayBeFinal")
 @Configuration
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SpecialTypeChecker implements TypeChecker {
 
-    private final List<String> farmBlocks = List.of();
-    private final List<String> pressureSensitiveBlocks = List.of();
-    private final List<String> griefingMobs = List.of();
+    private List<String> farmBlocks = List.of();
+    private List<String> pressureSensitiveBlocks = List.of();
+    private List<String> griefingMobs = List.of();
 
     @NotNull
     public static SpecialTypeChecker load(@NotNull InputStream data) throws IllegalArgumentException {
