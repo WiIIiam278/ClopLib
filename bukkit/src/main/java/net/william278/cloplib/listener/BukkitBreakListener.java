@@ -50,7 +50,7 @@ public interface BukkitBreakListener extends BukkitListener {
         if (getHandler().cancelOperation(Operation.of(
                 getUser(e.getPlayer()),
                 OperationType.FILL_BUCKET,
-                getPosition(e.getBlockClicked().getLocation())
+                getPosition(e.getBlock().getLocation())
         ))) {
             e.setCancelled(true);
         }

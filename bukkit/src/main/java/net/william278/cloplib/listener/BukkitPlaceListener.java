@@ -47,7 +47,7 @@ public interface BukkitPlaceListener extends BukkitListener {
         if (getHandler().cancelOperation(Operation.of(
                 getUser(e.getPlayer()),
                 OperationType.EMPTY_BUCKET,
-                getPosition(e.getBlockClicked().getLocation())
+                getPosition(e.getBlock().getLocation())
         ))) {
             e.setCancelled(true);
         }
