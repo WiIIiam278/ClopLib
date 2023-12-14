@@ -33,7 +33,7 @@ public interface BukkitPlaceListener extends BukkitListener {
     default void onPlayerPlaceBlock(@NotNull BlockPlaceEvent e) {
         if (getHandler().cancelOperation(Operation.of(
                 getUser(e.getPlayer()),
-                getTypeChecker().isFarmMaterial(e.getBlockPlaced().getType().getKey().toString())
+                getChecker().isFarmMaterial(e.getBlockPlaced().getType().getKey().toString())
                         ? OperationType.FARM_BLOCK_PLACE : OperationType.BLOCK_PLACE,
                 getPosition(e.getBlock().getLocation())
         ))) {

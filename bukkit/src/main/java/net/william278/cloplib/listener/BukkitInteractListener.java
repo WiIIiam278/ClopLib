@@ -69,7 +69,7 @@ public interface BukkitInteractListener extends BukkitListener {
                     if (getHandler().cancelOperation(Operation.of(
                             getUser(e.getPlayer()),
                             block.getState() instanceof InventoryHolder ? OperationType.CONTAINER_OPEN
-                                    : getTypeChecker().isFarmMaterial(blockId) ? OperationType.FARM_BLOCK_INTERACT
+                                    : getChecker().isFarmMaterial(blockId) ? OperationType.FARM_BLOCK_INTERACT
                                     : block.getBlockData() instanceof Switch ? OperationType.REDSTONE_INTERACT
                                     : block.getBlockData() instanceof Sign ? OperationType.BLOCK_PLACE
                                     : OperationType.BLOCK_INTERACT,
@@ -90,7 +90,7 @@ public interface BukkitInteractListener extends BukkitListener {
 
                 final Block block = e.getClickedBlock();
                 if (block != null && block.getType() != Material.AIR) {
-                    if (getTypeChecker().isPressureSensitiveMaterial(block.getType().getKey().toString())) {
+                    if (getChecker().isPressureSensitiveMaterial(block.getType().getKey().toString())) {
                         if (getHandler().cancelOperation(Operation.of(
                                 getUser(e.getPlayer()),
                                 OperationType.REDSTONE_INTERACT,

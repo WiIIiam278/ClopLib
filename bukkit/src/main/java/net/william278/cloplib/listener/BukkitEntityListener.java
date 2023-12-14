@@ -81,7 +81,7 @@ public interface BukkitEntityListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onEntityChangeBlock(@NotNull EntityChangeBlockEvent e) {
-        if (getTypeChecker().isGriefingMob(e.getEntity().getType().getKey().toString())) {
+        if (getChecker().isGriefingMob(e.getEntity().getType().getKey().toString())) {
             final Block block = e.getBlock();
             if (getHandler().cancelOperation(Operation.of(
                     OperationType.MONSTER_DAMAGE_TERRAIN,

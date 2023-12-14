@@ -45,7 +45,7 @@ public interface BukkitListener extends Listener, InspectorCallbackProvider {
     Handler getHandler();
 
     @NotNull
-    TypeChecker getTypeChecker();
+    TypeChecker getChecker();
 
     default Optional<Player> getPlayerSource(@Nullable Entity e) {
         if (e == null) {
