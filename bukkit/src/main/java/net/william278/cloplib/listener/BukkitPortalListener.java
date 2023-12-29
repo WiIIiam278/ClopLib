@@ -19,19 +19,20 @@
 
 package net.william278.cloplib.listener;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
 import net.william278.cloplib.operation.OperationUser;
-import org.bukkit.Chunk;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.world.PortalCreateEvent;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public interface BukkitPortalListener extends BukkitListener {
 
@@ -41,14 +42,14 @@ public interface BukkitPortalListener extends BukkitListener {
             return;
         }
 
-        // Get the list of locations in distinct chunks
-        final List<OperationPosition> locations = new ArrayList<>();
-        final List<Chunk> chunks = new ArrayList<>();
+        // Get the list of locations in distinct X/Z columns
+        final List<OperationPosition> locations = Lists.newArrayList();
+        final Map<Integer, Integer> coordinates = Maps.newHashMap();
         for (BlockState state : e.getBlocks()) {
-            if (chunks.contains(state.getChunk())) {
+            if (coordinates.containsKey(state.getX()) && coordinates.get(state.getX()) == state.getZ()) {
                 continue;
             }
-            chunks.add(state.getChunk());
+            coordinates.put(state.getX(), state.getZ());
             locations.add(getPosition(state.getLocation()));
         }
 
