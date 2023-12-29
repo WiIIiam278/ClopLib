@@ -31,6 +31,7 @@ import org.jetbrains.annotations.NotNull;
  *
  * @since 1.0
  */
+@SuppressWarnings("unused")
 public interface ChunkHandler extends Handler {
 
     @Override
