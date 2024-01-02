@@ -94,18 +94,25 @@ public interface BukkitEntityListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onMobSpawn(@NotNull CreatureSpawnEvent e) {
-        final Entity entity = e.getEntity();
-        if (!(entity instanceof Monster)) {
-            return;
-        }
-
         // Check against ignored spawn reasons
         final CreatureSpawnEvent.SpawnReason reason = e.getSpawnReason();
         if (IGNORED_SPAWN_REASONS.contains(reason)) {
             return;
         }
 
-        // Cancel spawning in restricted areas
+        // Cancel passive mob spawning
+        final Entity entity = e.getEntity();
+        if (!(entity instanceof Monster)) {
+            if (getHandler().cancelOperation(Operation.of(
+                    OperationType.PASSIVE_MOB_SPAWN,
+                    getPosition(entity.getLocation())
+            ))) {
+                e.setCancelled(true);
+            }
+            return;
+        }
+
+        // Cancel hostile spawning
         final Location location = e.getLocation();
         if (getHandler().cancelOperation(Operation.of(
                 OperationType.MONSTER_SPAWN,

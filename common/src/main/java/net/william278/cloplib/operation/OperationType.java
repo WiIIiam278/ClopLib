@@ -111,6 +111,13 @@ public enum OperationType {
     MONSTER_SPAWN(true),
 
     /**
+     * When a passive (non-hostile) mob spawns
+     *
+     * @since 1.0
+     */
+    PASSIVE_MOB_SPAWN(true),
+
+    /**
      * When a mob damages terrain (e.g., an Enderman picking up a block)
      *
      * @since 1.0
