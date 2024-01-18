@@ -34,7 +34,7 @@ Then, add the dependency itself. Replace `VERSION` with the latest release versi
 
 ```groovy
 dependencies {
-    implementation "net.william278:cloplib-PLATFORM:VERSION"
+    implementation "net.william278.cloplib:cloplib-PLATFORM:VERSION"
 }
 ```
 </details>
