@@ -5,7 +5,7 @@
         <img src="https://img.shields.io/github/actions/workflow/status/WiIIiam278/ClopLib/ci.yml?branch=master&logo=github"/>
     </a> 
     <a href="https://repo.william278.net/#/releases/net/william278/cloplib/">
-        <img src="https://repo.william278.net/api/badge/latest/releases/net/william278/cloplib?color=00fb9a&name=Maven&prefix=v"/>
+        <img src="https://repo.william278.net/api/badge/latest/releases/net/william278/cloplib/cloplib-common?color=00fb9a&name=Maven&prefix=v"/>
     </a> 
     <a href="https://discord.gg/tVYhJfyDWG">
         <img src="https://img.shields.io/discord/818135932103557162.svg?label=&logo=discord&logoColor=fff&color=7389D8&labelColor=6A7EC2" />
@@ -34,7 +34,7 @@ Then, add the dependency itself. Replace `VERSION` with the latest release versi
 
 ```groovy
 dependencies {
-    implementation "net.william278:cloplib-PLATFORM:VERSION"
+    implementation "net.william278.cloplib:cloplib-PLATFORM:VERSION"
 }
 ```
 </details>
