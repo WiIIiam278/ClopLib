@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    api 'com.github.Exlll.ConfigLib:configlib-yaml:v4.3.0'
+    api 'com.github.Exlll.ConfigLib:configlib-yaml:v4.4.0'
 
     compileOnly 'org.jetbrains:annotations:24.1.0'
     compileOnly 'org.projectlombok:lombok:1.18.30'
