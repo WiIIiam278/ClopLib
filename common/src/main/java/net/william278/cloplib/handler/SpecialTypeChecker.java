@@ -21,12 +21,14 @@ package net.william278.cloplib.handler;
 
 
 import de.exlll.configlib.Configuration;
+import de.exlll.configlib.YamlConfigurationProperties;
 import de.exlll.configlib.YamlConfigurations;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 @SuppressWarnings("FieldMayBeFinal")
@@ -34,13 +36,17 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public final class SpecialTypeChecker implements TypeChecker {
 
+    private static final YamlConfigurationProperties CONFIG_PROPERTIES = YamlConfigurationProperties.newBuilder()
+            .charset(StandardCharsets.UTF_8)
+            .build();
+
     private List<String> farmBlocks = List.of();
     private List<String> pressureSensitiveBlocks = List.of();
     private List<String> griefingMobs = List.of();
 
     @NotNull
     public static SpecialTypeChecker load(@NotNull InputStream data) throws IllegalArgumentException {
-        return YamlConfigurations.read(data, SpecialTypeChecker.class);
+        return YamlConfigurations.read(data, SpecialTypeChecker.class, CONFIG_PROPERTIES);
     }
 
     @Override
