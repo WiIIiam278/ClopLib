@@ -21,9 +21,7 @@ package net.william278.cloplib.listener;
 
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationType;
-import org.bukkit.Location;
 import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockExplodeEvent;
@@ -35,16 +33,16 @@ import org.jetbrains.annotations.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
+import static org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+
 public interface BukkitEntityListener extends BukkitListener {
 
-    // List of special reasons that are ignored when handling monster spawn checks
-    Set<CreatureSpawnEvent.SpawnReason> IGNORED_SPAWN_REASONS = Set.of(
-            CreatureSpawnEvent.SpawnReason.SPAWNER_EGG,
-            CreatureSpawnEvent.SpawnReason.COMMAND,
-            CreatureSpawnEvent.SpawnReason.CUSTOM,
-            CreatureSpawnEvent.SpawnReason.BUILD_IRONGOLEM,
-            CreatureSpawnEvent.SpawnReason.BUILD_SNOWMAN,
-            CreatureSpawnEvent.SpawnReason.BUILD_WITHER
+    // List of spawn reasons that the CreatureSpawnEvent will handle
+    Set<SpawnReason> CHECKED_SPAWN_REASONS = Set.of(
+            SpawnReason.NATURAL,
+            SpawnReason.TRAP,
+            SpawnReason.REINFORCEMENTS,
+            SpawnReason.PATROL
     );
 
     @EventHandler(ignoreCancelled = true)
@@ -94,29 +92,17 @@ public interface BukkitEntityListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onMobSpawn(@NotNull CreatureSpawnEvent e) {
-        // Check against ignored spawn reasons
-        final CreatureSpawnEvent.SpawnReason reason = e.getSpawnReason();
-        if (IGNORED_SPAWN_REASONS.contains(reason)) {
+        // This event fires *a lot*, so we only check against important reason for performance
+        if (!CHECKED_SPAWN_REASONS.contains(e.getSpawnReason())) {
             return;
         }
 
-        // Cancel passive mob spawning
-        final Entity entity = e.getEntity();
-        if (!(entity instanceof Monster)) {
-            if (getHandler().cancelOperation(Operation.of(
-                    OperationType.PASSIVE_MOB_SPAWN,
-                    getPosition(entity.getLocation())
-            ))) {
-                e.setCancelled(true);
-            }
-            return;
-        }
-
-        // Cancel hostile spawning
-        final Location location = e.getLocation();
+        // Cancel mob spawning
         if (getHandler().cancelOperation(Operation.of(
-                OperationType.MONSTER_SPAWN,
-                getPosition(location)
+                e.getEntity() instanceof Monster
+                        ? OperationType.MONSTER_SPAWN
+                        : OperationType.PASSIVE_MOB_SPAWN,
+                getPosition(e.getLocation())
         ))) {
             e.setCancelled(true);
         }
