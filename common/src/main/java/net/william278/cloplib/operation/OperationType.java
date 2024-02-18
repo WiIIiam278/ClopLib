@@ -113,7 +113,7 @@ public enum OperationType {
     /**
      * When a passive (non-hostile) mob spawns
      *
-     * @since 1.0
+     * @since 1.0.2
      */
     PASSIVE_MOB_SPAWN(true),
 

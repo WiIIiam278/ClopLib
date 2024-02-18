@@ -19,6 +19,8 @@
 
 package net.william278.cloplib.operation;
 
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,25 +33,36 @@ import java.util.Optional;
  * @author William
  * @since 1.0
  */
+@SuppressWarnings("unused")
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Operation {
 
     private final OperationType type;
     private final OperationPosition position;
-    private boolean silent;
     @Nullable
     private final OperationUser user;
+    @Nullable
+    private final OperationUser victim;
+    private boolean silent;
 
     @ApiStatus.Internal
-    private Operation(@Nullable OperationUser user, @NotNull OperationType type, @NotNull OperationPosition position) {
+    private Operation(@Nullable OperationUser user, @Nullable OperationUser victim,
+                      @NotNull OperationType type, @NotNull OperationPosition position) {
         this.user = user;
+        this.victim = victim;
         this.type = type;
         this.position = position;
         this.silent = getType().isSilent();
     }
 
     @ApiStatus.Internal
+    private Operation(@Nullable OperationUser user, @NotNull OperationType type, @NotNull OperationPosition position) {
+        this(user, null, type, position);
+    }
+
+    @ApiStatus.Internal
     private Operation(@NotNull OperationType type, @NotNull OperationPosition position) {
-        this(null, type, position);
+        this(null, null, type, position);
     }
 
     /**
@@ -62,7 +75,8 @@ public class Operation {
      * @since 1.0
      */
     @NotNull
-    public static Operation of(@Nullable OperationUser user, @NotNull OperationType type, @NotNull OperationPosition position) {
+    public static Operation of(@Nullable OperationUser user, @NotNull OperationType type,
+                               @NotNull OperationPosition position) {
         return new Operation(user, type, position);
     }
 
@@ -90,11 +104,28 @@ public class Operation {
      * @since 1.0
      */
     @NotNull
-    public static Operation of(@Nullable OperationUser user, @NotNull OperationType type, @NotNull OperationPosition position,
-                               boolean silent) {
+    public static Operation of(@Nullable OperationUser user, @NotNull OperationType type,
+                               @NotNull OperationPosition position, boolean silent) {
         final Operation operation = of(user, type, position);
         operation.setSilent(silent);
         return operation;
+    }
+
+    /**
+     * Create a new {@code Operation} from a {@link OperationUser user}, {@link OperationUser victim},
+     * {@link OperationType type}, and {@link OperationPosition position}
+     *
+     * @param user     the user who performed the operation
+     * @param victim   the user who was affected by the operation
+     * @param type     the type of operation
+     * @param position the OperationPosition of the operation; where it took place
+     * @return the new {@code Operation}
+     * @since 1.0.3
+     */
+    @NotNull
+    public static Operation of(@Nullable OperationUser user, @Nullable OperationUser victim,
+                               @NotNull OperationType type, @NotNull OperationPosition position) {
+        return new Operation(user, victim, type, position);
     }
 
     /**
@@ -163,6 +194,16 @@ public class Operation {
      */
     public Optional<OperationUser> getUser() {
         return Optional.ofNullable(user);
+    }
+
+    /**
+     * Get the {@link OperationUser} who was affected by the operation, if any
+     *
+     * @return the user who was affected by the operation, wrapped in an {@link Optional}
+     * @since 1.0
+     */
+    public Optional<OperationUser> getVictim() {
+        return Optional.ofNullable(victim);
     }
 
 }

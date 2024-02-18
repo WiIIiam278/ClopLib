@@ -44,6 +44,7 @@ public interface BukkitEntityDamageListener extends BukkitListener {
             if (damaged.isPresent()) {
                 if (getHandler().cancelOperation(Operation.of(
                         getUser(damaging.get()),
+                        getUser(damaged.get()),
                         OperationType.PLAYER_DAMAGE_PLAYER,
                         getPosition(damaged.get().getLocation())
                 ))) {
