@@ -19,8 +19,11 @@
 
 package net.william278.cloplib.listener;
 
+import com.google.common.collect.Sets;
 import net.william278.cloplib.operation.Operation;
+import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
+import net.william278.cloplib.operation.OperationUser;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Monster;
 import org.bukkit.event.EventHandler;
@@ -31,6 +34,7 @@ import org.bukkit.event.entity.EntityExplodeEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 import static org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -47,7 +51,7 @@ public interface BukkitEntityListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onBlockExplosion(@NotNull BlockExplodeEvent e) {
-        final HashSet<Block> blocksToRemove = new HashSet<>();
+        final HashSet<Block> blocksToRemove = Sets.newHashSet();
         for (Block block : e.blockList()) {
             if (getHandler().cancelOperation(Operation.of(
                     OperationType.EXPLOSION_DAMAGE_TERRAIN,
@@ -56,14 +60,13 @@ public interface BukkitEntityListener extends BukkitListener {
                 blocksToRemove.add(block);
             }
         }
-        for (Block block : blocksToRemove) {
-            e.blockList().remove(block);
-        }
+        // Don't destroy protected blocks (but allow the explosion to continue)
+        blocksToRemove.forEach(e.blockList()::remove);
     }
 
     @EventHandler(ignoreCancelled = true)
     default void onEntityExplode(@NotNull EntityExplodeEvent e) {
-        final HashSet<Block> blocksToRemove = new HashSet<>();
+        final HashSet<Block> blocksToRemove = Sets.newHashSet();
         for (Block block : e.blockList()) {
             if (getHandler().cancelOperation(Operation.of(
                     OperationType.MONSTER_DAMAGE_TERRAIN,
@@ -79,11 +82,26 @@ public interface BukkitEntityListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onEntityChangeBlock(@NotNull EntityChangeBlockEvent e) {
+        final OperationPosition position = getPosition(e.getBlock().getLocation());
+        final Optional<OperationUser> user = getPlayerSource(e.getEntity()).map(this::getUser);
+
+        // Handle projectiles breaking blocks (chorus fruit, decorated pots)
+        if (user.isPresent()) {
+            if (getHandler().cancelOperation(Operation.of(
+                    user.get(),
+                    OperationType.BLOCK_BREAK,
+                    position
+            ))) {
+                e.setCancelled(true);
+            }
+            return;
+        }
+
+        // Handle mob griefing (Endermen, etc.)
         if (getChecker().isGriefingMob(e.getEntity().getType().getKey().toString())) {
-            final Block block = e.getBlock();
             if (getHandler().cancelOperation(Operation.of(
                     OperationType.MONSTER_DAMAGE_TERRAIN,
-                    getPosition(block.getLocation())
+                    position
             ))) {
                 e.setCancelled(true);
             }
