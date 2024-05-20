@@ -26,7 +26,11 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a listener for handling {@link Operation operations} that take place on the server
+ *
+ * @see Operation
+ * @since 1.0
  */
+@SuppressWarnings("unused")
 public interface OperationListener extends InspectorCallbackProvider {
 
     /**

@@ -28,6 +28,7 @@ import org.jetbrains.annotations.NotNull;
  * @see Operation
  * @since 1.0
  */
+@SuppressWarnings("unused")
 public interface OperationChunk {
 
     /**

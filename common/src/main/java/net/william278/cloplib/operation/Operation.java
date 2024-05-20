@@ -199,7 +199,7 @@ public class Operation {
     /**
      * Get the {@link OperationUser} who was affected by the operation, if any
      *
-     * @return the user who was affected by the operation, wrapped in an {@link Optional}
+     * @return the user affected by the operation, wrapped in an {@link Optional}
      * @since 1.0
      */
     public Optional<OperationUser> getVictim() {

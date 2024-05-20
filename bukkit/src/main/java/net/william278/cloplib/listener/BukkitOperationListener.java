@@ -47,8 +47,9 @@ public abstract class BukkitOperationListener implements OperationListener, Bukk
 
     private final Handler handler;
     private final TypeChecker checker;
-    private final Map<String, BiConsumer<OperationUser, OperationPosition>> inspectionHandlers;
+    private final Map<InspectionTool, BiConsumer<OperationUser, OperationPosition>> inspectionToolHandlers;
 
+    @SuppressWarnings("unused")
     public BukkitOperationListener(@NotNull Handler handler, @NotNull JavaPlugin plugin) {
         this(
                 handler,
@@ -83,17 +84,14 @@ public abstract class BukkitOperationListener implements OperationListener, Bukk
     /**
      * Set the callback for when a player inspects a block while holding something
      *
-     * @param material the material the user must be holding to trigger the callback
+     * @param tool     the tool the user must be holding to trigger the callback
      * @param callback the callback to set
-     * @since 1.0
+     * @since 1.0.5
      */
     @Override
-    public void setInspectorCallback(@NotNull String material, @NotNull BiConsumer<OperationUser, OperationPosition> callback) {
-        if (material.startsWith("minecraft:")) {
-            material = material.substring(10);
-        }
-        inspectionHandlers.put(material, callback);
+    public void setInspectorCallback(@NotNull InspectionTool tool,
+                                     @NotNull BiConsumer<OperationUser, OperationPosition> callback) {
+        inspectionToolHandlers.put(tool, callback);
     }
-
 
 }

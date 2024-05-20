@@ -42,7 +42,7 @@ public interface TypeChecker {
     boolean isGriefingMob(@NotNull String mobId);
 
     /**
-     * Returns whether a material is pressure sensitive
+     * Returns whether a material is pressure-sensitive
      *
      * @param materialId the material ID
      * @return whether the material is pressure sensitive

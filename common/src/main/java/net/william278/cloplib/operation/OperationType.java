@@ -238,6 +238,7 @@ public enum OperationType {
      * @return The operation type, or an empty optional if not found
      * @since 1.0
      */
+    @SuppressWarnings("unused")
     public static Optional<OperationType> fromId(@NotNull String id) {
         return Arrays.stream(values()).filter(flag -> flag.name().equalsIgnoreCase(id)).findFirst();
     }

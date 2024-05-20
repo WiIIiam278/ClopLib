@@ -30,6 +30,7 @@ import java.util.UUID;
  * @see Operation
  * @since 1.0
  */
+@SuppressWarnings("unused")
 public interface OperationWorld {
 
     // Default environment name for the overworld

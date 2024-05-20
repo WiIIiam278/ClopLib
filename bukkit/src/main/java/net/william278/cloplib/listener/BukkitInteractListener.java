@@ -37,8 +37,11 @@ import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Objects;
 import java.util.function.BiConsumer;
 
 public interface BukkitInteractListener extends BukkitListener {
@@ -126,22 +129,33 @@ public interface BukkitInteractListener extends BukkitListener {
 
     // Handle claim inspection callbacks
     default boolean handleInspectionCallbacks(@NotNull PlayerInteractEvent e) {
-        final String item = e.getPlayer().getInventory().getItemInMainHand().getType().getKey().getKey();
-        if (!getInspectionHandlers().containsKey(item)) {
+        final ItemStack item = e.getPlayer().getInventory().getItemInMainHand();
+        final InspectionTool tool = getTool(item);
+        if (!getInspectionToolHandlers().containsKey(tool)) {
             return false;
         }
 
-        // Consume the interact event
+        // Consume the item interact event
         e.setUseInteractedBlock(Event.Result.DENY);
         e.setUseItemInHand(Event.Result.DENY);
 
         // Execute the callback
-        final BiConsumer<OperationUser, OperationPosition> callback = getInspectionHandlers().get(item);
+        final BiConsumer<OperationUser, OperationPosition> callback = getInspectionToolHandlers().get(tool);
         final Block block = e.getPlayer().getTargetBlockExact(getInspectionDistance(), FluidCollisionMode.NEVER);
         if (block != null) {
             callback.accept(getUser(e.getPlayer()), getPosition(block.getLocation()));
         }
         return true;
+    }
+
+    @NotNull
+    private InspectionTool getTool(@NotNull ItemStack item) {
+        final InspectionTool.InspectionToolBuilder builder = InspectionTool.builder()
+                .material(item.getType().getKey().toString());
+        if (item.hasItemMeta() && item.getItemMeta() != null && item.getItemMeta().hasCustomModelData()) {
+            builder.useCustomModelData(true).customModelData(item.getItemMeta().getCustomModelData());
+        }
+        return builder.build();
     }
 
     // Returns true if a spawn egg operation was handled

@@ -19,12 +19,15 @@
 
 package net.william278.cloplib.listener;
 
+import lombok.Builder;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationUser;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
 
 /**
  * An interface for providing callbacks for inspection actions.
@@ -32,8 +35,10 @@ import java.util.function.BiConsumer;
  * <p>
  * This should be used for inspecting chunks with tools such as sticks to view borders,
  * as well as for claim creation actions such as with a golden shovel
+ *
  * @since 1.0
  */
+@SuppressWarnings("unused")
 public interface InspectorCallbackProvider {
 
     /**
@@ -53,13 +58,38 @@ public interface InspectorCallbackProvider {
     void setInspectionDistance(int distance);
 
     /**
-     * Get handler callbacks for inspection actions
+     * Get handler callbacks for inspection actions, as a map of {@link InspectionTool} to {@link BiConsumer}s
+     *
+     * @return the handlers
+     * @since 1.0.5
+     */
+    @NotNull
+    Map<InspectionTool, BiConsumer<OperationUser, OperationPosition>> getInspectionToolHandlers();
+
+    /**
+     * Get handler callbacks for inspection actions, as a map of material key strings to {@link BiConsumer}s
      *
      * @return the handlers
      * @since 1.0
+     * @deprecated use {@link #getInspectionToolHandlers()} instead
      */
+    @Deprecated(forRemoval = true, since = "1.0.5")
+    @Unmodifiable
     @NotNull
-    Map<String, BiConsumer<OperationUser, OperationPosition>> getInspectionHandlers();
+    default Map<String, BiConsumer<OperationUser, OperationPosition>> getInspectionHandlers() {
+        return getInspectionToolHandlers().entrySet().stream()
+                .collect(Collectors.toMap(entry -> entry.getKey().material(), Map.Entry::getValue));
+    }
+
+    /**
+     * Sets a callback for use handling inspection actions
+     *
+     * @param tool     the tool to set the callback for
+     * @param callback the callback to set
+     * @since 1.0.5
+     */
+    void setInspectorCallback(@NotNull InspectionTool tool,
+                              @NotNull BiConsumer<OperationUser, OperationPosition> callback);
 
     /**
      * Sets a callback for use handling inspection actions
@@ -68,6 +98,37 @@ public interface InspectorCallbackProvider {
      * @param callback the callback to set
      * @since 1.0
      */
-    void setInspectorCallback(@NotNull String material, @NotNull BiConsumer<OperationUser, OperationPosition> callback);
+    default void setInspectorCallback(@NotNull String material,
+                                      @NotNull BiConsumer<OperationUser, OperationPosition> callback) {
+        setInspectorCallback(InspectionTool.builder().material(material).build(), callback);
+    }
+
+    /**
+     * Record for a tool used for inspection, consisting of a material key string and optional custom model data
+     *
+     * @param material           the material key string; may or may not be namespaced
+     *                           (e.g. "minecraft:stick" or "golden_shovel")
+     * @param useCustomModelData whether the tool uses custom model data
+     * @param customModelData    the custom model data value (an integer)
+     * @since 1.0.5
+     */
+    @Builder
+    record InspectionTool(@NotNull String material, boolean useCustomModelData, int customModelData) {
+
+        public InspectionTool(@NotNull String material, boolean useCustomModelData, int customModelData) {
+            this.material = material.startsWith("minecraft:") ? material.substring(10) : material;
+            this.useCustomModelData = useCustomModelData;
+            this.customModelData = useCustomModelData ? customModelData : -1;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            final InspectionTool that = (InspectionTool) obj;
+            return material.equals(that.material) && (!useCustomModelData || customModelData == that.customModelData);
+        }
+
+    }
 
 }

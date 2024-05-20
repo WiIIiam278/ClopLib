@@ -27,6 +27,8 @@ import org.jetbrains.annotations.NotNull;
 
 /**
  * Represents a handler for processing {@link Operation}
+ *
+ * @since 1.0
  */
 public interface Handler {
 
