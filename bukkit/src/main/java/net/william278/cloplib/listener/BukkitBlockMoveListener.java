@@ -22,7 +22,9 @@ package net.william278.cloplib.listener;
 import net.william278.cloplib.operation.OperationPosition;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.data.Directional;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.block.BlockDispenseEvent;
 import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.block.BlockPistonExtendEvent;
 import org.bukkit.event.block.BlockPistonRetractEvent;
@@ -76,6 +78,22 @@ public interface BukkitBlockMoveListener extends BukkitListener {
                 e.setCancelled(true);
                 return;
             }
+        }
+    }
+
+    // Stop dispensers from dispensing onto unsuspecting claims
+    @EventHandler(ignoreCancelled = true)
+    default void onBlockDispense(@NotNull BlockDispenseEvent e) {
+        final OperationPosition blockPosition = getPosition(e.getBlock().getLocation());
+        final OperationPosition facingPosition = getPosition(e.getBlock().getRelative(
+                ((Directional) e.getBlock().getBlockData()).getFacing()
+        ).getLocation());
+        if (getHandler().cancelNature(
+                blockPosition.getWorld(),
+                blockPosition,
+                facingPosition
+        )) {
+            e.setCancelled(true);
         }
     }
 
