@@ -95,7 +95,8 @@ public interface BukkitInteractListener extends BukkitListener {
                         if (getHandler().cancelOperation(Operation.of(
                                 getUser(e.getPlayer()),
                                 OperationType.REDSTONE_INTERACT,
-                                getPosition(block.getLocation())
+                                getPosition(block.getLocation()),
+                                true
                         ))) {
                             e.setUseInteractedBlock(Event.Result.DENY);
                         }
