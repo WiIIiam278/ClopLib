@@ -28,6 +28,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.type.Sign;
 import org.bukkit.block.data.type.Switch;
+import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -72,7 +73,8 @@ public interface BukkitInteractListener extends BukkitListener {
                             block.getState() instanceof InventoryHolder ? OperationType.CONTAINER_OPEN
                                     : getChecker().isFarmMaterial(blockId) ? OperationType.FARM_BLOCK_INTERACT
                                     : block.getBlockData() instanceof Switch ? OperationType.REDSTONE_INTERACT
-                                    : block.getBlockData() instanceof Sign ? OperationType.BLOCK_PLACE
+                                    : (block.getBlockData() instanceof Sign
+                                       || block.getBlockData() instanceof WallSign) ? OperationType.BLOCK_PLACE
                                     : OperationType.BLOCK_INTERACT,
                             getPosition(block.getLocation()),
                             e.getHand() == EquipmentSlot.OFF_HAND
