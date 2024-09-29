@@ -221,7 +221,7 @@ public enum OperationType {
      *
      * @since 1.0.9
      */
-    START_RAID;
+    START_RAID(true);
 
     /**
      * Indicates whether by default this operation should not notify a player when it is canceled
