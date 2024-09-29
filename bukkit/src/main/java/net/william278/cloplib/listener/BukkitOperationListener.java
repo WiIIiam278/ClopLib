@@ -43,7 +43,7 @@ import java.util.function.BiConsumer;
 @AllArgsConstructor
 public abstract class BukkitOperationListener implements OperationListener, BukkitInteractListener,
         BukkitEntityDamageListener, BukkitPlaceListener, BukkitBreakListener, BukkitBlockMoveListener,
-        BukkitPortalListener, BukkitMoveListener, BukkitEntityListener, BukkitFireListener {
+        BukkitPortalListener, BukkitMoveListener, BukkitEntityListener, BukkitFireListener, BukkitWorldListener {
 
     private final Handler handler;
     private final TypeChecker checker;
