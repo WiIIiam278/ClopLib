@@ -26,9 +26,8 @@ import net.william278.cloplib.operation.OperationUser;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
-import org.bukkit.block.data.type.Sign;
+import org.bukkit.block.Sign;
 import org.bukkit.block.data.type.Switch;
-import org.bukkit.block.data.type.WallSign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -67,15 +66,15 @@ public interface BukkitInteractListener extends BukkitListener {
                 // Check against containers, switches and other block interactions
                 final Block block = e.getClickedBlock();
                 if (block != null && e.useInteractedBlock() != Event.Result.DENY) {
-                    final String blockId = block.getType().getKey().toString();
                     if (getHandler().cancelOperation(Operation.of(
                             getUser(e.getPlayer()),
-                            block.getState() instanceof InventoryHolder ? OperationType.CONTAINER_OPEN
-                                    : getChecker().isFarmMaterial(blockId) ? OperationType.FARM_BLOCK_INTERACT
-                                    : block.getBlockData() instanceof Switch ? OperationType.REDSTONE_INTERACT
-                                    : (block.getBlockData() instanceof Sign
-                                       || block.getBlockData() instanceof WallSign) ? OperationType.BLOCK_PLACE
-                                    : OperationType.BLOCK_INTERACT,
+                            switch (getInteractBehaviour(block)) {
+                                case EDIT_SIGN -> OperationType.BLOCK_PLACE;
+                                case REDSTONE_SWITCHED -> OperationType.REDSTONE_INTERACT;
+                                case FARM_BLOCK -> OperationType.FARM_BLOCK_INTERACT;
+                                case CONTAINER_OPENS -> OperationType.CONTAINER_OPEN;
+                                default -> OperationType.BLOCK_INTERACT;
+                            },
                             getPosition(block.getLocation()),
                             e.getHand() == EquipmentSlot.OFF_HAND
                     ))) {
@@ -209,6 +208,34 @@ public interface BukkitInteractListener extends BukkitListener {
         ))) {
             e.setCancelled(true);
         }
+    }
+
+    // Get the behaviour of a block
+    @NotNull
+    private BukkitInteractListener.InteractBehaviour getInteractBehaviour(@NotNull Block block) {
+        final String blockId = block.getType().getKey().toString();
+        if (getChecker().isFarmMaterial(blockId)) {
+            return InteractBehaviour.FARM_BLOCK;
+        }
+        if (block.getState() instanceof InventoryHolder) {
+            return InteractBehaviour.CONTAINER_OPENS;
+        }
+        if (block.getBlockData() instanceof Switch) {
+            return InteractBehaviour.REDSTONE_SWITCHED;
+        }
+        if (block.getState() instanceof Sign) {
+            return InteractBehaviour.EDIT_SIGN;
+        }
+        return InteractBehaviour.STANDARD;
+    }
+
+    // Represents different behaviours when a block is interacted with
+    enum InteractBehaviour {
+        EDIT_SIGN,
+        FARM_BLOCK,
+        CONTAINER_OPENS,
+        REDSTONE_SWITCHED,
+        STANDARD
     }
 
 }
