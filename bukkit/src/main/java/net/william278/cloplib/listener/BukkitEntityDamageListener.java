@@ -26,9 +26,12 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityEvent;
 import org.bukkit.projectiles.BlockProjectileSource;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,64 +41,22 @@ public interface BukkitEntityDamageListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onEntityDamageEntity(@NotNull EntityDamageByEntityEvent e) {
-        final Optional<Player> damaged = getPlayerSource(e.getEntity());
+        // Protect against player & projectile-player damage source
         final Optional<Player> damaging = getPlayerSource(e.getDamager());
         if (damaging.isPresent()) {
-            if (damaged.isPresent()) {
-                if (getHandler().cancelOperation(Operation.of(
-                        getUser(damaging.get()),
-                        getUser(damaged.get()),
-                        OperationType.PLAYER_DAMAGE_PLAYER,
-                        getPosition(damaged.get().getLocation())
-                ))) {
-                    e.setCancelled(true);
-                }
-                return;
-            }
-
-            // Determine the Operation type based on the entity being damaged
-            if (getHandler().cancelOperation(Operation.of(
-                    getUser(damaging.get()),
-                    getPlayerDamageType(e),
-                    getPosition(e.getEntity().getLocation())
-            ))) {
-                e.setCancelled(true);
-            }
+            this.handlePlayerDamager(damaging.get(), e);
             return;
         }
-
         if (e.getDamager() instanceof Projectile projectile) {
-            // Prevent projectiles dispensed outside of claims from harming stuff in claims
-            if (projectile.getShooter() instanceof BlockProjectileSource shooter) {
-                final OperationPosition blockLocation = getPosition(shooter.getBlock().getLocation());
-                if (getHandler().cancelNature(
-                        blockLocation.getWorld(),
-                        blockLocation,
-                        getPosition(e.getEntity().getLocation())
-                )) {
-                    e.setCancelled(true);
-                }
-                return;
-            }
-
-            // Prevent projectiles shot by mobs from harming passive mobs, hanging entities & armor stands
-            if (!(e.getEntity() instanceof Player || e.getEntity() instanceof Monster)
-                    && projectile.getShooter() instanceof Monster) {
-                if (getHandler().cancelOperation(Operation.of(
-                        OperationType.MONSTER_DAMAGE_TERRAIN,
-                        getPosition(e.getEntity().getLocation())
-                ))) {
-                    e.setCancelled(true);
-                }
-            }
+            this.handleProjectileDamager(projectile, e);
             return;
         }
 
         // Protect against mobs being hurt by explosions
         final EntityDamageEvent.DamageCause cause = e.getCause();
         if (cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION
-                || cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION
-                && !(e.getEntity() instanceof Monster)) {
+            || cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION
+               && !(e.getEntity() instanceof Monster)) {
             if (getHandler().cancelOperation(Operation.of(
                     OperationType.EXPLOSION_DAMAGE_ENTITY,
                     getPosition(e.getEntity().getLocation())
@@ -105,13 +66,76 @@ public interface BukkitEntityDamageListener extends BukkitListener {
         }
     }
 
+    @EventHandler(ignoreCancelled = true)
+    default void onEntityLightEntityOnFire(@NotNull EntityCombustByEntityEvent e) {
+        // Protect against players & projectiles lighting players on fire
+        final Optional<Player> damager = getPlayerSource(e.getCombuster());
+        if (damager.isPresent()) {
+            this.handlePlayerDamager(damager.get(), e);
+            return;
+        }
+        if (e.getCombuster() instanceof Projectile projectile) {
+            this.handleProjectileDamager(projectile, e);
+        }
+    }
+
+    private <E extends EntityEvent & Cancellable> void handlePlayerDamager(@NotNull Player damager, @NotNull E e) {
+        final Optional<Player> damaged = getPlayerSource(e.getEntity());
+        if (damaged.isPresent()) {
+            if (getHandler().cancelOperation(Operation.of(
+                    getUser(damager),
+                    getUser(damaged.get()),
+                    OperationType.PLAYER_DAMAGE_PLAYER,
+                    getPosition(damaged.get().getLocation())
+            ))) {
+                e.setCancelled(true);
+            }
+            return;
+        }
+
+        // Determine the Operation type based on the entity being damaged
+        if (getHandler().cancelOperation(Operation.of(
+                getUser(damager),
+                getPlayerDamageType(e),
+                getPosition(e.getEntity().getLocation())
+        ))) {
+            e.setCancelled(true);
+        }
+    }
+
+    private <E extends EntityEvent & Cancellable> void handleProjectileDamager(@NotNull Projectile proj, @NotNull E e) {
+        // Prevent projectiles dispensed outside of claims from harming stuff in claims
+        if (proj.getShooter() instanceof BlockProjectileSource shooter) {
+            final OperationPosition blockLocation = getPosition(shooter.getBlock().getLocation());
+            if (getHandler().cancelNature(
+                    blockLocation.getWorld(),
+                    blockLocation,
+                    getPosition(e.getEntity().getLocation())
+            )) {
+                e.setCancelled(true);
+            }
+            return;
+        }
+
+        // Prevent projectiles shot by mobs from harming passive mobs, hanging entities & armor stands
+        if (!(e.getEntity() instanceof Player || e.getEntity() instanceof Monster)
+            && proj.getShooter() instanceof Monster) {
+            if (getHandler().cancelOperation(Operation.of(
+                    OperationType.MONSTER_DAMAGE_TERRAIN,
+                    getPosition(e.getEntity().getLocation())
+            ))) {
+                e.setCancelled(true);
+            }
+        }
+    }
+
     @NotNull
-    private OperationType getPlayerDamageType(@NotNull EntityDamageByEntityEvent e) {
+    private OperationType getPlayerDamageType(@NotNull EntityEvent e) {
         OperationType type = OperationType.PLAYER_DAMAGE_ENTITY;
         if (e.getEntity() instanceof Monster) {
             type = OperationType.PLAYER_DAMAGE_MONSTER;
         } else if (e.getEntity() instanceof LivingEntity living && !living.getRemoveWhenFarAway()
-                || e.getEntity().getCustomName() != null) {
+                   || e.getEntity().getCustomName() != null) {
             type = OperationType.PLAYER_DAMAGE_PERSISTENT_ENTITY;
         }
         return type;

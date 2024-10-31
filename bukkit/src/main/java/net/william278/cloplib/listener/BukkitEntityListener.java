@@ -26,12 +26,14 @@ import net.william278.cloplib.operation.OperationType;
 import net.william278.cloplib.operation.OperationUser;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Monster;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
+import org.bukkit.projectiles.BlockProjectileSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -98,12 +100,23 @@ public interface BukkitEntityListener extends BukkitListener {
             return;
         }
 
-        // Handle mob griefing (Endermen, etc.)
+        // Handle mob griefing (e.g. an Enderman, etc.)
         if (getChecker().isGriefingMob(e.getEntity().getType().getKey().toString())) {
             if (getHandler().cancelOperation(Operation.of(
                     OperationType.MONSTER_DAMAGE_TERRAIN,
                     position
             ))) {
+                e.setCancelled(true);
+            }
+        }
+
+        // Handle dispensed projectile griefing (e.g. a lit arrow lighting a campfire)
+        if (e.getEntity() instanceof Projectile p && p.getShooter() instanceof BlockProjectileSource shooter) {
+            if (getHandler().cancelNature(
+                    position.getWorld(),
+                    getPosition(shooter.getBlock().getLocation()),
+                    position
+            )) {
                 e.setCancelled(true);
             }
         }

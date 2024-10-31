@@ -146,7 +146,9 @@ public enum OperationType {
     FIRE_BURN(true),
 
     /**
-     * When fire spreads from an ignited block to another block
+     * When fire spreads from an ignited block to another block.
+     * <p>
+     * Note {@link #BLOCK_PLACE} is fired for when fire is "placed" by a player/dispenser
      *
      * @since 1.0
      */
