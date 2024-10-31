@@ -59,7 +59,7 @@ public interface BukkitBreakListener extends BukkitListener {
     @EventHandler(ignoreCancelled = true)
     default void onPlayerBreakHangingEntity(@NotNull HangingBreakByEntityEvent e) {
         switch (e.getCause()) {
-            case ENTITY -> {
+            case ENTITY, PHYSICS, OBSTRUCTION, DEFAULT -> {
                 if (e.getRemover() == null) {
                     return;
                 }
