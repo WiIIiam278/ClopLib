@@ -30,7 +30,7 @@ repositories {
 }
 ```
 
-Then, add the dependency itself. Replace `VERSION` with the latest release version. (e.g., `1.0`) and `PLATFORM` with the platform you are targeting (e.g., `bukkit`). If you want to target pre-release "snapshot" versions (not recommended), you should use the `/snapshots` repository instead.
+Then, add the dependency itself. Replace `VERSION` with the latest release version. (e.g., `1.0.11`) and `PLATFORM` with the platform you are targeting (e.g., `bukkit`). If you want to target pre-release "snapshot" versions (not recommended), you should use the `/snapshots` repository instead.
 
 ```groovy
 dependencies {
@@ -40,6 +40,18 @@ dependencies {
 </details>
 
 Using Maven/something else? There's instructions on how to include ClopLib on [the repo browser](https://repo.william278.net/#/releases/net/william278/cloplib).
+
+## Using
+* ✅ This library IS intended for people developing land protection or plugins & mods that want an easy way of contextually handling when the world or players do stuff.
+* ❌ This library IS NOT intended for people wanting to develop hooks for HuskClaims or HuskTowns. Please see the API reference for [HuskClaims](https://william278.net/docs/huskclaims/api) and [HuskTowns](https://william278.net/docs/husktowns/api) respectively. You do not need to include this library or add it to your `/plugins` folder; ClopLib is shaded & relocated in the final jar for each plugin.
+
+Documentation on using ClopLib in your projects is a WIP! At it's core, though, HuskClaims exposes a:
+* The `Handler` interface, which you should implement in your plugin  
+* The `OperationUser` interface, which you should implement via your object representing online players
+* The `OperationPosition/World/Chunk` interfaces, which you should implement via your object(s) representing game world positions 
+* The `OperationListener` interface, and platform-specific interfaces such as `BukkitOperationListener`, the latter of which you should extend to register ClopLib's handlers and supply your implementing `OperationUser/Position/World/Chunk` objects. 
+
+A good place to start would be looking at how HuskClaims' code implements ClopLib in its [common module](https://github.com/WiIIiam278/HuskClaims/blob/master/common/src/main/java/net/william278/huskclaims/claim/ClaimHandler.java), and then implements the [platform operation handler on bukkit](https://github.com/WiIIiam278/HuskClaims/blob/master/bukkit/src/main/java/net/william278/huskclaims/listener/BukkitListener.java).
 
 ## Building
 To build ClopLib, run `clean build` in the root directory. The output JARs will be in `target/`.
