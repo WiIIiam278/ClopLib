@@ -31,6 +31,7 @@ import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
@@ -105,6 +106,21 @@ public interface BukkitEntityListener extends BukkitListener {
             ))) {
                 e.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    default void onEggThrow(@NotNull PlayerEggThrowEvent e) {
+        final OperationPosition position = getPosition(e.getEgg().getLocation());
+        final Optional<OperationUser> user = getPlayerSource(e.getPlayer()).map(this::getUser);
+
+        // Handle the chance of entities spawning from a thrown egg projectile
+        if (user.isPresent() && getHandler().cancelOperation(Operation.of(
+                user.get(),
+                OperationType.USE_SPAWN_EGG,
+                position
+        ))) {
+            e.setHatching(false);
         }
     }
 

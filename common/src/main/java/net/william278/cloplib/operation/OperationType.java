@@ -196,7 +196,7 @@ public enum OperationType {
     FARM_BLOCK_INTERACT,
 
     /**
-     * When a player uses a Spawn Egg
+     * When a player uses a Spawn Egg, or throws a Chicken Egg to try and hatch a chicken.
      *
      * @since 1.0
      */
