@@ -21,20 +21,23 @@ package net.william278.cloplib.listener;
 
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationType;
+import org.bukkit.Material;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockBurnEvent;
-import org.bukkit.event.block.BlockIgniteEvent;
+import org.bukkit.event.block.BlockSpreadEvent;
 import org.jetbrains.annotations.NotNull;
 
 public interface BukkitFireListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
-    default void onBlockSpread(@NotNull BlockIgniteEvent e) {
-        if (getHandler().cancelOperation(Operation.of(
-                OperationType.FIRE_SPREAD,
-                getPosition(e.getBlock().getLocation())
-        ))) {
-            e.setCancelled(true);
+    default void onBlockSpread(@NotNull BlockSpreadEvent e) {
+        if (e.getSource().getType() == Material.FIRE) {
+            if (getHandler().cancelOperation(Operation.of(
+                    OperationType.FIRE_SPREAD,
+                    getPosition(e.getBlock().getLocation())
+            ))) {
+                e.setCancelled(true);
+            }
         }
     }
 
