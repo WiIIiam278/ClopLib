@@ -180,22 +180,13 @@ public interface BukkitInteractListener extends BukkitListener {
         if (e.getRightClicked() instanceof Player) {
             return;
         }
-        if (e.getHand() == EquipmentSlot.HAND) {
-            if (getHandler().cancelOperation(Operation.of(
-                    getUser(e.getPlayer()),
-                    OperationType.ENTITY_INTERACT,
-                    getPosition(e.getRightClicked().getLocation())
-            ))) {
-                e.setCancelled(true);
-            }
-        } else if (e.getHand() == EquipmentSlot.OFF_HAND) {
-            if (getHandler().cancelOperation(Operation.of(
-                    getUser(e.getPlayer()),
-                    OperationType.ENTITY_INTERACT,
-                    getPosition(e.getRightClicked().getLocation())
-            ))) {
-                e.setCancelled(true);
-            }
+        if (getHandler().cancelOperation(Operation.of(
+                getUser(e.getPlayer()),
+                OperationType.ENTITY_INTERACT,
+                getPosition(e.getRightClicked().getLocation()),
+                e.getHand() == EquipmentSlot.OFF_HAND
+        ))) {
+            e.setCancelled(true);
         }
     }
 
@@ -204,7 +195,8 @@ public interface BukkitInteractListener extends BukkitListener {
         if (getHandler().cancelOperation(Operation.of(
                 getUser(e.getPlayer()),
                 OperationType.CONTAINER_OPEN,
-                getPosition(e.getRightClicked().getLocation())
+                getPosition(e.getRightClicked().getLocation()),
+                e.getHand() == EquipmentSlot.OFF_HAND
         ))) {
             e.setCancelled(true);
         }
