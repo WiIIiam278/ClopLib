@@ -78,8 +78,10 @@ public interface BukkitInteractListener extends BukkitListener {
                             getPosition(block.getLocation()),
                             e.getHand() == EquipmentSlot.OFF_HAND
                     ))) {
+                        // Allow eating while clicking blocks in others' claims
+                        final Material usedInHand = e.getItem() != null ? e.getItem().getType() : null;
                         e.setUseInteractedBlock(Event.Result.DENY);
-                        if (e.getItem() != null && e.getItem().getType() != Material.AIR) {
+                        if (usedInHand != null && !(usedInHand == Material.AIR || usedInHand.isEdible())) {
                             e.setUseItemInHand(Event.Result.DENY);
                         }
                     }
