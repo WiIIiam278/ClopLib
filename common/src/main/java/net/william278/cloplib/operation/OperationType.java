@@ -183,6 +183,26 @@ public enum OperationType {
     BREAK_HANGING_ENTITY,
 
     /**
+     * When a player places a vehicle (e.g. Minecarts or Boats).
+     * <p>
+     * Note {@link #BLOCK_PLACE} is fired for when a vehicle that is also a container is placed (e.g. Boat with Chest).
+     * This event is not fired for living entities such as horses or pigs.
+     *
+     * @since 1.0.14
+     */
+    PLACE_VEHICLE,
+
+    /**
+     * When a player breaks a vehicle (e.g. Minecarts or Boats)
+     * <p>
+     * Note {@link #BLOCK_BREAK} is fired for when a vehicle that is also a container is broken (e.g. Boat with Chest).
+     * This event is not fired for living entities such as horses or pigs.
+     *
+     * @since 1.0.14
+     */
+    BREAK_VEHICLE,
+
+    /**
      * When a player interacts with an entity in some way
      *
      * @since 1.0
@@ -212,7 +232,7 @@ public enum OperationType {
     ENDER_PEARL_TELEPORT,
 
     /**
-     * When a player opens a container (e.g., chests, hoppers, furnaces, etc.)
+     * When a player opens a container (e.g., Chests, Hoppers, Furnaces, etc.)
      *
      * @since 1.0
      */

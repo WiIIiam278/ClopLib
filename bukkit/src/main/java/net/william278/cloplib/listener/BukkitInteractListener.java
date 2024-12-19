@@ -28,7 +28,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.type.Switch;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.Action;
@@ -179,9 +181,23 @@ public interface BukkitInteractListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onPlayerInteractEntity(@NotNull PlayerInteractEntityEvent e) {
-        if (e.getRightClicked() instanceof Player) {
+        final Entity entity = e.getRightClicked();
+        if (entity instanceof Player) {
             return;
         }
+
+        // Check against interacting with container vehicles
+        if (entity instanceof Vehicle && entity instanceof InventoryHolder
+            && getHandler().cancelOperation(Operation.of(
+                getUser(e.getPlayer()),
+                OperationType.CONTAINER_OPEN,
+                getPosition(e.getRightClicked().getLocation()),
+                e.getHand() == EquipmentSlot.OFF_HAND
+        ))) {
+            e.setCancelled(true);
+            return;
+        }
+
         if (getHandler().cancelOperation(Operation.of(
                 getUser(e.getPlayer()),
                 OperationType.ENTITY_INTERACT,

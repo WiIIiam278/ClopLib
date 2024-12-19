@@ -27,12 +27,15 @@ import net.william278.cloplib.operation.OperationUser;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Vehicle;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.EntityPlaceEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.projectiles.BlockProjectileSource;
 import org.jetbrains.annotations.NotNull;
 
@@ -134,6 +137,23 @@ public interface BukkitEntityListener extends BukkitListener {
                 position
         ))) {
             e.setHatching(false);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    default void onEntityPlace(@NotNull EntityPlaceEvent e) {
+        final OperationPosition position = getPosition(e.getEntity().getLocation());
+        final Optional<OperationUser> user = getPlayerSource(e.getEntity()).map(this::getUser);
+
+        // Handle entities that can be placed (Minecarts, Boats, End Crystals & Armor Stands)
+        if (getHandler().cancelOperation(Operation.of(
+                user.orElse(null),
+                (e.getEntity() instanceof Vehicle v && !(v instanceof InventoryHolder))
+                        ? OperationType.PLACE_VEHICLE
+                        : OperationType.BLOCK_PLACE,
+                position
+        ))) {
+            e.setCancelled(true);
         }
     }
 

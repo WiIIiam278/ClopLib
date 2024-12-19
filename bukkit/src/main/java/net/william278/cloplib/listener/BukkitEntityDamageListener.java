@@ -22,16 +22,14 @@ package net.william278.cloplib.listener;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityEvent;
+import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.projectiles.BlockProjectileSource;
 import org.jetbrains.annotations.NotNull;
 
@@ -134,6 +132,8 @@ public interface BukkitEntityDamageListener extends BukkitListener {
         OperationType type = OperationType.PLAYER_DAMAGE_ENTITY;
         if (e.getEntity() instanceof Monster) {
             type = OperationType.PLAYER_DAMAGE_MONSTER;
+        } else if (e.getEntity() instanceof Vehicle vehicle) {
+            type = vehicle instanceof InventoryHolder ? OperationType.BLOCK_BREAK : OperationType.BREAK_VEHICLE;
         } else if (e.getEntity() instanceof LivingEntity living && !living.getRemoveWhenFarAway()
                    || e.getEntity().getCustomName() != null) {
             type = OperationType.PLAYER_DAMAGE_PERSISTENT_ENTITY;
