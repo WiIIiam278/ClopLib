@@ -52,11 +52,11 @@ public interface BukkitBlockMoveListener extends BukkitListener {
     @EventHandler(ignoreCancelled = true)
     default void onPistonPush(@NotNull BlockPistonExtendEvent e) {
         final OperationPosition pistonLocation = getPosition(e.getBlock().getLocation());
-        for (final Block pushedBlock : e.getBlocks()) {
+        for (final Block pushed : e.getBlocks()) {
             if (getHandler().cancelNature(
                     pistonLocation.getWorld(),
                     pistonLocation,
-                    getPosition(pushedBlock.getLocation())
+                    getPosition(pushed.getRelative(e.getDirection(), 1).getLocation())
             )) {
                 e.setCancelled(true);
                 return;
@@ -64,16 +64,15 @@ public interface BukkitBlockMoveListener extends BukkitListener {
         }
     }
 
-
     // Stop people from pulling blocks from claims
     @EventHandler(ignoreCancelled = true)
     default void onPistonPull(@NotNull BlockPistonRetractEvent e) {
         final OperationPosition pistonLocation = getPosition(e.getBlock().getLocation());
-        for (final Block pushedBlock : e.getBlocks()) {
+        for (final Block pulled : e.getBlocks()) {
             if (getHandler().cancelNature(
                     pistonLocation.getWorld(),
                     pistonLocation,
-                    getPosition(pushedBlock.getLocation())
+                    getPosition(pulled.getLocation())
             )) {
                 e.setCancelled(true);
                 return;
