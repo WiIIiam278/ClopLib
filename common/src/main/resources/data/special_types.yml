@@ -51,6 +51,8 @@ pressureSensitiveBlocks:
   - polished_blackstone_pressure_plate
   - heavy_weighted_pressure_plate
   - light_weighted_pressure_plate
+  - redstone_ore
+  - deepslate_redstone_ore
   - tripwire
   - big_dripleaf
   - big_dripleaf_stem
