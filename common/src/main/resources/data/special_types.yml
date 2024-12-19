@@ -55,6 +55,7 @@ pressureSensitiveBlocks:
   - big_dripleaf
   - big_dripleaf_stem
   - small_dripleaf
+  - sculk_shrieker
 
 griefingMobs:
   - wither_skull
