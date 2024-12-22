@@ -22,6 +22,7 @@ package net.william278.cloplib.listener;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
+import net.william278.cloplib.operation.OperationUser;
 import org.bukkit.entity.*;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
@@ -29,6 +30,7 @@ import org.bukkit.event.entity.EntityCombustByEntityEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.projectiles.BlockProjectileSource;
 import org.jetbrains.annotations.NotNull;
@@ -77,6 +79,36 @@ public interface BukkitEntityDamageListener extends BukkitListener {
         }
     }
 
+    @EventHandler(ignoreCancelled = true)
+    default void onPlayerFishEntity(@NotNull PlayerFishEvent e) {
+        // Protect against players reeling in others with fishing rods
+        if (e.getState() != PlayerFishEvent.State.CAUGHT_ENTITY || e.getCaught() == null) return;
+        final OperationUser catcher = getUser(e.getPlayer());
+
+        // Handle a player reeling in a player
+        final Optional<Player> caughtPlayer = getPlayerSource(e.getCaught());
+        if (caughtPlayer.isPresent()) {
+            if (getHandler().cancelOperation(Operation.of(
+                    catcher,
+                    getUser(caughtPlayer.get()),
+                    OperationType.PLAYER_DAMAGE_PLAYER,
+                    getPosition(caughtPlayer.get().getLocation())
+            ))) {
+                e.setCancelled(true);
+            }
+            return;
+        }
+
+        // Determine the Operation type based on the entity being reeled in
+        if (getHandler().cancelOperation(Operation.of(
+                catcher,
+                getPlayerDamageType(e.getCaught()),
+                getPosition(e.getCaught().getLocation())
+        ))) {
+            e.setCancelled(true);
+        }
+    }
+
     private <E extends EntityEvent & Cancellable> void handlePlayerDamager(@NotNull Player damager, @NotNull E e) {
         final Optional<Player> damaged = getPlayerSource(e.getEntity());
         if (damaged.isPresent()) {
@@ -94,7 +126,7 @@ public interface BukkitEntityDamageListener extends BukkitListener {
         // Determine the Operation type based on the entity being damaged
         if (getHandler().cancelOperation(Operation.of(
                 getUser(damager),
-                getPlayerDamageType(e),
+                getPlayerDamageType(e.getEntity()),
                 getPosition(e.getEntity().getLocation())
         ))) {
             e.setCancelled(true);
@@ -128,14 +160,14 @@ public interface BukkitEntityDamageListener extends BukkitListener {
     }
 
     @NotNull
-    private OperationType getPlayerDamageType(@NotNull EntityEvent e) {
+    private OperationType getPlayerDamageType(@NotNull Entity entity) {
         OperationType type = OperationType.PLAYER_DAMAGE_ENTITY;
-        if (e.getEntity() instanceof Monster) {
+        if (entity instanceof Monster) {
             type = OperationType.PLAYER_DAMAGE_MONSTER;
-        } else if (e.getEntity() instanceof Vehicle vehicle) {
+        } else if (entity instanceof Vehicle vehicle) {
             type = vehicle instanceof InventoryHolder ? OperationType.BLOCK_BREAK : OperationType.BREAK_VEHICLE;
-        } else if (e.getEntity() instanceof LivingEntity living && !living.getRemoveWhenFarAway()
-                   || e.getEntity().getCustomName() != null) {
+        } else if (entity instanceof LivingEntity living && !living.getRemoveWhenFarAway()
+                   || entity.getCustomName() != null) {
             type = OperationType.PLAYER_DAMAGE_PERSISTENT_ENTITY;
         }
         return type;
