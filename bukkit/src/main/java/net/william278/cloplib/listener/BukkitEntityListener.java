@@ -143,14 +143,12 @@ public interface BukkitEntityListener extends BukkitListener {
     @EventHandler(ignoreCancelled = true)
     default void onEntityPlace(@NotNull EntityPlaceEvent e) {
         final OperationPosition position = getPosition(e.getEntity().getLocation());
-        final Optional<OperationUser> user = Optional.ofNullable(e.getPlayer() != null ? getUser(e.getPlayer()) : null);
 
         // Handle entities that can be placed (Minecarts, Boats, End Crystals & Armor Stands)
         if (getHandler().cancelOperation(Operation.of(
-                user.orElse(null),
+                e.getPlayer() != null ? getUser(e.getPlayer()) : null,
                 (e.getEntity() instanceof Vehicle v && !(v instanceof InventoryHolder))
-                        ? OperationType.PLACE_VEHICLE
-                        : OperationType.BLOCK_PLACE,
+                        ? OperationType.PLACE_VEHICLE : OperationType.BLOCK_PLACE,
                 position
         ))) {
             e.setCancelled(true);
