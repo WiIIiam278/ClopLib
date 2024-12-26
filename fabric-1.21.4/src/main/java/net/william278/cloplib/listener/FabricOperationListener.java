@@ -22,71 +22,84 @@ package net.william278.cloplib.listener;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.math.Vec3d;
 import net.william278.cloplib.handler.Handler;
 import net.william278.cloplib.handler.SpecialTypeChecker;
 import net.william278.cloplib.handler.TypeChecker;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationUser;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
-/**
- * A listener for Bukkit events that can be used to cancel operations
- */
 @Getter
 @AllArgsConstructor
-public abstract class BukkitOperationListener implements OperationListener, BukkitInteractListener,
-        BukkitEntityDamageListener, BukkitPlaceListener, BukkitBreakListener, BukkitBlockMoveListener,
-        BukkitPortalListener, BukkitMoveListener, BukkitEntityListener, BukkitFireListener, BukkitWorldListener {
+public abstract class FabricOperationListener implements OperationListener {
 
     private final Handler handler;
     private final TypeChecker checker;
     private final Map<InspectionTool, BiConsumer<OperationUser, OperationPosition>> inspectionToolHandlers;
 
     @SuppressWarnings("unused")
-    public BukkitOperationListener(@NotNull Handler handler, @NotNull JavaPlugin plugin) {
+    public FabricOperationListener(@NotNull Handler handler, @NotNull ModContainer modContainer) {
         this(
                 handler,
                 SpecialTypeChecker.load(Objects.requireNonNull(
-                        plugin.getResource(SPECIAL_TYPES_FILE),
+                        getSpecialTypes(modContainer),
                         "Failed to load special types file")
                 ),
                 Maps.newHashMap()
         );
     }
 
-    /**
-     * Returns the {@link OperationPosition} of a {@link Location}
-     *
-     * @param location the location
-     * @return the OperationPosition of the location
-     * @since 1.0
-     */
-    @NotNull
-    public abstract OperationPosition getPosition(@NotNull Location location);
+    @Nullable
+    private static InputStream getSpecialTypes(@NotNull ModContainer modContainer) {
+        return modContainer.findPath(SPECIAL_TYPES_FILE)
+                .map(path -> {
+                    try {
+                        return Files.newInputStream(path);
+                    } catch (IOException ignored) {
+                        return null;
+                    }
+                })
+                .orElse(FabricOperationListener.class.getClassLoader().getResourceAsStream(SPECIAL_TYPES_FILE));
+    }
 
     /**
-     * Returns the {@link OperationUser} of a {@link Player}
+     * Returns the {@link OperationPosition} of a pos and world
+     *
+     * @param pos   the location
+     * @param world the world
+     * @return the OperationPosition of the location
+     * @since 1.0.16
+     */
+    @NotNull
+    public abstract OperationPosition getPosition(@NotNull Vec3d pos, @NotNull net.minecraft.world.World world);
+
+    /**
+     * Returns the {@link OperationUser} of a {@link ServerPlayerEntity}
      *
      * @param player the player
      * @return the OperationUser of the player
-     * @since 1.0
+     * @since 1.0.16
      */
     @NotNull
-    public abstract OperationUser getUser(@NotNull Player player);
+    public abstract OperationUser getUser(@NotNull ServerPlayerEntity player);
 
     /**
      * Set the callback for when a player inspects a block while holding something
      *
      * @param tool     the tool the user must be holding to trigger the callback
      * @param callback the callback to set
-     * @since 1.0.5
+     * @since 1.0.16
      */
     @Override
     public void setInspectorCallback(@NotNull InspectionTool tool,

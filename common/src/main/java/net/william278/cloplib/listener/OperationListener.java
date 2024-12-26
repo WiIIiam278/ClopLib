@@ -33,6 +33,8 @@ import org.jetbrains.annotations.NotNull;
 @SuppressWarnings("unused")
 public interface OperationListener extends InspectorCallbackProvider {
 
+    String SPECIAL_TYPES_FILE = "data/special_types.yml";
+
     /**
      * Get the {@link Handler} for this listener
      *
