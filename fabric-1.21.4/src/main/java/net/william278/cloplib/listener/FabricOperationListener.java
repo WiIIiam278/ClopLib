@@ -82,7 +82,8 @@ public abstract class FabricOperationListener implements OperationListener {
      * @since 1.0.16
      */
     @NotNull
-    public abstract OperationPosition getPosition(@NotNull Vec3d pos, @NotNull net.minecraft.world.World world);
+    public abstract OperationPosition getPosition(@NotNull Vec3d pos, float yaw, float pitch,
+                                                  @NotNull net.minecraft.world.World world);
 
     /**
      * Returns the {@link OperationUser} of a {@link ServerPlayerEntity}
