@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "id": "cloplib",
+  "version": "${version}",
+  "description": "${description}",
+  "name": "cloplib",
+  "authors": [
+    "William278"
+  ],
+  "contact": {
+    "homepage": "https://william278.net/project/cloplib",
+    "issues": "https://github.com/WiIIiam278/ClopLib/issues",
+    "sources": "https://github.com/WiIIiam278/ClopLib"
+  },
+  "license": "GPL-3.0",
+  "custom": {
+    "modmenu:api": true,
+    "modmenu": {
+      "badges": [
+        "library"
+      ]
+    }
+  },
+  "depends": {
+    "fabric-api": "*"
+  }
+}
