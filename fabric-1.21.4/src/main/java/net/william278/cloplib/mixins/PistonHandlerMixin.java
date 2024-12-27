@@ -1,11 +1,11 @@
-package net.william278.cloplib.listener.mixins;
+package net.william278.cloplib.mixins;
 
 import com.google.common.collect.Streams;
 import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.william278.cloplib.listener.events.PistonTryActuate;
+import net.william278.cloplib.events.PistonTryActuate;
 import org.jetbrains.annotations.Unmodifiable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

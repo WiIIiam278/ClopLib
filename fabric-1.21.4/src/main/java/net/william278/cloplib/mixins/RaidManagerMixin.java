@@ -17,14 +17,14 @@
  *  limitations under the License.
  */
 
-package net.william278.cloplib.listener.mixins;
+package net.william278.cloplib.mixins;
 
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.village.raid.RaidManager;
-import net.william278.cloplib.listener.events.RaidStarted;
+import net.william278.cloplib.events.RaidStarted;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

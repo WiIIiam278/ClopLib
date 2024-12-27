@@ -17,7 +17,7 @@
  *  limitations under the License.
  */
 
-package net.william278.cloplib.listener.events;
+package net.william278.cloplib.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
@@ -25,18 +25,15 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.List;
-
-public final class PistonTryActuate {
+public final class FluidFlowsHorizontally {
 
     @NotNull
-    public static final Event<BeforePistonActuation> EVENT = EventFactory.createArrayBacked(
-            BeforePistonActuation.class,
-            (callbacks) -> (world, pistonPos, affectedBlocks) -> {
-                for (BeforePistonActuation listener : callbacks) {
-                    final ActionResult result = listener.actuate(world, pistonPos, affectedBlocks);
+    public static final Event<BeforeFluidFlows> EVENT = EventFactory.createArrayBacked(
+            BeforeFluidFlows.class,
+            (callbacks) -> (world, from, to) -> {
+                for (BeforeFluidFlows listener : callbacks) {
+                    final ActionResult result = listener.flow(world, from, to);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -47,10 +44,10 @@ public final class PistonTryActuate {
     );
 
     @FunctionalInterface
-    public interface BeforePistonActuation {
+    public interface BeforeFluidFlows {
 
         @NotNull
-        ActionResult actuate(World world, BlockPos pistonPos, @Unmodifiable List<BlockPos> affectedBlocks);
+        ActionResult flow(World world, BlockPos from, BlockPos to);
 
     }
 

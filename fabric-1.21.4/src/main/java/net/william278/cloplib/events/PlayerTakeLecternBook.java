@@ -17,7 +17,7 @@
  *  limitations under the License.
  */
 
-package net.william278.cloplib.listener.events;
+package net.william278.cloplib.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
@@ -27,14 +27,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-public final class RaidStarted {
+public final class PlayerTakeLecternBook {
 
     @NotNull
-    public static final Event<BeforeRaidStarted> EVENT = EventFactory.createArrayBacked(
-            BeforeRaidStarted.class,
+    public static final Event<BeforePlayerTakesLectern> EVENT = EventFactory.createArrayBacked(
+            BeforePlayerTakesLectern.class,
             (callbacks) -> (world, pos, player) -> {
-                for (BeforeRaidStarted listener : callbacks) {
-                    final ActionResult result = listener.started(world, pos, player);
+                for (BeforePlayerTakesLectern listener : callbacks) {
+                    final ActionResult result = listener.take(world, pos, player);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -45,10 +45,10 @@ public final class RaidStarted {
     );
 
     @FunctionalInterface
-    public interface BeforeRaidStarted {
+    public interface BeforePlayerTakesLectern {
 
         @NotNull
-        ActionResult started(World world, BlockPos from, PlayerEntity player);
+        ActionResult take(World world, BlockPos from, PlayerEntity player);
 
     }
 

@@ -17,7 +17,7 @@
  *  limitations under the License.
  */
 
-package net.william278.cloplib.listener.mixins;
+package net.william278.cloplib.mixins;
 
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
@@ -26,7 +26,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.william278.cloplib.listener.events.PlayerCollideWithBlock;
+import net.william278.cloplib.events.PlayerCollideWithBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

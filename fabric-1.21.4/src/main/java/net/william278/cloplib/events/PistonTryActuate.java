@@ -17,24 +17,26 @@
  *  limitations under the License.
  */
 
-package net.william278.cloplib.listener.events;
+package net.william278.cloplib.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
-public final class PlayerTakeLecternBook {
+import java.util.List;
+
+public final class PistonTryActuate {
 
     @NotNull
-    public static final Event<BeforePlayerTakesLectern> EVENT = EventFactory.createArrayBacked(
-            BeforePlayerTakesLectern.class,
-            (callbacks) -> (world, pos, player) -> {
-                for (BeforePlayerTakesLectern listener : callbacks) {
-                    final ActionResult result = listener.take(world, pos, player);
+    public static final Event<BeforePistonActuation> EVENT = EventFactory.createArrayBacked(
+            BeforePistonActuation.class,
+            (callbacks) -> (world, pistonPos, affectedBlocks) -> {
+                for (BeforePistonActuation listener : callbacks) {
+                    final ActionResult result = listener.actuate(world, pistonPos, affectedBlocks);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -45,10 +47,10 @@ public final class PlayerTakeLecternBook {
     );
 
     @FunctionalInterface
-    public interface BeforePlayerTakesLectern {
+    public interface BeforePistonActuation {
 
         @NotNull
-        ActionResult take(World world, BlockPos from, PlayerEntity player);
+        ActionResult actuate(World world, BlockPos pistonPos, @Unmodifiable List<BlockPos> affectedBlocks);
 
     }
 

@@ -17,7 +17,7 @@
  *  limitations under the License.
  */
 
-package net.william278.cloplib.listener.events;
+package net.william278.cloplib.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;

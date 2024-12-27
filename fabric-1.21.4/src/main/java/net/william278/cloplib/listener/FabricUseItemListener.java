@@ -121,7 +121,7 @@ public interface FabricUseItemListener extends FabricListener {
     // Handle claim inspection callbacks
     @NotNull
     default ActionResult handleInspectionCallbacks(ServerPlayerEntity player, World world, ItemStack item) {
-        final InspectorCallbackProvider.InspectionTool tool = getTool(item);
+        final InspectionTool tool = getTool(item);
         if (!getInspectionToolHandlers().containsKey(tool)) {
             return ActionResult.PASS;
         }

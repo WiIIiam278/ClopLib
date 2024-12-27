@@ -33,10 +33,10 @@ import net.minecraft.item.Item;
 import net.minecraft.resource.LifecycledResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.math.Vec3d;
+import net.william278.cloplib.events.*;
 import net.william278.cloplib.handler.Handler;
 import net.william278.cloplib.handler.SpecialTypeChecker;
 import net.william278.cloplib.handler.TypeChecker;
-import net.william278.cloplib.listener.events.*;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
 import net.william278.cloplib.operation.OperationUser;
@@ -61,7 +61,7 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
 
     private final Handler handler;
     private final TypeChecker checker;
-    private final Map<InspectionTool, BiConsumer<OperationUser, OperationPosition>> inspectionToolHandlers;
+    private final Map<InspectorCallbackProvider.InspectionTool, BiConsumer<OperationUser, OperationPosition>> inspectionToolHandlers;
 
     // Maps of registry blocks to operation types, precalculated on data (re)load for perf
     private final Map<Item, OperationType> precalculatedItemMap = Maps.newHashMap();
@@ -81,7 +81,7 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
 
     @ApiStatus.Internal
     public FabricOperationListener(@NotNull Handler handler, @NotNull SpecialTypeChecker checker,
-                                   @NotNull HashMap<InspectionTool, BiConsumer<OperationUser, OperationPosition>> map) {
+                                   @NotNull HashMap<InspectorCallbackProvider.InspectionTool, BiConsumer<OperationUser, OperationPosition>> map) {
         this.handler = handler;
         this.checker = checker;
         this.inspectionToolHandlers = map;
@@ -165,7 +165,7 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
      * @since 1.1
      */
     @Override
-    public void setInspectorCallback(@NotNull InspectionTool tool,
+    public void setInspectorCallback(@NotNull InspectorCallbackProvider.InspectionTool tool,
                                      @NotNull BiConsumer<OperationUser, OperationPosition> callback) {
         inspectionToolHandlers.put(tool, callback);
     }

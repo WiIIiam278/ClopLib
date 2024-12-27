@@ -1,4 +1,4 @@
-package net.william278.cloplib.listener.mixins;
+package net.william278.cloplib.mixins;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -8,7 +8,7 @@ import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.william278.cloplib.listener.events.PlayerTakeLecternBook;
+import net.william278.cloplib.events.PlayerTakeLecternBook;
 import org.jetbrains.annotations.NotNull;
 
 public class TrackedLecternScreenHandler extends LecternScreenHandler {

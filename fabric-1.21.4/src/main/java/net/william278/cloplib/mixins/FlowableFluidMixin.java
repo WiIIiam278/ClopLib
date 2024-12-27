@@ -17,7 +17,7 @@
  *  limitations under the License.
  */
 
-package net.william278.cloplib.listener.mixins;
+package net.william278.cloplib.mixins;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FlowableFluid;
@@ -27,7 +27,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.william278.cloplib.listener.events.FluidFlowsHorizontally;
+import net.william278.cloplib.events.FluidFlowsHorizontally;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;

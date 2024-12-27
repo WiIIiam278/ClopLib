@@ -1,4 +1,4 @@
-package net.william278.cloplib.listener.mixins;
+package net.william278.cloplib.mixins;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.LecternBlockEntity;
