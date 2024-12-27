@@ -22,13 +22,22 @@ package net.william278.cloplib.listener;
 import com.google.common.collect.Maps;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
+import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
+import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.Item;
+import net.minecraft.resource.LifecycledResourceManager;
+import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.Vec3d;
 import net.william278.cloplib.handler.Handler;
 import net.william278.cloplib.handler.SpecialTypeChecker;
 import net.william278.cloplib.handler.TypeChecker;
 import net.william278.cloplib.operation.OperationPosition;
+import net.william278.cloplib.operation.OperationType;
 import net.william278.cloplib.operation.OperationUser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -42,11 +51,14 @@ import java.util.function.BiConsumer;
 
 @Getter
 @AllArgsConstructor
-public abstract class FabricOperationListener implements OperationListener {
+public abstract class FabricOperationListener implements OperationListener,
+    FabricBreakListener, FabricInteractListener {
 
     private final Handler handler;
     private final TypeChecker checker;
     private final Map<InspectionTool, BiConsumer<OperationUser, OperationPosition>> inspectionToolHandlers;
+
+    private final Map<Item, OperationType> precalculatedItemMap = Maps.newHashMap();
 
     @SuppressWarnings("unused")
     public FabricOperationListener(@NotNull Handler handler, @NotNull ModContainer modContainer) {
@@ -58,6 +70,26 @@ public abstract class FabricOperationListener implements OperationListener {
                 ),
                 Maps.newHashMap()
         );
+
+        this.precalculate();
+        this.initialize();
+    }
+
+    private void precalculate() {
+        precalculatedItemMap.clear();
+        this.precalculateItems(precalculatedItemMap);
+    }
+
+    private void initialize() {
+        PlayerBlockBreakEvents.BEFORE.register(this::onPlayerBreakBlock);
+        AttackBlockCallback.EVENT.register(this::onPlayerAttackBlock);
+        UseItemCallback.EVENT.register(this::onPlayerUseItem);
+        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register(this::reload);
+    }
+
+    private void reload(MinecraftServer minecraftServer,
+                        LifecycledResourceManager lifecycledResourceManager, boolean b) {
+        precalculate();
     }
 
     @Nullable
@@ -86,14 +118,14 @@ public abstract class FabricOperationListener implements OperationListener {
                                                   @NotNull net.minecraft.world.World world);
 
     /**
-     * Returns the {@link OperationUser} of a {@link ServerPlayerEntity}
+     * Returns the {@link OperationUser} of a {@link PlayerEntity}
      *
      * @param player the player
      * @return the OperationUser of the player
      * @since 1.0.16
      */
     @NotNull
-    public abstract OperationUser getUser(@NotNull ServerPlayerEntity player);
+    public abstract OperationUser getUser(@NotNull PlayerEntity player);
 
     /**
      * Set the callback for when a player inspects a block while holding something
