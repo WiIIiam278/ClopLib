@@ -32,6 +32,7 @@ import net.minecraft.item.Item;
 import net.minecraft.resource.LifecycledResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.william278.cloplib.handler.Handler;
 import net.william278.cloplib.handler.SpecialTypeChecker;
@@ -49,6 +50,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
 
+/**
+ * A listener for Fabric callbacks that can be used to cancel operations
+ */
 @Getter
 @AllArgsConstructor
 public abstract class FabricOperationListener implements OperationListener,
@@ -72,7 +76,7 @@ public abstract class FabricOperationListener implements OperationListener,
         );
 
         this.precalculate();
-        this.initialize();
+        this.initialize(modContainer.getMetadata().getId());
     }
 
     private void precalculate() {
@@ -80,10 +84,16 @@ public abstract class FabricOperationListener implements OperationListener,
         this.precalculateItems(precalculatedItemMap);
     }
 
-    private void initialize() {
+    private void initialize(@NotNull String modName) {
+        // Set the phase identifier (TODO - if we need this or not)
+//        final Identifier id = Identifier.of(modName, "cloplib");
+
+        // Register implemented callback event handlers
         PlayerBlockBreakEvents.BEFORE.register(this::onPlayerBreakBlock);
         AttackBlockCallback.EVENT.register(this::onPlayerAttackBlock);
         UseItemCallback.EVENT.register(this::onPlayerUseItem);
+
+        // We reload the data packs.
         ServerLifecycleEvents.END_DATA_PACK_RELOAD.register(this::reload);
     }
 
