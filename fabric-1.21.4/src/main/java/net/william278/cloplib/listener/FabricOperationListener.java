@@ -97,7 +97,7 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
         PlayerTakeLecternBook.EVENT.register(this::onPlayerTakeLecternBook);
         PlayerCollideWithBlock.EVENT.register(this::onPlayerPhysicallyInteract);
         FluidFlowsHorizontally.EVENT.register(this::onBlockFromTo);
-        PistonTryActuateMixin.EVENT.register(this::onPistonActuate);
+        PistonTryActuate.EVENT.register(this::onPistonActuate);
         RaidStarted.EVENT.register(this::onRaidTriggered);
 
         // Register handlers for precalculating data

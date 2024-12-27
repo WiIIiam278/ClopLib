@@ -29,7 +29,7 @@ import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.List;
 
-public final class PistonTryActuateMixin {
+public final class PistonTryActuate {
 
     @NotNull
     public static final Event<BeforePistonActuation> EVENT = EventFactory.createArrayBacked(

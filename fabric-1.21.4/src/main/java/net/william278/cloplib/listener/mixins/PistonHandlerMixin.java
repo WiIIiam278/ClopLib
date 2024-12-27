@@ -5,7 +5,7 @@ import net.minecraft.block.piston.PistonHandler;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.william278.cloplib.listener.events.PistonTryActuateMixin;
+import net.william278.cloplib.listener.events.PistonTryActuate;
 import org.jetbrains.annotations.Unmodifiable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -36,7 +36,7 @@ public abstract class PistonHandlerMixin {
     // When one block is destroyed.
     @Inject(method = "calculatePush", at = @At(value = "RETURN", ordinal = 0), cancellable = true)
     private void calculatePushSingleDestroyMixin(CallbackInfoReturnable<Boolean> cir) {
-        final ActionResult result = PistonTryActuateMixin.EVENT.invoker().actuate(world, posFrom, getChangedBlocks());
+        final ActionResult result = PistonTryActuate.EVENT.invoker().actuate(world, posFrom, getChangedBlocks());
         if (result == ActionResult.FAIL) {
             cir.setReturnValue(false);
             cir.cancel();
@@ -46,7 +46,7 @@ public abstract class PistonHandlerMixin {
     // When one or more blocks are moved or destroyed
     @Inject(method = "calculatePush", at = @At(value = "RETURN", ordinal = 4), cancellable = true)
     private void calculatePushOneOrMoreMoveMixin(CallbackInfoReturnable<Boolean> cir) {
-        final ActionResult result = PistonTryActuateMixin.EVENT.invoker().actuate(world, posFrom, getChangedBlocks());
+        final ActionResult result = PistonTryActuate.EVENT.invoker().actuate(world, posFrom, getChangedBlocks());
         if (result == ActionResult.FAIL) {
             cir.setReturnValue(false);
             cir.cancel();
