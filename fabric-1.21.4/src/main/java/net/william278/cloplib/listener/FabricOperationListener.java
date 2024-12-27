@@ -20,32 +20,36 @@
 package net.william278.cloplib.listener;
 
 import com.google.common.collect.Maps;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
+import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
 import net.fabricmc.loader.api.ModContainer;
+import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.resource.LifecycledResourceManager;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Vec3d;
 import net.william278.cloplib.handler.Handler;
 import net.william278.cloplib.handler.SpecialTypeChecker;
 import net.william278.cloplib.handler.TypeChecker;
+import net.william278.cloplib.listener.events.FluidHorizontalFlow;
+import net.william278.cloplib.listener.events.PlayerCollideWithBlock;
+import net.william278.cloplib.listener.events.RaidStarted;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
 import net.william278.cloplib.operation.OperationUser;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiConsumer;
@@ -54,15 +58,16 @@ import java.util.function.BiConsumer;
  * A listener for Fabric callbacks that can be used to cancel operations
  */
 @Getter
-@AllArgsConstructor
-public abstract class FabricOperationListener implements OperationListener,
-    FabricBreakListener, FabricInteractListener {
+public abstract class FabricOperationListener implements OperationListener, FabricWorldListener,
+        FabricBreakListener, FabricUseItemListener, FabricUseBlockListener, FabricBlockMoveListener {
 
     private final Handler handler;
     private final TypeChecker checker;
     private final Map<InspectionTool, BiConsumer<OperationUser, OperationPosition>> inspectionToolHandlers;
 
+    // Maps of registry blocks to operation types, precalculated on data (re)load for perf
     private final Map<Item, OperationType> precalculatedItemMap = Maps.newHashMap();
+    private final Map<Block, OperationType> precalculatedBlockMap = Maps.newHashMap();
 
     @SuppressWarnings("unused")
     public FabricOperationListener(@NotNull Handler handler, @NotNull ModContainer modContainer) {
@@ -74,32 +79,47 @@ public abstract class FabricOperationListener implements OperationListener,
                 ),
                 Maps.newHashMap()
         );
-
-        this.precalculate();
-        this.initialize(modContainer.getMetadata().getId());
     }
 
-    private void precalculate() {
-        precalculatedItemMap.clear();
-        this.precalculateItems(precalculatedItemMap);
+    @ApiStatus.Internal
+    public FabricOperationListener(@NotNull Handler handler, @NotNull SpecialTypeChecker checker,
+                                   @NotNull HashMap<InspectionTool, BiConsumer<OperationUser, OperationPosition>> map) {
+        this.handler = handler;
+        this.checker = checker;
+        this.inspectionToolHandlers = map;
+        this.registerCallbacks();
     }
 
-    private void initialize(@NotNull String modName) {
-        // Set the phase identifier (TODO - if we need this or not)
-//        final Identifier id = Identifier.of(modName, "cloplib");
-
+    private void registerCallbacks() {
         // Register implemented callback event handlers
         PlayerBlockBreakEvents.BEFORE.register(this::onPlayerBreakBlock);
         AttackBlockCallback.EVENT.register(this::onPlayerAttackBlock);
         UseItemCallback.EVENT.register(this::onPlayerUseItem);
+        UseBlockCallback.EVENT.register(this::onPlayerUseBlock);
+        PlayerCollideWithBlock.EVENT.register(this::onPlayerCollideWithBlock);
+        FluidHorizontalFlow.EVENT.register(this::onBlockFromTo);
+        RaidStarted.EVENT.register(this::onRaidTriggered);
 
-        // We reload the data packs.
-        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register(this::reload);
+        // Register handlers for precalculating data
+        ServerLifecycleEvents.SERVER_STARTED.register(this::onServerStarted);
+        ServerLifecycleEvents.END_DATA_PACK_RELOAD.register(this::onDataReloaded);
     }
 
-    private void reload(MinecraftServer minecraftServer,
-                        LifecycledResourceManager lifecycledResourceManager, boolean b) {
-        precalculate();
+    // Recalculate block operation map when the server starts
+    private void onServerStarted(MinecraftServer server) {
+        this.precalculateMaps();
+    }
+
+    // Recalculate block operation map when the data pack is reloaded
+    private void onDataReloaded(MinecraftServer server, LifecycledResourceManager manager, boolean b) {
+        this.precalculateMaps();
+    }
+
+    private void precalculateMaps() {
+        precalculatedItemMap.clear();
+        this.precalculateItems(precalculatedItemMap);
+        precalculatedBlockMap.clear();
+        this.precalculateBlocks(precalculatedBlockMap);
     }
 
     @Nullable
@@ -121,7 +141,7 @@ public abstract class FabricOperationListener implements OperationListener,
      * @param pos   the location
      * @param world the world
      * @return the OperationPosition of the location
-     * @since 1.0.16
+     * @since 1.1
      */
     @NotNull
     public abstract OperationPosition getPosition(@NotNull Vec3d pos, float yaw, float pitch,
@@ -132,7 +152,7 @@ public abstract class FabricOperationListener implements OperationListener,
      *
      * @param player the player
      * @return the OperationUser of the player
-     * @since 1.0.16
+     * @since 1.1
      */
     @NotNull
     public abstract OperationUser getUser(@NotNull PlayerEntity player);
@@ -142,7 +162,7 @@ public abstract class FabricOperationListener implements OperationListener,
      *
      * @param tool     the tool the user must be holding to trigger the callback
      * @param callback the callback to set
-     * @since 1.0.16
+     * @since 1.1
      */
     @Override
     public void setInspectorCallback(@NotNull InspectionTool tool,

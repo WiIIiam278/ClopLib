@@ -21,6 +21,9 @@
       ]
     }
   },
+  "mixins": [
+    "cloplib.mixins.json"
+  ],
   "depends": {
     "fabric-api": "*"
   }

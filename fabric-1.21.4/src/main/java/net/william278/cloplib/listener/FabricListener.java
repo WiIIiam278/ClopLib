@@ -19,10 +19,11 @@
 
 package net.william278.cloplib.listener;
 
+import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
-import net.minecraft.item.BlockItem;
+import net.minecraft.item.Item;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
@@ -30,7 +31,6 @@ import net.minecraft.util.math.Vec3d;
 import net.william278.cloplib.handler.Handler;
 import net.william278.cloplib.handler.TypeChecker;
 import net.william278.cloplib.operation.OperationPosition;
-import net.william278.cloplib.operation.OperationType;
 import net.william278.cloplib.operation.OperationUser;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -70,6 +70,16 @@ public interface FabricListener extends InspectorCallbackProvider {
                 .filter(p -> p instanceof ServerPlayerEntity)
                 .map(p -> (ServerPlayerEntity) p)
                 .findFirst();
+    }
+
+    @NotNull
+    static String getId(@NotNull Item item) {
+        return Registries.ITEM.getId(item).toString();
+    }
+
+    @NotNull
+    static String getId(@NotNull Block block) {
+        return Registries.BLOCK.getId(block).toString();
     }
 
 }

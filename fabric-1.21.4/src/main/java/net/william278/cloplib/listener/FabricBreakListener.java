@@ -43,7 +43,7 @@ public interface FabricBreakListener extends FabricListener {
                                        @Nullable BlockState block, @Nullable BlockEntity tileEntity) {
         if (block != null && getHandler().cancelOperation(Operation.of(
                 getUser(playerEntity),
-                getChecker().isFarmMaterial(Registries.BLOCK.getId(block.getBlock()).toString())
+                getChecker().isFarmMaterial(FabricListener.getId(block.getBlock()))
                         ? OperationType.FARM_BLOCK_BREAK : OperationType.BLOCK_BREAK,
                 getPosition(pos, world)
         ))) {

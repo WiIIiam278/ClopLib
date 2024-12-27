@@ -30,6 +30,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
+import net.william278.cloplib.handler.TypeChecker;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
@@ -39,19 +40,20 @@ import org.jetbrains.annotations.NotNull;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.BiConsumer;
-import java.util.function.Predicate;
+import java.util.function.BiPredicate;
 
-public interface FabricInteractListener extends FabricListener {
+public interface FabricUseItemListener extends FabricListener {
 
     // Map of use item predicates to operation types
-    Map<Predicate<Item>, OperationType> USE_ITEM_PREDICATE_MAP = Map.of(
-            (i) -> i instanceof BlockItem, OperationType.BLOCK_PLACE,
-            (i) -> i instanceof BucketItem b && b == Items.BUCKET, OperationType.FILL_BUCKET,
-            (i) -> i instanceof BucketItem b && b != Items.BUCKET, OperationType.EMPTY_BUCKET,
-            (i) -> i instanceof EnderPearlItem || i == Items.CHORUS_FRUIT, OperationType.ENDER_PEARL_TELEPORT,
-            (i) -> i instanceof BoatItem || i instanceof MinecartItem, OperationType.PLACE_VEHICLE,
-            (i) -> i instanceof DecorationItem, OperationType.PLACE_HANGING_ENTITY,
-            (i) -> i instanceof SpawnEggItem || i instanceof EggItem, OperationType.USE_SPAWN_EGG
+    Map<BiPredicate<Item, TypeChecker>, OperationType> USE_ITEM_PREDICATE_MAP = Map.of(
+            (i, c) -> c.isFarmMaterial(Registries.ITEM.getId(i).toString()), OperationType.FARM_BLOCK_PLACE,
+            (i, c) -> i instanceof BlockItem && !c.isFarmMaterial(FabricListener.getId(i)), OperationType.BLOCK_PLACE,
+            (i, c) -> i instanceof BucketItem b && b == Items.BUCKET, OperationType.FILL_BUCKET,
+            (i, c) -> i instanceof BucketItem b && b != Items.BUCKET, OperationType.EMPTY_BUCKET,
+            (i, c) -> i instanceof EnderPearlItem || i == Items.CHORUS_FRUIT, OperationType.ENDER_PEARL_TELEPORT,
+            (i, c) -> i instanceof BoatItem || i instanceof MinecartItem, OperationType.PLACE_VEHICLE,
+            (i, c) -> i instanceof DecorationItem, OperationType.PLACE_HANGING_ENTITY,
+            (i, c) -> i instanceof SpawnEggItem || i instanceof EggItem, OperationType.USE_SPAWN_EGG
     );
 
     @NotNull
@@ -59,7 +61,7 @@ public interface FabricInteractListener extends FabricListener {
 
     private Optional<OperationType> testItemPredicate(@NotNull Item item) {
         return USE_ITEM_PREDICATE_MAP.entrySet().stream()
-                .filter(e -> e.getKey().test(item))
+                .filter(e -> e.getKey().test(item, getChecker()))
                 .map(Map.Entry::getValue).findFirst();
     }
 
@@ -87,8 +89,7 @@ public interface FabricInteractListener extends FabricListener {
 
         if (getHandler().cancelOperation(Operation.of(
                 getUser(player),
-                operationType == OperationType.BLOCK_PLACE && item.getItem() instanceof BlockItem block
-                        ? getPlacedBlockActionType(block) : operationType,
+                operationType,
                 getUseItemPosition(player, world, hand, item),
                 hand == Hand.OFF_HAND
         ))) {
@@ -117,12 +118,6 @@ public interface FabricInteractListener extends FabricListener {
         return getPosition(player.getPos(), world, player.getYaw(), player.getPitch());
     }
 
-    @NotNull
-    private OperationType getPlacedBlockActionType(BlockItem item) {
-        return getChecker().isFarmMaterial(Registries.BLOCK.getId(item.getBlock()).toString())
-                ? OperationType.FARM_BLOCK_PLACE : OperationType.BLOCK_PLACE;
-    }
-
     // Handle claim inspection callbacks
     @NotNull
     default ActionResult handleInspectionCallbacks(ServerPlayerEntity player, World world, ItemStack item) {
@@ -144,7 +139,7 @@ public interface FabricInteractListener extends FabricListener {
     private InspectorCallbackProvider.InspectionTool getTool(@NotNull ItemStack item) {
         final InspectorCallbackProvider.InspectionTool.InspectionToolBuilder builder = InspectorCallbackProvider
                 .InspectionTool.builder()
-                .material(Registries.ITEM.getId(item.getItem()).toString());
+                .material(FabricListener.getId(item.getItem()));
         //todo Custom Model Data feature in fabric (NBT check?)
 //        if (item.getDefaultComponents().mo && item.getItemMeta() != null && item.getItemMeta().hasCustomModelData()) {
 //            builder.useCustomModelData(true).customModelData(item.getItemMeta().getCustomModelData());

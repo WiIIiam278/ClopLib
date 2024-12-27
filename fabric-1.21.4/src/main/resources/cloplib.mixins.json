@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "net.william278.cloplib.listener.mixins",
+  "compatibilityLevel": "JAVA_17",
+  "server": [
+    "AbstractBlockStateMixin",
+    "FlowableFluidMixin",
+    "RaidManagerMixin"
+  ],
+  "client": [],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
