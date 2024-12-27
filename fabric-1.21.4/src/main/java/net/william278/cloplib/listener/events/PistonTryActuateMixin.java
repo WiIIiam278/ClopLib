@@ -25,15 +25,18 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
-public final class FluidHorizontalFlow {
+import java.util.List;
+
+public final class PistonTryActuateMixin {
 
     @NotNull
-    public static final Event<BeforeFluidHorizontalFlow> EVENT = EventFactory.createArrayBacked(
-            BeforeFluidHorizontalFlow.class,
-            (callbacks) -> (world, from, to) -> {
-                for (BeforeFluidHorizontalFlow listener : callbacks) {
-                    final ActionResult result = listener.flow(world, from, to);
+    public static final Event<BeforePistonActuation> EVENT = EventFactory.createArrayBacked(
+            BeforePistonActuation.class,
+            (callbacks) -> (world, pistonPos, affectedBlocks) -> {
+                for (BeforePistonActuation listener : callbacks) {
+                    final ActionResult result = listener.actuate(world, pistonPos, affectedBlocks);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -44,10 +47,10 @@ public final class FluidHorizontalFlow {
     );
 
     @FunctionalInterface
-    public interface BeforeFluidHorizontalFlow {
+    public interface BeforePistonActuation {
 
         @NotNull
-        ActionResult flow(World world, BlockPos from, BlockPos to);
+        ActionResult actuate(World world, BlockPos pistonPos, @Unmodifiable List<BlockPos> affectedBlocks);
 
     }
 

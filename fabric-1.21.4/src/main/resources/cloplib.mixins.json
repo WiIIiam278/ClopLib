@@ -6,6 +6,8 @@
   "server": [
     "AbstractBlockStateMixin",
     "FlowableFluidMixin",
+    "LecternBlockEntityMixin",
+    "PistonHandlerMixin",
     "RaidManagerMixin"
   ],
   "client": [],

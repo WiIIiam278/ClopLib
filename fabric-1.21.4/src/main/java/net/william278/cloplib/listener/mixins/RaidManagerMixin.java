@@ -37,8 +37,8 @@ public abstract class RaidManagerMixin {
     private void startRaidMixin(ServerPlayerEntity player, BlockPos pos, CallbackInfoReturnable<Raid> cir) {
         final ActionResult result = RaidStarted.EVENT.invoker().started(player.getServerWorld(), pos, player);
         if (result == ActionResult.FAIL) {
-            cir.cancel();
             cir.setReturnValue(null);
+            cir.cancel();
         }
     }
 

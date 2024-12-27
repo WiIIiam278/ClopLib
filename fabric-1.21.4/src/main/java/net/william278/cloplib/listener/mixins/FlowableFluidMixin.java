@@ -27,7 +27,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.william278.cloplib.listener.events.FluidHorizontalFlow;
+import net.william278.cloplib.listener.events.FluidFlowsHorizontally;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -51,7 +51,7 @@ public abstract class FlowableFluidMixin {
             return;
         }
 
-        final ActionResult result = FluidHorizontalFlow.EVENT.invoker().flow(world, fromPos, toPos);
+        final ActionResult result = FluidFlowsHorizontally.EVENT.invoker().flow(world, fromPos, toPos);
         if (result == ActionResult.FAIL) {
             cir.setReturnValue(false);
         }

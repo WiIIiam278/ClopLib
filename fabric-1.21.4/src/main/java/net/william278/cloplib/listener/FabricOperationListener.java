@@ -36,9 +36,7 @@ import net.minecraft.util.math.Vec3d;
 import net.william278.cloplib.handler.Handler;
 import net.william278.cloplib.handler.SpecialTypeChecker;
 import net.william278.cloplib.handler.TypeChecker;
-import net.william278.cloplib.listener.events.FluidHorizontalFlow;
-import net.william278.cloplib.listener.events.PlayerCollideWithBlock;
-import net.william278.cloplib.listener.events.RaidStarted;
+import net.william278.cloplib.listener.events.*;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
 import net.william278.cloplib.operation.OperationUser;
@@ -96,8 +94,10 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
         AttackBlockCallback.EVENT.register(this::onPlayerAttackBlock);
         UseItemCallback.EVENT.register(this::onPlayerUseItem);
         UseBlockCallback.EVENT.register(this::onPlayerUseBlock);
-        PlayerCollideWithBlock.EVENT.register(this::onPlayerCollideWithBlock);
-        FluidHorizontalFlow.EVENT.register(this::onBlockFromTo);
+        PlayerTakeLecternBook.EVENT.register(this::onPlayerTakeLecternBook);
+        PlayerCollideWithBlock.EVENT.register(this::onPlayerPhysicallyInteract);
+        FluidFlowsHorizontally.EVENT.register(this::onBlockFromTo);
+        PistonTryActuateMixin.EVENT.register(this::onPistonActuate);
         RaidStarted.EVENT.register(this::onRaidTriggered);
 
         // Register handlers for precalculating data

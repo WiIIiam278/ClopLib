@@ -25,6 +25,8 @@ import net.minecraft.world.World;
 import net.william278.cloplib.operation.OperationPosition;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.List;
+
 public interface FabricBlockMoveListener extends FabricListener {
 
     // Stop fluids from entering claims
@@ -37,6 +39,21 @@ public interface FabricBlockMoveListener extends FabricListener {
                 getPosition(to, world))
         ) {
             return ActionResult.FAIL;
+        }
+        return ActionResult.PASS;
+    }
+
+    @NotNull
+    default ActionResult onPistonActuate(World world, BlockPos pistonBlock, List<BlockPos> affectedBlocks) {
+        final OperationPosition pistonPos = getPosition(pistonBlock, world);
+        for (final BlockPos newBlockPos : affectedBlocks) {
+            if (getHandler().cancelNature(
+                    pistonPos.getWorld(),
+                    pistonPos,
+                    getPosition(newBlockPos, world)
+            )) {
+                return ActionResult.FAIL;
+            }
         }
         return ActionResult.PASS;
     }

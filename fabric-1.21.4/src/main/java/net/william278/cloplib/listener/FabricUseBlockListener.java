@@ -20,7 +20,11 @@
 package net.william278.cloplib.listener;
 
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.CampfireBlockEntity;
+import net.minecraft.block.entity.SignBlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
@@ -34,6 +38,7 @@ import net.william278.cloplib.handler.TypeChecker;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
 import java.util.Optional;
@@ -43,7 +48,8 @@ public interface FabricUseBlockListener extends FabricListener {
 
     // Map of use block predicates to operation types
     Map<BiPredicate<Block, TypeChecker>, OperationType> USE_BLOCK_PREDICATE_MAP = Map.of(
-            (b, c) -> b instanceof InventoryProvider || b instanceof CampfireBlock, OperationType.CONTAINER_OPEN,
+            (b, c) -> b instanceof CampfireBlock, OperationType.CONTAINER_OPEN,
+            (b, c) -> b instanceof AbstractSignBlock, OperationType.BLOCK_PLACE,
             (b, c) -> c.isFarmMaterial(FabricListener.getId(b)), OperationType.FARM_BLOCK_INTERACT,
             (b, c) -> c.isPressureSensitiveMaterial(FabricListener.getId(b)) || b instanceof LeverBlock ||
                       b instanceof ButtonBlock || b instanceof RedstoneOreBlock, OperationType.REDSTONE_INTERACT
@@ -75,8 +81,19 @@ public interface FabricUseBlockListener extends FabricListener {
             return ActionResult.PASS;
         }
 
+        // Check entity
+        OperationType operationType = checkUseBlockEntity(player, world, world.getBlockEntity(blockHit.getBlockPos()));
+        if (operationType != null && getHandler().cancelOperation(Operation.of(
+                getUser(player),
+                operationType,
+                getPosition(blockHit.getBlockPos(), world),
+                hand == Hand.OFF_HAND
+        ))) {
+            return ActionResult.FAIL;
+        }
+
         // Check precalculated block operation map
-        final OperationType operationType = getPrecalculatedBlockMap().get(blockState.getBlock());
+        operationType = getPrecalculatedBlockMap().get(blockState.getBlock());
         if (getHandler().cancelOperation(Operation.of(
                 getUser(player),
                 operationType != null ? operationType : OperationType.BLOCK_INTERACT,
@@ -88,9 +105,25 @@ public interface FabricUseBlockListener extends FabricListener {
         return ActionResult.PASS;
     }
 
+    @Nullable
+    private OperationType checkUseBlockEntity(@NotNull ServerPlayerEntity player, @NotNull World world,
+                                              @Nullable BlockEntity blockEntity) {
+        if (blockEntity == null) {
+            return null;
+        }
+        if (blockEntity instanceof InventoryProvider || blockEntity instanceof Inventory ||
+            blockEntity instanceof CampfireBlockEntity) {
+            return OperationType.CONTAINER_OPEN;
+        }
+        if (blockEntity instanceof SignBlockEntity) {
+            return OperationType.BLOCK_PLACE;
+        }
+        return null;
+    }
+
     @NotNull
-    default ActionResult onPlayerCollideWithBlock(World world, BlockPos blockPos, BlockState state,
-                                                  PlayerEntity playerEntity) {
+    default ActionResult onPlayerPhysicallyInteract(World world, BlockPos blockPos, BlockState state,
+                                                    PlayerEntity playerEntity) {
         if (!(playerEntity instanceof ServerPlayerEntity player)
             || player.interactionManager.getGameMode() == GameMode.ADVENTURE) {
             return ActionResult.PASS;
@@ -105,6 +138,24 @@ public interface FabricUseBlockListener extends FabricListener {
         if (getHandler().cancelOperation(Operation.of(
                 getUser(player),
                 OperationType.REDSTONE_INTERACT,
+                getPosition(blockPos, world),
+                true
+        ))) {
+            return ActionResult.FAIL;
+        }
+        return ActionResult.PASS;
+    }
+
+    @NotNull
+    default ActionResult onPlayerTakeLecternBook(World world, BlockPos blockPos, PlayerEntity playerEntity) {
+        if (!(playerEntity instanceof ServerPlayerEntity player)) {
+            return ActionResult.PASS;
+        }
+
+        // Check if this is allowed
+        if (getHandler().cancelOperation(Operation.of(
+                getUser(player),
+                OperationType.CONTAINER_OPEN,
                 getPosition(blockPos, world),
                 true
         ))) {
