@@ -151,7 +151,7 @@ subprojects {
 
         if (['fabric-1.21.4'].contains(project.name)) {
             publications {
-                mavenJavaBukkit(MavenPublication) {
+                mavenJavaFabric_1_21_4(MavenPublication) {
                     groupId = 'net.william278.cloplib'
                     artifactId = 'cloplib-fabric'
                     version = "$rootProject.version+1.21.4"
