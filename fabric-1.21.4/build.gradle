@@ -18,9 +18,6 @@ dependencies {
     shadow project(path: ':common')
 }
 
-// todo
-//loom.setAccessWidenerPath(file("src/main/resources/uniform.accesswidener"))
-
 shadowJar {
     configurations = [project.configurations.shadow]
     destinationDirectory.set(file("$projectDir/build/libs"))
