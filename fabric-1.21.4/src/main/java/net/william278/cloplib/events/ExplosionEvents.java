@@ -35,9 +35,9 @@ public class ExplosionEvents {
     @NotNull
     public static final Event<BeforeBlocksBrokenCallback> BEFORE_BLOCKS_BROKEN = EventFactory.createArrayBacked(
             BeforeBlocksBrokenCallback.class,
-            (callbacks) -> (world, blocks) -> {
+            (callbacks) -> (explosion, blocks) -> {
                 for (BeforeBlocksBrokenCallback listener : callbacks) {
-                    blocks = listener.explode(world, blocks);
+                    blocks = listener.explode(explosion, blocks);
                 }
                 return blocks;
             }
@@ -46,9 +46,9 @@ public class ExplosionEvents {
     @NotNull
     public static final Event<BeforeDamageEntity> BEFORE_DAMAGE_ENTITY = EventFactory.createArrayBacked(
             BeforeDamageEntity.class,
-            (callbacks) -> (world, entity, explosionPos) -> {
+            (callbacks) -> (explosion, entity) -> {
                 for (BeforeDamageEntity listener : callbacks) {
-                    final ActionResult result = listener.damage(world, entity, explosionPos);
+                    final ActionResult result = listener.damage(explosion, entity);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
