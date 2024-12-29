@@ -21,20 +21,20 @@ package net.william278.cloplib.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-public final class RaidStarted {
+public final class FluidEvents {
 
+    // Perf note - this only fires for horizontal updates
     @NotNull
-    public static final Event<BeforeRaidStarted> EVENT = EventFactory.createArrayBacked(
-            BeforeRaidStarted.class,
-            (callbacks) -> (world, pos, player) -> {
-                for (BeforeRaidStarted listener : callbacks) {
-                    final ActionResult result = listener.started(world, pos, player);
+    public static final Event<BeforeFlowCallback> BEFORE_FLOW = EventFactory.createArrayBacked(
+            BeforeFlowCallback.class,
+            (callbacks) -> (world, from, to) -> {
+                for (BeforeFlowCallback listener : callbacks) {
+                    final ActionResult result = listener.flow(world, from, to);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -45,10 +45,10 @@ public final class RaidStarted {
     );
 
     @FunctionalInterface
-    public interface BeforeRaidStarted {
+    public interface BeforeFlowCallback {
 
         @NotNull
-        ActionResult started(World world, BlockPos from, PlayerEntity player);
+        ActionResult flow(World world, BlockPos from, BlockPos to);
 
     }
 

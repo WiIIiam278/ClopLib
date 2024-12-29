@@ -27,14 +27,14 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-public final class PlayerTakeLecternBook {
+public final class LecternEvents {
 
     @NotNull
-    public static final Event<BeforePlayerTakesLectern> EVENT = EventFactory.createArrayBacked(
-            BeforePlayerTakesLectern.class,
+    public static final Event<BeforeBookTaken> BEFORE_BOOK_TAKEN = EventFactory.createArrayBacked(
+            BeforeBookTaken.class,
             (callbacks) -> (world, pos, player) -> {
-                for (BeforePlayerTakesLectern listener : callbacks) {
-                    final ActionResult result = listener.take(world, pos, player);
+                for (BeforeBookTaken listener : callbacks) {
+                    final ActionResult result = listener.bookTaken(world, pos, player);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -45,10 +45,10 @@ public final class PlayerTakeLecternBook {
     );
 
     @FunctionalInterface
-    public interface BeforePlayerTakesLectern {
+    public interface BeforeBookTaken {
 
         @NotNull
-        ActionResult take(World world, BlockPos from, PlayerEntity player);
+        ActionResult bookTaken(World world, BlockPos from, PlayerEntity player);
 
     }
 

@@ -27,7 +27,7 @@ import net.minecraft.screen.PropertyDelegate;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.william278.cloplib.events.PlayerTakeLecternBook;
+import net.william278.cloplib.events.LecternEvents;
 import org.jetbrains.annotations.NotNull;
 
 public class TrackedLecternScreenHandler extends LecternScreenHandler {
@@ -45,7 +45,7 @@ public class TrackedLecternScreenHandler extends LecternScreenHandler {
     @Override
     public boolean onButtonClick(PlayerEntity player, int id) {
         if (id == TAKE_BOOK_BUTTON_ID) {
-            final ActionResult result = PlayerTakeLecternBook.EVENT.invoker().take(lecternWorld, lecternPos, player);
+            final ActionResult result = LecternEvents.BEFORE_BOOK_TAKEN.invoker().bookTaken(lecternWorld, lecternPos, player);
             if (result == ActionResult.FAIL) {
                 return false;
             }

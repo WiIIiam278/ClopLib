@@ -21,6 +21,8 @@ package net.william278.cloplib.listener;
 
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.mob.Angerable;
+import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
@@ -70,6 +72,10 @@ public interface FabricListener extends InspectorCallbackProvider {
                 .filter(p -> p instanceof ServerPlayerEntity)
                 .map(p -> (ServerPlayerEntity) p)
                 .findFirst();
+    }
+
+    default boolean isMonster(@Nullable Entity entity) {
+        return entity instanceof HostileEntity || entity instanceof Angerable;
     }
 
     @NotNull

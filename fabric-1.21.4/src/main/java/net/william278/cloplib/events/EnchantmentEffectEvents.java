@@ -21,19 +21,20 @@ package net.william278.cloplib.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.entity.Entity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-public final class FluidFlowsHorizontally {
+public final class EnchantmentEffectEvents {
 
     @NotNull
-    public static final Event<BeforeFluidFlows> EVENT = EventFactory.createArrayBacked(
-            BeforeFluidFlows.class,
-            (callbacks) -> (world, from, to) -> {
-                for (BeforeFluidFlows listener : callbacks) {
-                    final ActionResult result = listener.flow(world, from, to);
+    public static final Event<BeforeBlockUpdateCallback> BEFORE_BLOCK_UPDATE = EventFactory.createArrayBacked(
+            BeforeBlockUpdateCallback.class,
+            (callbacks) -> (entity, world, pos) -> {
+                for (BeforeBlockUpdateCallback listener : callbacks) {
+                    final ActionResult result = listener.blockUpdate(entity, world, pos);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -44,10 +45,10 @@ public final class FluidFlowsHorizontally {
     );
 
     @FunctionalInterface
-    public interface BeforeFluidFlows {
+    public interface BeforeBlockUpdateCallback {
 
         @NotNull
-        ActionResult flow(World world, BlockPos from, BlockPos to);
+        ActionResult blockUpdate(Entity entity, World world, BlockPos pos);
 
     }
 

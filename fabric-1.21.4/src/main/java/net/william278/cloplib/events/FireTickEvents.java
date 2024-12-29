@@ -25,18 +25,30 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.List;
-
-public final class PistonTryActuate {
+public final class FireTickEvents {
 
     @NotNull
-    public static final Event<BeforePistonActuation> EVENT = EventFactory.createArrayBacked(
-            BeforePistonActuation.class,
-            (callbacks) -> (world, pistonPos, affectedBlocks) -> {
-                for (BeforePistonActuation listener : callbacks) {
-                    final ActionResult result = listener.actuate(world, pistonPos, affectedBlocks);
+    public static final Event<BeforeSpreadCallback> BEFORE_SPREAD = EventFactory.createArrayBacked(
+            BeforeSpreadCallback.class,
+            (callbacks) -> (world, pos) -> {
+                for (BeforeSpreadCallback listener : callbacks) {
+                    final ActionResult result = listener.fireSpread(world, pos);
+                    if (result != ActionResult.PASS) {
+                        return result;
+                    }
+                }
+
+                return ActionResult.PASS;
+            }
+    );
+
+    @NotNull
+    public static final Event<BeforeBurnCallback> BEFORE_BURN = EventFactory.createArrayBacked(
+            BeforeBurnCallback.class,
+            (callbacks) -> (world, pos) -> {
+                for (BeforeBurnCallback listener : callbacks) {
+                    final ActionResult result = listener.fireBurn(world, pos);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -47,10 +59,18 @@ public final class PistonTryActuate {
     );
 
     @FunctionalInterface
-    public interface BeforePistonActuation {
+    public interface BeforeSpreadCallback {
 
         @NotNull
-        ActionResult actuate(World world, BlockPos pistonPos, @Unmodifiable List<BlockPos> affectedBlocks);
+        ActionResult fireSpread(World world, BlockPos pos);
+
+    }
+
+    @FunctionalInterface
+    public interface BeforeBurnCallback {
+
+        @NotNull
+        ActionResult fireBurn(World world, BlockPos pos);
 
     }
 

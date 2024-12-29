@@ -26,7 +26,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
-import net.william278.cloplib.events.PlayerCollideWithBlock;
+import net.william278.cloplib.events.PressureBlockEvents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -38,11 +38,11 @@ public abstract class AbstractBlockStateMixin {
     @Inject(method = "onEntityCollision", at = @At("HEAD"), cancellable = true)
     private void onEntityCollisionMixin(World world, BlockPos pos, Entity entity, CallbackInfo ci) {
         final BlockState state = world.getBlockState(pos);
-        if (state == null || state.isAir() || !(entity instanceof PlayerEntity playerEntity)) {
+        if (state == null || state.isAir()) {
             return;
         }
 
-        final ActionResult result = PlayerCollideWithBlock.EVENT.invoker().collide(world, pos, state, playerEntity);
+        final ActionResult result = PressureBlockEvents.BEFORE_COLLISION.invoker().collide(world, pos, state, entity);
         if (result == ActionResult.FAIL) {
             ci.cancel();
         }

@@ -170,4 +170,15 @@ public interface FabricUseItemListener extends FabricListener {
 //        }
         return builder.build();
     }
+
+    @NotNull
+    default ActionResult onDispenserPlace(World world, BlockPos dispenserPos, BlockPos blockPos) {
+        final OperationPosition block = getPosition(blockPos, world);
+        return getHandler().cancelNature(
+                block.getWorld(),
+                getPosition(dispenserPos, world),
+                block
+        ) ? ActionResult.FAIL : ActionResult.PASS;
+    }
+
 }

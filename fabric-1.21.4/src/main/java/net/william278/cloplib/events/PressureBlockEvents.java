@@ -22,19 +22,20 @@ package net.william278.cloplib.events;
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.block.BlockState;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-public final class PlayerCollideWithBlock {
+public final class PressureBlockEvents {
 
     @NotNull
-    public static final Event<BeforeBlockCollision> EVENT = EventFactory.createArrayBacked(
-            BeforeBlockCollision.class,
+    public static final Event<BeforeCollisionCallback> BEFORE_COLLISION = EventFactory.createArrayBacked(
+            BeforeCollisionCallback.class,
             (callbacks) -> (world, pos, state, entity) -> {
-                for (BeforeBlockCollision listener : callbacks) {
+                for (BeforeCollisionCallback listener : callbacks) {
                     final ActionResult result = listener.collide(world, pos, state, entity);
                     if (result != ActionResult.PASS) {
                         return result;
@@ -46,10 +47,10 @@ public final class PlayerCollideWithBlock {
     );
 
     @FunctionalInterface
-    public interface BeforeBlockCollision {
+    public interface BeforeCollisionCallback {
 
         @NotNull
-        ActionResult collide(World world, BlockPos pos, BlockState block, PlayerEntity playerEntity);
+        ActionResult collide(World world, BlockPos pos, BlockState block, Entity playerEntity);
 
     }
 

@@ -11,7 +11,10 @@
     "RaidManagerMixin",
     "FireBlockMixin",
     "SetBlockPropertiesEnchantmentEffectMixin",
-    "ReplaceBlockEnchantmentEffectMixin"
+    "ReplaceBlockEnchantmentEffectMixin",
+    "ProjectileEntityMixin",
+    "BlockDispenserBehaviourMixin",
+    "VehiclePlaceDispenserBehaviourMixin"
   ],
   "client": [],
   "injectors": {

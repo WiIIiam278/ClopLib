@@ -21,20 +21,20 @@ package net.william278.cloplib.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-public final class EnchantmentUpdates {
+public final class RaidEvents {
 
     @NotNull
-    public static final Event<FrostWalkerFreezesWater> FROST_WALKER_FREEZES = EventFactory.createArrayBacked(
-            FrostWalkerFreezesWater.class,
-            (callbacks) -> (entity, world, pos) -> {
-                for (FrostWalkerFreezesWater listener : callbacks) {
-                    final ActionResult result = listener.frosts(entity, world, pos);
+    public static final Event<BeforeStartCallback> BEFORE_START = EventFactory.createArrayBacked(
+            BeforeStartCallback.class,
+            (callbacks) -> (world, pos, player) -> {
+                for (BeforeStartCallback listener : callbacks) {
+                    final ActionResult result = listener.starts(world, pos, player);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -45,10 +45,10 @@ public final class EnchantmentUpdates {
     );
 
     @FunctionalInterface
-    public interface FrostWalkerFreezesWater {
+    public interface BeforeStartCallback {
 
         @NotNull
-        ActionResult frosts(Entity entity, World world, BlockPos pos);
+        ActionResult starts(World world, BlockPos from, PlayerEntity player);
 
     }
 

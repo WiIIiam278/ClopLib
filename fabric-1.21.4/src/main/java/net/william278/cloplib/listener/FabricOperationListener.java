@@ -54,8 +54,8 @@ import java.util.function.BiConsumer;
  */
 @Getter
 public abstract class FabricOperationListener implements OperationListener, FabricWorldListener, FabricBreakListener,
-        FabricUseItemListener, FabricUseBlockListener, FabricUseEntityListener, FabricBlockMoveListener,
-        FabricFireListener {
+        FabricUseItemListener, FabricUseBlockListener, FabricUseEntityListener, FabricEntityDamageListener,
+        FabricBlockMoveListener, FabricFireListener {
 
     private final Handler handler;
     private final TypeChecker checker;
@@ -90,17 +90,21 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
         // Register implemented callback event handlers
         PlayerBlockBreakEvents.BEFORE.register(this::onPlayerBreakBlock);
         AttackBlockCallback.EVENT.register(this::onPlayerAttackBlock);
+        AttackEntityCallback.EVENT.register(this::onPlayerAttackEntity);
         UseItemCallback.EVENT.register(this::onPlayerUseItem);
         UseBlockCallback.EVENT.register(this::onPlayerUseBlock);
         UseEntityCallback.EVENT.register(this::onPlayerUseEntity);
-        PlayerTakeLecternBook.EVENT.register(this::onPlayerTakeLecternBook);
-        PlayerCollideWithBlock.EVENT.register(this::onPlayerPhysicallyInteract);
-        FluidFlowsHorizontally.EVENT.register(this::onBlockFromTo);
-        PistonTryActuate.EVENT.register(this::onPistonActuate);
-        RaidStarted.EVENT.register(this::onRaidTriggered);
-        FireUpdates.BEFORE_FIRE_BURNS.register(this::onBlockBurn);
-        FireUpdates.BEFORE_FIRE_SPREAD.register(this::onFireSpread);
-        EnchantmentUpdates.FROST_WALKER_FREEZES.register(this::onPlayerFrostWalker);
+        LecternEvents.BEFORE_BOOK_TAKEN.register(this::onPlayerTakeLecternBook);
+        PressureBlockEvents.BEFORE_COLLISION.register(this::onEntityPhysicallyInteract);
+        ProjectileEvents.BEFORE_BLOCK_HIT.register(this::onProjectileHitBlock);
+        ProjectileEvents.BEFORE_ENTITY_HIT.register(this::onProjectileHitEntity);
+        DispenserEvents.BEFORE_PLACE.register(this::onDispenserPlace);
+        FluidEvents.BEFORE_FLOW.register(this::onBlockFromTo);
+        PistonEvents.BEFORE_ACTUATION.register(this::onPistonActuate);
+        RaidEvents.BEFORE_START.register(this::onRaidTriggered);
+        FireTickEvents.BEFORE_BURN.register(this::onBlockBurn);
+        FireTickEvents.BEFORE_SPREAD.register(this::onFireSpread);
+        EnchantmentEffectEvents.BEFORE_BLOCK_UPDATE.register(this::onPlayerFrostWalker);
 
         // Register handlers for precalculating data
         ServerLifecycleEvents.SERVER_STARTED.register(this::onServerStarted);

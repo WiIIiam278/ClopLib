@@ -23,7 +23,7 @@ import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
-import net.william278.cloplib.events.EnchantmentUpdates;
+import net.william278.cloplib.events.EnchantmentEffectEvents;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
@@ -31,7 +31,7 @@ public interface BlockEnchantmentEffectHandler {
 
     @Unique
     default void handleEnchantmentBlockEffect(ServerWorld world, Entity user, BlockPos blockPos, CallbackInfo ci) {
-        final ActionResult result = EnchantmentUpdates.FROST_WALKER_FREEZES.invoker().frosts(user, world, blockPos);
+        final ActionResult result = EnchantmentEffectEvents.BEFORE_BLOCK_UPDATE.invoker().blockUpdate(user, world, blockPos);
         if (result == ActionResult.FAIL) {
             ci.cancel();
         }

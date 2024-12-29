@@ -164,7 +164,7 @@ public interface BukkitEntityDamageListener extends BukkitListener {
         OperationType type = OperationType.PLAYER_DAMAGE_ENTITY;
         if (entity instanceof Monster) {
             type = OperationType.PLAYER_DAMAGE_MONSTER;
-        } else if (entity instanceof Vehicle vehicle) {
+        } else if (entity instanceof Vehicle vehicle && !(entity instanceof Mob)) {
             type = vehicle instanceof InventoryHolder ? OperationType.BLOCK_BREAK : OperationType.BREAK_VEHICLE;
         } else if (entity instanceof LivingEntity living && !living.getRemoveWhenFarAway()
                    || entity.getCustomName() != null) {

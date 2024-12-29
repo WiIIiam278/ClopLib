@@ -27,7 +27,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.BlockView;
-import net.william278.cloplib.events.FluidFlowsHorizontally;
+import net.william278.cloplib.events.FluidEvents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -39,7 +39,7 @@ import java.util.Set;
 @Mixin(FlowableFluid.class)
 public abstract class FlowableFluidMixin {
 
-    // Ignore up/down fluid flow (claims occupy the world height)
+    // Performance: Ignore up/down fluid flow
     @Unique
     private static final Set<Direction> CLOPLIB_IGNORED_DIRECTIONS = Set.of(Direction.UP, Direction.DOWN);
 
@@ -51,7 +51,7 @@ public abstract class FlowableFluidMixin {
             return;
         }
 
-        final ActionResult result = FluidFlowsHorizontally.EVENT.invoker().flow(world, fromPos, toPos);
+        final ActionResult result = FluidEvents.BEFORE_FLOW.invoker().flow(world, fromPos, toPos);
         if (result == ActionResult.FAIL) {
             cir.setReturnValue(false);
         }

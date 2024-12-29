@@ -23,7 +23,9 @@ import net.minecraft.block.*;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -32,7 +34,6 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.world.GameMode;
 import net.minecraft.world.World;
 import net.william278.cloplib.handler.TypeChecker;
 import net.william278.cloplib.operation.Operation;
@@ -52,7 +53,7 @@ public interface FabricUseBlockListener extends FabricListener {
             (b, c) -> b instanceof AbstractSignBlock, OperationType.BLOCK_PLACE,
             (b, c) -> c.isFarmMaterial(FabricListener.getId(b)), OperationType.FARM_BLOCK_INTERACT,
             (b, c) -> c.isPressureSensitiveMaterial(FabricListener.getId(b)) || b instanceof LeverBlock ||
-                      b instanceof ButtonBlock || b instanceof RedstoneOreBlock, OperationType.REDSTONE_INTERACT
+                    b instanceof ButtonBlock || b instanceof RedstoneOreBlock, OperationType.REDSTONE_INTERACT
     );
 
     @NotNull
@@ -71,7 +72,7 @@ public interface FabricUseBlockListener extends FabricListener {
     @NotNull
     default ActionResult onPlayerUseBlock(PlayerEntity playerEntity, World world, Hand hand, BlockHitResult blockHit) {
         if (blockHit.getType() != HitResult.Type.BLOCK || !(playerEntity instanceof ServerPlayerEntity player)
-            || player.interactionManager.getGameMode() == GameMode.ADVENTURE) {
+                || player.isSneaking()) {
             return ActionResult.PASS;
         }
 
@@ -112,7 +113,7 @@ public interface FabricUseBlockListener extends FabricListener {
             return null;
         }
         if (blockEntity instanceof InventoryProvider || blockEntity instanceof Inventory ||
-            blockEntity instanceof CampfireBlockEntity) {
+                blockEntity instanceof CampfireBlockEntity) {
             return OperationType.CONTAINER_OPEN;
         }
         if (blockEntity instanceof SignBlockEntity) {
@@ -122,19 +123,20 @@ public interface FabricUseBlockListener extends FabricListener {
     }
 
     @NotNull
-    default ActionResult onPlayerPhysicallyInteract(World world, BlockPos blockPos, BlockState state,
-                                                    PlayerEntity playerEntity) {
-        if (!(playerEntity instanceof ServerPlayerEntity player)
-            || player.interactionManager.getGameMode() == GameMode.ADVENTURE) {
-            return ActionResult.PASS;
-        }
-
+    default ActionResult onEntityPhysicallyInteract(World world, BlockPos blockPos, BlockState state, Entity entity) {
         // Check if the block was a pressure sensitive block
         if (!getChecker().isPressureSensitiveMaterial(FabricListener.getId(state.getBlock()))) {
             return ActionResult.PASS;
         }
 
+        // Get the player source
+        final Optional<ServerPlayerEntity> playerSource = getPlayerSource(entity);
+        if (playerSource.isEmpty() || playerSource.get().isSpectator()) {
+            return ActionResult.PASS;
+        }
+
         // Check if this is allowed
+        final ServerPlayerEntity player = playerSource.get();
         if (getHandler().cancelOperation(Operation.of(
                 getUser(player),
                 OperationType.REDSTONE_INTERACT,
@@ -161,6 +163,12 @@ public interface FabricUseBlockListener extends FabricListener {
         ))) {
             return ActionResult.FAIL;
         }
+        return ActionResult.PASS;
+    }
+
+    @NotNull
+    default ActionResult onProjectileHitBlock(BlockPos blockPos, World world, ProjectileEntity projectile,
+                                              @Nullable Entity shooter) {
         return ActionResult.PASS;
     }
 

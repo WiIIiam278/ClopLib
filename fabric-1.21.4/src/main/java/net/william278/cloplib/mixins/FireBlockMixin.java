@@ -28,7 +28,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.random.Random;
 import net.minecraft.world.World;
 import net.minecraft.world.WorldView;
-import net.william278.cloplib.events.FireUpdates;
+import net.william278.cloplib.events.FireTickEvents;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -49,7 +49,7 @@ public abstract class FireBlockMixin {
     @Inject(method = "trySpreadingFire", at = @At("HEAD"), cancellable = true)
     private void trySpreadingFireMixin(World world, BlockPos pos, int spreadFactor, Random random,
                                        int currentAge, CallbackInfo cir) {
-        final ActionResult result = FireUpdates.BEFORE_FIRE_SPREAD.invoker().spreads(world, pos);
+        final ActionResult result = FireTickEvents.BEFORE_SPREAD.invoker().fireSpread(world, pos);
         if (result == ActionResult.FAIL) {
             cir.cancel();
         }
@@ -58,7 +58,7 @@ public abstract class FireBlockMixin {
     // Prevent fire spread contextually
     @Inject(method = "getBurnChance(Lnet/minecraft/world/WorldView;Lnet/minecraft/util/math/BlockPos;)I", at = @At("HEAD"), cancellable = true)
     private void getBurnChanceMixin(WorldView world, BlockPos pos, CallbackInfoReturnable<Integer> cir) {
-        final ActionResult result = FireUpdates.BEFORE_FIRE_BURNS.invoker().burns((World) world, pos);
+        final ActionResult result = FireTickEvents.BEFORE_BURN.invoker().fireBurn((World) world, pos);
         if (result == ActionResult.FAIL) {
             cir.setReturnValue(0);
             cir.cancel();
@@ -68,7 +68,7 @@ public abstract class FireBlockMixin {
     // Return fire age
     @Redirect(method = "scheduledTick", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/block/BlockState;get(Lnet/minecraft/state/property/Property;)Ljava/lang/Comparable;"))
     private int scheduledTickMixin(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        final ActionResult result = FireUpdates.BEFORE_FIRE_BURNS.invoker().burns((World) world, pos);
+        final ActionResult result = FireTickEvents.BEFORE_BURN.invoker().fireBurn((World) world, pos);
         if (result == ActionResult.FAIL) {
             return 0;
         }

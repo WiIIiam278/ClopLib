@@ -21,19 +21,22 @@ package net.william278.cloplib.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
+import net.minecraft.entity.Entity;
+import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public final class FireUpdates {
+public final class ProjectileEvents {
 
     @NotNull
-    public static final Event<BeforeFireSpreads> BEFORE_FIRE_SPREAD = EventFactory.createArrayBacked(
-            BeforeFireSpreads.class,
-            (callbacks) -> (world, pos) -> {
-                for (BeforeFireSpreads listener : callbacks) {
-                    final ActionResult result = listener.spreads(world, pos);
+    public static final Event<BeforeEntityHit> BEFORE_ENTITY_HIT = EventFactory.createArrayBacked(
+            BeforeEntityHit.class,
+            (callbacks) -> (entity, projectile, shooter) -> {
+                for (BeforeEntityHit listener : callbacks) {
+                    final ActionResult result = listener.entityHit(entity, projectile, shooter);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -44,11 +47,11 @@ public final class FireUpdates {
     );
 
     @NotNull
-    public static final Event<BeforeFireBurns> BEFORE_FIRE_BURNS = EventFactory.createArrayBacked(
-            BeforeFireBurns.class,
-            (callbacks) -> (world, pos) -> {
-                for (BeforeFireBurns listener : callbacks) {
-                    final ActionResult result = listener.burns(world, pos);
+    public static final Event<BeforeBlockHit> BEFORE_BLOCK_HIT = EventFactory.createArrayBacked(
+            BeforeBlockHit.class,
+            (callbacks) -> (block, world, projectile, shooter) -> {
+                for (BeforeBlockHit listener : callbacks) {
+                    final ActionResult result = listener.blockHit(block, world, projectile, shooter);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -59,18 +62,18 @@ public final class FireUpdates {
     );
 
     @FunctionalInterface
-    public interface BeforeFireSpreads {
+    public interface BeforeEntityHit {
 
         @NotNull
-        ActionResult spreads(World world, BlockPos pos);
+        ActionResult entityHit(Entity hitEntity, ProjectileEntity projectile, @Nullable Entity shooter);
 
     }
 
     @FunctionalInterface
-    public interface BeforeFireBurns {
+    public interface BeforeBlockHit {
 
         @NotNull
-        ActionResult burns(World world, BlockPos pos);
+        ActionResult blockHit(BlockPos hitBlock, World world, ProjectileEntity projectile, @Nullable Entity shooter);
 
     }
 
