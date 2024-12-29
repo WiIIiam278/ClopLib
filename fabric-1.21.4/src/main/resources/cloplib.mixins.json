@@ -9,7 +9,9 @@
     "LecternBlockEntityMixin",
     "PistonHandlerMixin",
     "RaidManagerMixin",
-    "FireBlockMixin"
+    "FireBlockMixin",
+    "SetBlockPropertiesEnchantmentEffectMixin",
+    "ReplaceBlockEnchantmentEffectMixin"
   ],
   "client": [],
   "injectors": {

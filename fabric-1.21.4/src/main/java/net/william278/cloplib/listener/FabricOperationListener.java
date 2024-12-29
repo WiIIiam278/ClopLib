@@ -100,6 +100,7 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
         RaidStarted.EVENT.register(this::onRaidTriggered);
         FireUpdates.BEFORE_FIRE_BURNS.register(this::onBlockBurn);
         FireUpdates.BEFORE_FIRE_SPREAD.register(this::onFireSpread);
+        EnchantmentUpdates.FROST_WALKER_FREEZES.register(this::onPlayerFrostWalker);
 
         // Register handlers for precalculating data
         ServerLifecycleEvents.SERVER_STARTED.register(this::onServerStarted);

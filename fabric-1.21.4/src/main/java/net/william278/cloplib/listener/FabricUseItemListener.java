@@ -19,6 +19,7 @@
 
 package net.william278.cloplib.listener;
 
+import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
@@ -27,6 +28,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
@@ -118,6 +120,28 @@ public interface FabricUseItemListener extends FabricListener {
         return getPosition(player.getPos(), world, player.getYaw(), player.getPitch());
     }
 
+    // Handle frost walker freezing ground
+    @NotNull
+    default ActionResult onPlayerFrostWalker(Entity entity, World world, BlockPos pos) {
+        final Optional<ServerPlayerEntity> player = getPlayerSource(entity);
+        final OperationPosition blockPos = getPosition(pos, world);
+        if (player.isPresent() && getHandler().cancelOperation(Operation.of(
+                getUser(player.get()),
+                OperationType.BLOCK_PLACE,
+                blockPos,
+                true
+        ))) {
+            return ActionResult.FAIL;
+        }
+
+        // Cancel natural frost walker
+        return getHandler().cancelNature(
+                blockPos.getWorld(),
+                getPosition(entity.getBlockPos(), world),
+                blockPos
+        ) ? ActionResult.FAIL : ActionResult.PASS;
+    }
+
     // Handle claim inspection callbacks
     @NotNull
     default ActionResult handleInspectionCallbacks(ServerPlayerEntity player, World world, ItemStack item) {
@@ -146,5 +170,4 @@ public interface FabricUseItemListener extends FabricListener {
 //        }
         return builder.build();
     }
-
 }
