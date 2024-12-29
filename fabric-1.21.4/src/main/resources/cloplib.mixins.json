@@ -15,7 +15,8 @@
     "ProjectileEntityMixin",
     "BlockDispenserBehaviourMixin",
     "VehiclePlaceDispenserBehaviourMixin",
-    "ProjectileDispenserBehaviourMixin"
+    "ProjectileDispenserBehaviourMixin",
+    "SpawnHelperMixin"
   ],
   "client": [],
   "injectors": {

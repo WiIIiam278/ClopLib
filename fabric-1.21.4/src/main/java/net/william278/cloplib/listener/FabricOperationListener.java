@@ -55,7 +55,7 @@ import java.util.function.BiConsumer;
 @Getter
 public abstract class FabricOperationListener implements OperationListener, FabricWorldListener, FabricBreakListener,
         FabricUseItemListener, FabricUseBlockListener, FabricUseEntityListener, FabricEntityDamageListener,
-        FabricBlockMoveListener, FabricFireListener {
+        FabricEntityListener, FabricBlockMoveListener, FabricFireListener {
 
     private final Handler handler;
     private final TypeChecker checker;
@@ -105,6 +105,7 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
         FireTickEvents.BEFORE_BURN.register(this::onBlockBurn);
         FireTickEvents.BEFORE_SPREAD.register(this::onFireSpread);
         EnchantmentEffectEvents.BEFORE_BLOCK_UPDATE.register(this::onPlayerFrostWalker);
+        SpawnEvents.BEFORE_MOB_SPAWN.register(this::onCreatureSpawn);
 
         // Register handlers for precalculating data
         ServerLifecycleEvents.SERVER_STARTED.register(this::onServerStarted);
