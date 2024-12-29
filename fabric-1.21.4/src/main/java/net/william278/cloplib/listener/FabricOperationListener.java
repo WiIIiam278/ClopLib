@@ -22,10 +22,7 @@ package net.william278.cloplib.listener;
 import com.google.common.collect.Maps;
 import lombok.Getter;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
-import net.fabricmc.fabric.api.event.player.AttackBlockCallback;
-import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.fabricmc.fabric.api.event.player.*;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
@@ -56,8 +53,9 @@ import java.util.function.BiConsumer;
  * A listener for Fabric callbacks that can be used to cancel operations
  */
 @Getter
-public abstract class FabricOperationListener implements OperationListener, FabricWorldListener,
-        FabricBreakListener, FabricUseItemListener, FabricUseBlockListener, FabricBlockMoveListener {
+public abstract class FabricOperationListener implements OperationListener, FabricWorldListener, FabricBreakListener,
+        FabricUseItemListener, FabricUseBlockListener, FabricUseEntityListener, FabricBlockMoveListener,
+        FabricFireListener {
 
     private final Handler handler;
     private final TypeChecker checker;
@@ -94,11 +92,14 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
         AttackBlockCallback.EVENT.register(this::onPlayerAttackBlock);
         UseItemCallback.EVENT.register(this::onPlayerUseItem);
         UseBlockCallback.EVENT.register(this::onPlayerUseBlock);
+        UseEntityCallback.EVENT.register(this::onPlayerUseEntity);
         PlayerTakeLecternBook.EVENT.register(this::onPlayerTakeLecternBook);
         PlayerCollideWithBlock.EVENT.register(this::onPlayerPhysicallyInteract);
         FluidFlowsHorizontally.EVENT.register(this::onBlockFromTo);
         PistonTryActuate.EVENT.register(this::onPistonActuate);
         RaidStarted.EVENT.register(this::onRaidTriggered);
+        FireUpdates.BEFORE_FIRE_BURNS.register(this::onBlockBurn);
+        FireUpdates.BEFORE_FIRE_SPREAD.register(this::onFireSpread);
 
         // Register handlers for precalculating data
         ServerLifecycleEvents.SERVER_STARTED.register(this::onServerStarted);
