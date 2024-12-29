@@ -22,6 +22,7 @@ package net.william278.cloplib.listener;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.decoration.AbstractDecorationEntity;
+import net.minecraft.entity.decoration.ArmorStandEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.entity.vehicle.VehicleEntity;
@@ -32,6 +33,7 @@ import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
@@ -67,6 +69,38 @@ public interface FabricEntityDamageListener extends FabricListener {
         }
 
         // Ignore other projectile damage sources (e.g. monsters hitting other monsters, etc.)
+        return ActionResult.PASS;
+    }
+
+    @NotNull
+    default ActionResult onExplosionDamageEntity(Explosion explosion, Entity entity) {
+        if (entity == explosion.getCausingEntity()) {
+            return ActionResult.PASS;
+        }
+
+        // Handle decorative blocks (hanging items)
+        final OperationPosition entityPos = getPosition(entity.getPos(), entity.getWorld(), entity.getYaw(), entity.getPitch());
+        if ((entity instanceof AbstractDecorationEntity || entity instanceof ArmorStandEntity) &&
+                getHandler().cancelOperation(Operation.of(
+                        OperationType.EXPLOSION_DAMAGE_TERRAIN,
+                        entityPos
+                ))) {
+            return ActionResult.FAIL;
+        }
+
+        // Handle player triggered explosions
+        final Optional<ServerPlayerEntity> player = getPlayerSource(explosion.getCausingEntity());
+        if (player.isPresent() && !player.get().isSpectator()) {
+            return handlePlayerDamageEntity(player.get(), entity);
+        }
+
+        // All other causes
+        if (!isMonster(entity) && getHandler().cancelOperation(Operation.of(
+                OperationType.EXPLOSION_DAMAGE_ENTITY,
+                entityPos
+        ))) {
+            return ActionResult.FAIL;
+        }
         return ActionResult.PASS;
     }
 
@@ -114,4 +148,5 @@ public interface FabricEntityDamageListener extends FabricListener {
         }
         return type;
     }
+
 }

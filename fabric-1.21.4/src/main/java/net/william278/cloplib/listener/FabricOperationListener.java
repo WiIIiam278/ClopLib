@@ -106,6 +106,8 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
         FireTickEvents.BEFORE_SPREAD.register(this::onFireSpread);
         EnchantmentEffectEvents.BEFORE_BLOCK_UPDATE.register(this::onPlayerFrostWalker);
         SpawnEvents.BEFORE_MOB_SPAWN.register(this::onCreatureSpawn);
+        ExplosionEvents.BEFORE_BLOCKS_BROKEN.register(this::onExplosionBreakBlocks);
+        ExplosionEvents.BEFORE_DAMAGE_ENTITY.register(this::onExplosionDamageEntity);
 
         // Register handlers for precalculating data
         ServerLifecycleEvents.SERVER_STARTED.register(this::onServerStarted);

@@ -19,14 +19,19 @@
 
 package net.william278.cloplib.listener;
 
+import com.google.common.collect.Lists;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.SpawnReason;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import net.minecraft.world.explosion.Explosion;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationType;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
+import java.util.List;
 import java.util.Set;
 
 public interface FabricEntityListener extends FabricListener {
@@ -49,6 +54,22 @@ public interface FabricEntityListener extends FabricListener {
                 isMonster(entity) ? OperationType.MONSTER_SPAWN : OperationType.PASSIVE_MOB_SPAWN,
                 getPosition(entity.getPos(), world, entity.getYaw(), entity.getPitch()))
         ) ? ActionResult.FAIL : ActionResult.PASS;
+    }
+
+    @NotNull
+    default List<BlockPos> onExplosionBreakBlocks(Explosion explosion, @Unmodifiable List<BlockPos> blockPos) {
+        final List<BlockPos> newList = Lists.newArrayList();
+        for (BlockPos pos : blockPos) {
+            if (!getHandler().cancelOperation(Operation.of(
+                    getPlayerSource(explosion.getCausingEntity()).map(this::getUser).orElse(null),
+                    isMonster(explosion.getCausingEntity())
+                            ? OperationType.MONSTER_DAMAGE_TERRAIN : OperationType.EXPLOSION_DAMAGE_TERRAIN,
+                    getPosition(pos, explosion.getWorld())
+            ))) {
+                newList.add(pos);
+            }
+        }
+        return newList;
     }
 
 }
