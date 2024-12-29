@@ -37,6 +37,7 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.william278.cloplib.handler.TypeChecker;
 import net.william278.cloplib.operation.Operation;
+import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -168,8 +169,32 @@ public interface FabricUseBlockListener extends FabricListener {
 
     @NotNull
     default ActionResult onProjectileHitBlock(BlockPos blockPos, World world, ProjectileEntity projectile,
-                                              @Nullable Entity shooter) {
-        return ActionResult.PASS;
+                                              @Nullable Entity shooter, @Nullable BlockPos dispensedFrom) {
+        // Check players shooting stuff
+        final Optional<ServerPlayerEntity> playerShooter = getPlayerSource(shooter);
+        if (playerShooter.isPresent()) {
+            return getHandler().cancelOperation(Operation.of(
+                    getUser(playerShooter.get()),
+                    OperationType.REDSTONE_INTERACT,
+                    getPosition(blockPos, world)
+            )) ? ActionResult.FAIL : ActionResult.PASS;
+        }
+
+        // Check dispenser hitting a block
+        if (dispensedFrom != null) {
+            final OperationPosition dispenserPos = getPosition(dispensedFrom, world);
+            return getHandler().cancelNature(
+                    dispenserPos.getWorld(),
+                    getPosition(blockPos, world),
+                    dispenserPos
+            ) ? ActionResult.FAIL : ActionResult.PASS;
+        }
+
+        // Prevent mobs from shooting projectiles to do stuff
+        return getHandler().cancelOperation(Operation.of(
+                OperationType.MONSTER_DAMAGE_TERRAIN,
+                getPosition(blockPos, world)
+        )) ? ActionResult.FAIL : ActionResult.PASS;
     }
 
 }

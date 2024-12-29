@@ -30,6 +30,7 @@ import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.EntityHitResult;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationPosition;
@@ -48,12 +49,25 @@ public interface FabricEntityDamageListener extends FabricListener {
     }
 
     @NotNull
-    default ActionResult onProjectileHitEntity(Entity hit, ProjectileEntity projectile, @Nullable Entity shooter) {
+    default ActionResult onProjectileHitEntity(Entity hit, ProjectileEntity projectile,
+                                               @Nullable Entity shooter, @Nullable BlockPos dispensedFrom) {
         final Optional<ServerPlayerEntity> playerShooter = getPlayerSource(shooter);
         if (playerShooter.isPresent()) {
             return handlePlayerDamageEntity(playerShooter.get(), hit);
         }
-        return ActionResult.PASS; //todo dispenser
+
+        // Handle dispensers
+        if (dispensedFrom != null) {
+            final OperationPosition dispenserPos = getPosition(dispensedFrom, hit.getWorld());
+            return getHandler().cancelNature(
+                    dispenserPos.getWorld(),
+                    getPosition(hit.getPos(), hit.getWorld(), hit.getYaw(), hit.getPitch()),
+                    dispenserPos
+            ) ? ActionResult.FAIL : ActionResult.PASS;
+        }
+
+        // Ignore other projectile damage sources (e.g. monsters hitting other monsters, etc.)
+        return ActionResult.PASS;
     }
 
     @NotNull

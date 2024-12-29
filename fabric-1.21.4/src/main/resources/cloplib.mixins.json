@@ -14,7 +14,8 @@
     "ReplaceBlockEnchantmentEffectMixin",
     "ProjectileEntityMixin",
     "BlockDispenserBehaviourMixin",
-    "VehiclePlaceDispenserBehaviourMixin"
+    "VehiclePlaceDispenserBehaviourMixin",
+    "ProjectileDispenserBehaviourMixin"
   ],
   "client": [],
   "injectors": {

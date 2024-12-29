@@ -34,9 +34,9 @@ public final class ProjectileEvents {
     @NotNull
     public static final Event<BeforeEntityHit> BEFORE_ENTITY_HIT = EventFactory.createArrayBacked(
             BeforeEntityHit.class,
-            (callbacks) -> (entity, projectile, shooter) -> {
+            (callbacks) -> (entity, projectile, shooter, dispensedFrom) -> {
                 for (BeforeEntityHit listener : callbacks) {
-                    final ActionResult result = listener.entityHit(entity, projectile, shooter);
+                    final ActionResult result = listener.entityHit(entity, projectile, shooter, dispensedFrom);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -49,9 +49,9 @@ public final class ProjectileEvents {
     @NotNull
     public static final Event<BeforeBlockHit> BEFORE_BLOCK_HIT = EventFactory.createArrayBacked(
             BeforeBlockHit.class,
-            (callbacks) -> (block, world, projectile, shooter) -> {
+            (callbacks) -> (block, world, projectile, shooter, dispensedFrom) -> {
                 for (BeforeBlockHit listener : callbacks) {
-                    final ActionResult result = listener.blockHit(block, world, projectile, shooter);
+                    final ActionResult result = listener.blockHit(block, world, projectile, shooter, dispensedFrom);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -65,7 +65,8 @@ public final class ProjectileEvents {
     public interface BeforeEntityHit {
 
         @NotNull
-        ActionResult entityHit(Entity hitEntity, ProjectileEntity projectile, @Nullable Entity shooter);
+        ActionResult entityHit(Entity hitEntity, ProjectileEntity projectile,
+                               @Nullable Entity shooter, @Nullable BlockPos dispensedFrom);
 
     }
 
@@ -73,7 +74,9 @@ public final class ProjectileEvents {
     public interface BeforeBlockHit {
 
         @NotNull
-        ActionResult blockHit(BlockPos hitBlock, World world, ProjectileEntity projectile, @Nullable Entity shooter);
+        ActionResult blockHit(BlockPos hitBlock, World world, ProjectileEntity projectile,
+                              @Nullable Entity shooter, @Nullable BlockPos dispensedFrom);
+
 
     }
 
