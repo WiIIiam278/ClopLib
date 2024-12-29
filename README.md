@@ -13,9 +13,9 @@
 </p>
 <br/>
 
-**ClopLib** (_**C**laim **Op**erations **Lib**rary_) is a Minecraft server library for handling events that take place in varying positions within game worlds, to allow developers to contextually cancel or modify the outcome of operations such as block placement, block breaking, entity spawning, based on whether the type of operation was performed within a claimed region.
+**ClopLib** (_**Cl**aim **Op**erations **Lib**rary_) is a Minecraft server library for handling events that take place in varying positions within game worlds, to allow developers to contextually cancel or modify the outcome of operations such as block placement, block breaking, entity spawning, based on whether the type of operation was performed within a claimed region.
 
-Currently, ClopLib targets `bukkit` servers running **Spigot/Paper 1.17.1+**. ClopLib requires **Java 17**.
+Currently, ClopLib targets `bukkit` servers running **Spigot/Paper 1.17.1+** (requires Java 17) and **Fabric 1.21.4** (requires Java 21).
 
 ## Setup
 ClopLib is available [on Maven](https://repo.william278.net/#/releases/net/william278/cloplib/). You can browse the Javadocs [here](https://repo.william278.net/javadoc/releases/net/william278/cloplib/latest).
@@ -30,7 +30,9 @@ repositories {
 }
 ```
 
-Then, add the dependency itself. Replace `VERSION` with the latest release version. (e.g., `1.0.11`) and `PLATFORM` with the platform you are targeting (e.g., `bukkit`). If you want to target pre-release "snapshot" versions (not recommended), you should use the `/snapshots` repository instead.
+Then, add the dependency itself. Replace `VERSION` with the latest release version. (e.g., `1.1`) and `PLATFORM` with the platform you are targeting (e.g., `bukkit`, `fabric`). If you want to target pre-release "snapshot" versions (not recommended), you should use the `/snapshots` repository instead.
+
+On Fabric, you'll need to specify the targeted Minecraft version in the format `VERSION+MC_VERSION` (e.g. `net.william278.cloplib:cloplib-fabric:1.1+1.21.4`)
 
 ```groovy
 dependencies {
@@ -45,7 +47,7 @@ Using Maven/something else? There's instructions on how to include ClopLib on [t
 * ✅ This library IS intended for people developing land protection or plugins & mods that want an easy way of contextually handling when the world or players do stuff.
 * ❌ This library IS NOT intended for people wanting to develop hooks for HuskClaims or HuskTowns. Please see the API reference for [HuskClaims](https://william278.net/docs/huskclaims/api) and [HuskTowns](https://william278.net/docs/husktowns/api) respectively. You do not need to include this library or add it to your `/plugins` folder; ClopLib is shaded & relocated in the final jar for each plugin.
 
-Documentation on using ClopLib in your projects is a WIP! At it's core, though, HuskClaims exposes a:
+Documentation on using ClopLib in your projects is a WIP! At it's core, though, ClopLib exposes a:
 * The `Handler` interface, which you should implement in your plugin  
 * The `OperationUser` interface, which you should implement via your object representing online players
 * The `OperationPosition/World/Chunk` interfaces, which you should implement via your object(s) representing game world positions 

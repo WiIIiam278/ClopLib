@@ -1,11 +1,13 @@
 pluginManagement {
     repositories {
         gradlePluginPortal()
+        maven { url 'https://maven.fabricmc.net/' }
     }
 }
 
 rootProject.name = 'ClopLib'
 include(
         'common',
-        'bukkit'
+        'bukkit',
+        'fabric-1.21.4',
 )

@@ -54,7 +54,7 @@ public abstract class BukkitOperationListener implements OperationListener, Bukk
         this(
                 handler,
                 SpecialTypeChecker.load(Objects.requireNonNull(
-                        plugin.getResource("data/special_types.yml"),
+                        plugin.getResource(SPECIAL_TYPES_FILE),
                         "Failed to load special types file")
                 ),
                 Maps.newHashMap()

@@ -30,7 +30,7 @@ import org.jetbrains.annotations.NotNull;
 public interface BukkitFireListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
-    default void onBlockSpread(@NotNull BlockSpreadEvent e) {
+    default void onFireSpread(@NotNull BlockSpreadEvent e) {
         if (e.getSource().getType() == Material.FIRE) {
             if (getHandler().cancelOperation(Operation.of(
                     OperationType.FIRE_SPREAD,

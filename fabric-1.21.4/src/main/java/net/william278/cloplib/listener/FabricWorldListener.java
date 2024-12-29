@@ -19,38 +19,26 @@
 
 package net.william278.cloplib.listener;
 
-import net.william278.cloplib.handler.Handler;
-import net.william278.cloplib.handler.TypeChecker;
+import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import net.william278.cloplib.operation.Operation;
+import net.william278.cloplib.operation.OperationType;
 import org.jetbrains.annotations.NotNull;
 
-/**
- * Represents a listener for handling {@link Operation operations} that take place on the server
- *
- * @see Operation
- * @since 1.0
- */
-@SuppressWarnings("unused")
-public interface OperationListener extends InspectorCallbackProvider {
+public interface FabricWorldListener extends FabricListener {
 
-    String SPECIAL_TYPES_FILE = "data/special_types.yml";
-
-    /**
-     * Get the {@link Handler} for this listener
-     *
-     * @return the Handler
-     * @since 1.0
-     */
     @NotNull
-    Handler getHandler();
-
-    /**
-     * Get the {@link TypeChecker} for this listener
-     *
-     * @return the TypeChecker
-     * @since 1.0
-     */
-    @NotNull
-    TypeChecker getChecker();
+    default ActionResult onRaidTriggered(@NotNull World world, @NotNull BlockPos pos, @NotNull PlayerEntity player) {
+        if (getHandler().cancelOperation(Operation.of(
+                getUser(player),
+                OperationType.START_RAID,
+                getPosition(pos, world)
+        ))) {
+            return ActionResult.FAIL;
+        }
+        return ActionResult.PASS;
+    }
 
 }
