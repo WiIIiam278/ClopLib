@@ -37,7 +37,7 @@ public interface BukkitMoveListener extends BukkitListener {
             return;
         }
 
-        // Handle cancelling moving between chunks, if needed
+        // Handle cancelling moving, if needed
         if (getHandler().cancelMovement(getUser(e.getPlayer()), getPosition(fromLocation), getPosition(toLocation))) {
             e.setCancelled(true);
         }

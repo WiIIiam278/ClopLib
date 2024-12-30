@@ -18,6 +18,8 @@ dependencies {
     shadow project(path: ':common')
 }
 
+loom.setAccessWidenerPath(file("src/main/resources/cloplib.accesswidener"))
+
 shadowJar {
     configurations = [project.configurations.shadow]
     destinationDirectory.set(file("$projectDir/build/libs"))

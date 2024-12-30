@@ -5,19 +5,20 @@
   "compatibilityLevel": "JAVA_17",
   "server": [
     "AbstractBlockStateMixin",
+    "BlockDispenserBehaviourMixin",
+    "ExplosionImplMixin",
+    "FireBlockMixin",
     "FlowableFluidMixin",
     "LecternBlockEntityMixin",
     "PistonHandlerMixin",
-    "RaidManagerMixin",
-    "FireBlockMixin",
-    "SetBlockPropertiesEnchantmentEffectMixin",
-    "ReplaceBlockEnchantmentEffectMixin",
-    "ProjectileEntityMixin",
-    "BlockDispenserBehaviourMixin",
-    "VehiclePlaceDispenserBehaviourMixin",
     "ProjectileDispenserBehaviourMixin",
+    "ProjectileEntityMixin",
+    "RaidManagerMixin",
+    "ReplaceBlockEnchantmentEffectMixin",
+    "ServerPlayNetworkHandlerMixin",
+    "SetBlockPropertiesEnchantmentEffectMixin",
     "SpawnHelperMixin",
-    "ExplosionImplMixin"
+    "VehiclePlaceDispenserBehaviourMixin"
   ],
   "client": [],
   "injectors": {

@@ -20,7 +20,10 @@
 package net.william278.cloplib.mixins;
 
 import net.minecraft.block.DispenserBlock;
-import net.minecraft.block.dispenser.*;
+import net.minecraft.block.dispenser.BoatDispenserBehavior;
+import net.minecraft.block.dispenser.DispenserBehavior;
+import net.minecraft.block.dispenser.ItemDispenserBehavior;
+import net.minecraft.block.dispenser.MinecartDispenserBehavior;
 import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPointer;

@@ -21,21 +21,20 @@ package net.william278.cloplib.events;
 
 import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
-import net.minecraft.block.BlockState;
-import net.minecraft.entity.Entity;
+import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
-public final class PressureBlockEvents {
+public final class PlayerMovementEvents {
 
     @NotNull
-    public static final Event<BeforeCollisionCallback> BEFORE_COLLISION = EventFactory.createArrayBacked(
-            BeforeCollisionCallback.class,
-            (callbacks) -> (world, pos, state, entity) -> {
-                for (BeforeCollisionCallback listener : callbacks) {
-                    final ActionResult result = listener.collide(world, pos, state, entity);
+    public static final Event<BeforeMoveCallback> BEFORE_MOVE = EventFactory.createArrayBacked(
+            BeforeMoveCallback.class,
+            (callbacks) -> (player, world, from, to) -> {
+                for (BeforeMoveCallback listener : callbacks) {
+                    final ActionResult result = listener.move(player, world, from, to);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -46,10 +45,10 @@ public final class PressureBlockEvents {
     );
 
     @FunctionalInterface
-    public interface BeforeCollisionCallback {
+    public interface BeforeMoveCallback {
 
         @NotNull
-        ActionResult collide(World world, BlockPos pos, BlockState block, Entity playerEntity);
+        ActionResult move(ServerPlayerEntity player, World world, Vec3d from, Vec3d to);
 
     }
 

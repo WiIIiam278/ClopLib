@@ -26,5 +26,6 @@
   ],
   "depends": {
     "fabric-api": "*"
-  }
+  },
+  "accessWidener": "cloplib.accesswidener"
 }
