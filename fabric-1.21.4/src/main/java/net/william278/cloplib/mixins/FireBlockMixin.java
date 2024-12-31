@@ -65,15 +65,5 @@ public abstract class FireBlockMixin {
         }
     }
 
-    // Return fire age
-    @Redirect(method = "scheduledTick", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/block/BlockState;get(Lnet/minecraft/state/property/Property;)Ljava/lang/Comparable;"))
-    private int scheduledTickMixin(BlockState state, ServerWorld world, BlockPos pos, Random random) {
-        final ActionResult result = FireTickEvents.BEFORE_BURN.invoker().fireBurn((World) world, pos);
-        if (result == ActionResult.FAIL) {
-            return 0;
-        }
-        return state.get(AGE);
-    }
-
 }
 
