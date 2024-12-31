@@ -23,9 +23,11 @@ import net.minecraft.enchantment.EnchantmentEffectContext;
 import net.minecraft.enchantment.effect.entity.ReplaceBlockEnchantmentEffect;
 import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
+import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.minecraft.util.math.Vec3i;
+import net.william278.cloplib.events.EnchantmentEffectEvents;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -36,7 +38,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 // For emitting the place block operation when users have frost walker.
 // Set and replace are both used here by the game and are nearly identical, so we mixin to both.
 @Mixin(ReplaceBlockEnchantmentEffect.class)
-public abstract class ReplaceBlockEnchantmentEffectMixin implements BlockEnchantmentEffectHandler {
+public abstract class ReplaceBlockEnchantmentEffectMixin {
 
     @Shadow
     @Final
@@ -45,7 +47,11 @@ public abstract class ReplaceBlockEnchantmentEffectMixin implements BlockEnchant
     @Inject(method = "apply", at = @At("HEAD"), cancellable = true)
     void applyMixin(ServerWorld world, int level, EnchantmentEffectContext context, Entity user, Vec3d pos,
                     CallbackInfo ci) {
-        this.handleEnchantmentBlockEffect(world, user, BlockPos.ofFloored(pos).add(this.offset), ci);
+        final ActionResult result = EnchantmentEffectEvents.BEFORE_BLOCK_UPDATE.invoker().blockUpdate(user, world,
+                BlockPos.ofFloored(pos).add(this.offset));
+        if (result == ActionResult.FAIL) {
+            ci.cancel();
+        }
     }
 
 }

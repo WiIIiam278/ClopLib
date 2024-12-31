@@ -19,9 +19,7 @@
 
 package net.william278.cloplib.mixins;
 
-import net.minecraft.block.BlockState;
 import net.minecraft.block.FireBlock;
-import net.minecraft.server.world.ServerWorld;
 import net.minecraft.state.property.IntProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
@@ -34,7 +32,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
