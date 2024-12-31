@@ -33,6 +33,7 @@ import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
+import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.Redirect;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
@@ -47,14 +48,16 @@ public abstract class ProjectileDispenserBehaviourMixin {
     @Shadow
     private ProjectileItem.Settings projectileSettings;
 
-    @Redirect(method = "dispenseSilently", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/entity/projectile/ProjectileEntity;spawnWithVelocity(Lnet/minecraft/entity/projectile/ProjectileEntity;Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/item/ItemStack;DDDFF)Lnet/minecraft/entity/projectile/ProjectileEntity;"))
-    private ProjectileEntity dispenseSilentlyMixin(BlockPointer pointer, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
+    @Inject(method = "dispenseSilently", at = @At(value = "HEAD"), cancellable = true)
+    private void dispenseSilentlyMixin(BlockPointer pointer, ItemStack stack, CallbackInfoReturnable<ItemStack> cir) {
         ServerWorld serverWorld = pointer.world();
         Direction direction = pointer.state().get(DispenserBlock.FACING);
         Position position = this.projectileSettings.positionFunction().getDispensePosition(pointer, direction);
         final ProjectileEntity entity = ProjectileEntity.spawnWithVelocity(this.projectile.createEntity(serverWorld, position, stack, direction), serverWorld, stack, direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ(), this.projectileSettings.power(), this.projectileSettings.uncertainty());
         ProjectileUtil.markOrigin(entity, pointer.pos());
-        return entity;
+        stack.decrement(1);
+        cir.setReturnValue(stack);
+        cir.cancel();
     }
 
 }
