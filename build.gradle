@@ -155,7 +155,7 @@ subprojects {
                     groupId = 'net.william278.cloplib'
                     artifactId = 'cloplib-fabric'
                     version = "$rootProject.version+1.21.4"
-                    artifact shadowJar
+                    artifact remapJar
                     artifact sourcesJar
                     artifact javadocJar
                 }
