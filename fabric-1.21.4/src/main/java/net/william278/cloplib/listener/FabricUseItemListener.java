@@ -74,7 +74,7 @@ public interface FabricUseItemListener extends FabricListener {
     @NotNull
     default ActionResult onPlayerUseItem(PlayerEntity playerEntity, World world, Hand hand) {
         final ItemStack item = playerEntity.getStackInHand(hand);
-        if (item == null || item == ItemStack.EMPTY || !(playerEntity instanceof ServerPlayerEntity player)) {
+        if (item.isEmpty() || !(playerEntity instanceof ServerPlayerEntity player)) {
             return ActionResult.PASS;
         }
 
@@ -153,8 +153,8 @@ public interface FabricUseItemListener extends FabricListener {
         // Execute the callback
         final BiConsumer<OperationUser, OperationPosition> callback = getInspectionToolHandlers().get(tool);
         final HitResult hit = player.raycast(getInspectionDistance(), 0.0f, false);
-        if (hit.getType() != HitResult.Type.BLOCK) {
-            callback.accept(getUser(player), getPosition(hit.getPos(), world, 0.0f, 0.0f));
+        if (hit.getType() == HitResult.Type.BLOCK) {
+            callback.accept(getUser(player), getPosition(((BlockHitResult) hit).getBlockPos(), world));
         }
         return ActionResult.FAIL;
     }
