@@ -89,7 +89,6 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
     private void registerCallbacks() {
         // Register implemented callback event handlers
         PlayerBlockBreakEvents.BEFORE.register(this::onPlayerBreakBlock);
-        AttackBlockCallback.EVENT.register(this::onPlayerAttackBlock);
         AttackEntityCallback.EVENT.register(this::onPlayerAttackEntity);
         UseItemCallback.EVENT.register(this::onPlayerUseItem);
         UseBlockCallback.EVENT.register(this::onPlayerUseBlock);

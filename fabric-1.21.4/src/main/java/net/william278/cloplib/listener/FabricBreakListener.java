@@ -25,10 +25,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationType;
@@ -37,7 +34,7 @@ import org.jetbrains.annotations.Nullable;
 
 public interface FabricBreakListener extends FabricListener {
 
-    // We listen to both AFTER the block has broken and when the player STARTS breaking a block
+    // After a block is broken
     default boolean onPlayerBreakBlock(World world, PlayerEntity playerEntity, BlockPos pos,
                                        @Nullable BlockState block, @Nullable BlockEntity tileEntity) {
         if (block != null && getHandler().cancelOperation(Operation.of(
@@ -51,14 +48,6 @@ public interface FabricBreakListener extends FabricListener {
         }
         return true;
     }
-
-    @NotNull
-    default ActionResult onPlayerAttackBlock(PlayerEntity playerEntity, World world, Hand hand,
-                                             BlockPos pos, Direction direction) {
-        return onPlayerBreakBlock(world, playerEntity, pos, world.getBlockState(pos), world.getBlockEntity(pos))
-                ? ActionResult.PASS : ActionResult.FAIL;
-    }
-
 
     // Send an update packet to the client when breaking blocks w/ tile entities to fix desync
     private void sendTileEntityUpdate(@Nullable BlockEntity tileEntity, @NotNull PlayerEntity playerEntity) {
