@@ -19,6 +19,8 @@
 
 package net.william278.cloplib.listener;
 
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.*;
@@ -164,10 +166,10 @@ public interface FabricUseItemListener extends FabricListener {
         final InspectorCallbackProvider.InspectionTool.InspectionToolBuilder builder = InspectorCallbackProvider
                 .InspectionTool.builder()
                 .material(FabricListener.getId(item.getItem()));
-        //todo Custom Model Data feature in fabric (NBT check?)
-//        if (item.getDefaultComponents().mo && item.getItemMeta() != null && item.getItemMeta().hasCustomModelData()) {
-//            builder.useCustomModelData(true).customModelData(item.getItemMeta().getCustomModelData());
-//        }
+        CustomModelDataComponent customModelDataComponent = item.getComponents().get(DataComponentTypes.CUSTOM_MODEL_DATA);
+        if (customModelDataComponent != null && !customModelDataComponent.floats().isEmpty()) {
+            builder.useCustomModelData(true).customModelData(customModelDataComponent.floats().get(0).intValue());
+        }
         return builder.build();
     }
 
