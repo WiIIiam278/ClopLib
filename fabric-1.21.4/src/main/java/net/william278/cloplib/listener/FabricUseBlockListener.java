@@ -83,12 +83,6 @@ public interface FabricUseBlockListener extends FabricListener {
             return ActionResult.PASS;
         }
 
-        // Check block wasn't clicked as part of an inspection callback
-        final ActionResult toolAction = this.handleInspectionCallbacks(player, world, player.getMainHandStack());
-        if (hand == Hand.MAIN_HAND && toolAction != ActionResult.PASS) {
-            return toolAction;
-        }
-
         // Check entity
         OperationType operationType = checkUseBlockEntity(player, world, world.getBlockEntity(blockHit.getBlockPos()));
         if (operationType != null && getHandler().cancelOperation(Operation.of(

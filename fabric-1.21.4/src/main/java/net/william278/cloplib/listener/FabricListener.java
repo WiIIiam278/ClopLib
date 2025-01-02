@@ -26,15 +26,10 @@ import net.minecraft.entity.mob.HostileEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.util.ActionResult;
-import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.world.World;
 import net.william278.cloplib.handler.Handler;
 import net.william278.cloplib.handler.TypeChecker;
 import net.william278.cloplib.operation.OperationPosition;
@@ -43,7 +38,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
-import java.util.function.BiConsumer;
 
 public interface FabricListener extends InspectorCallbackProvider {
 
@@ -63,35 +57,6 @@ public interface FabricListener extends InspectorCallbackProvider {
 
     @NotNull
     TypeChecker getChecker();
-
-    // Handle claim inspection callbacks
-    @NotNull
-    default ActionResult handleInspectionCallbacks(ServerPlayerEntity player, World world, ItemStack item) {
-        final InspectionTool tool = getTool(item);
-        if (!getInspectionToolHandlers().containsKey(tool)) {
-            return ActionResult.PASS;
-        }
-
-        // Execute the callback
-        final BiConsumer<OperationUser, OperationPosition> callback = getInspectionToolHandlers().get(tool);
-        final HitResult hit = player.raycast(getInspectionDistance(), 0.0f, false);
-        if (hit.getType() == HitResult.Type.BLOCK) {
-            callback.accept(getUser(player), getPosition(((BlockHitResult) hit).getBlockPos(), world));
-        }
-        return ActionResult.FAIL;
-    }
-
-    @NotNull
-    private InspectorCallbackProvider.InspectionTool getTool(@NotNull ItemStack item) {
-        final InspectorCallbackProvider.InspectionTool.InspectionToolBuilder builder = InspectorCallbackProvider
-                .InspectionTool.builder()
-                .material(FabricListener.getId(item.getItem()));
-        //todo Custom Model Data feature in fabric (NBT check?)
-//        if (item.getDefaultComponents().mo && item.getItemMeta() != null && item.getItemMeta().hasCustomModelData()) {
-//            builder.useCustomModelData(true).customModelData(item.getItemMeta().getCustomModelData());
-//        }
-        return builder.build();
-    }
 
     default Optional<ServerPlayerEntity> getPlayerSource(@Nullable Entity e) {
         if (e == null) {

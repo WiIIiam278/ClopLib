@@ -36,10 +36,12 @@ import net.william278.cloplib.handler.TypeChecker;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
+import net.william278.cloplib.operation.OperationUser;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
 public interface FabricUseItemListener extends FabricListener {
@@ -138,6 +140,35 @@ public interface FabricUseItemListener extends FabricListener {
                 getPosition(entity.getBlockPos(), world),
                 blockPos
         ) ? ActionResult.FAIL : ActionResult.PASS;
+    }
+
+    // Handle claim inspection callbacks
+    @NotNull
+    default ActionResult handleInspectionCallbacks(ServerPlayerEntity player, World world, ItemStack item) {
+        final InspectionTool tool = getTool(item);
+        if (!getInspectionToolHandlers().containsKey(tool)) {
+            return ActionResult.PASS;
+        }
+
+        // Execute the callback
+        final BiConsumer<OperationUser, OperationPosition> callback = getInspectionToolHandlers().get(tool);
+        final HitResult hit = player.raycast(getInspectionDistance(), 0.0f, false);
+        if (hit.getType() == HitResult.Type.BLOCK) {
+            callback.accept(getUser(player), getPosition(((BlockHitResult) hit).getBlockPos(), world));
+        }
+        return ActionResult.FAIL;
+    }
+
+    @NotNull
+    private InspectorCallbackProvider.InspectionTool getTool(@NotNull ItemStack item) {
+        final InspectorCallbackProvider.InspectionTool.InspectionToolBuilder builder = InspectorCallbackProvider
+                .InspectionTool.builder()
+                .material(FabricListener.getId(item.getItem()));
+        //todo Custom Model Data feature in fabric (NBT check?)
+//        if (item.getDefaultComponents().mo && item.getItemMeta() != null && item.getItemMeta().hasCustomModelData()) {
+//            builder.useCustomModelData(true).customModelData(item.getItemMeta().getCustomModelData());
+//        }
+        return builder.build();
     }
 
     @NotNull
