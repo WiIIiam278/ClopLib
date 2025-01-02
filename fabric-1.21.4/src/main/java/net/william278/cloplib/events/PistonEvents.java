@@ -23,6 +23,7 @@ import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.EventFactory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -34,9 +35,9 @@ public final class PistonEvents {
     @NotNull
     public static final Event<BeforeActuationCallback> BEFORE_ACTUATION = EventFactory.createArrayBacked(
             BeforeActuationCallback.class,
-            (callbacks) -> (world, pistonPos, affectedBlocks) -> {
+            (callbacks) -> (world, pistonPos, pistonDirection, affectedBlocks) -> {
                 for (BeforeActuationCallback listener : callbacks) {
-                    final ActionResult result = listener.actuate(world, pistonPos, affectedBlocks);
+                    final ActionResult result = listener.actuate(world, pistonPos, pistonDirection, affectedBlocks);
                     if (result != ActionResult.PASS) {
                         return result;
                     }
@@ -50,7 +51,8 @@ public final class PistonEvents {
     public interface BeforeActuationCallback {
 
         @NotNull
-        ActionResult actuate(World world, BlockPos pistonPos, @Unmodifiable List<BlockPos> affectedBlocks);
+        ActionResult actuate(World world, BlockPos pistonPos, Direction pistonDirection,
+                             @Unmodifiable List<BlockPos> affectedBlocks);
 
     }
 

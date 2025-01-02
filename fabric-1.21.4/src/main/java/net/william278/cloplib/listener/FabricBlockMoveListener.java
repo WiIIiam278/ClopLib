@@ -21,6 +21,7 @@ package net.william278.cloplib.listener;
 
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.william278.cloplib.operation.OperationPosition;
 import org.jetbrains.annotations.NotNull;
@@ -44,13 +45,14 @@ public interface FabricBlockMoveListener extends FabricListener {
     }
 
     @NotNull
-    default ActionResult onPistonActuate(World world, BlockPos pistonBlock, List<BlockPos> affectedBlocks) {
+    default ActionResult onPistonActuate(World world, BlockPos pistonBlock, Direction pistonDirection,
+                                         List<BlockPos> affectedBlocks) {
         final OperationPosition pistonPos = getPosition(pistonBlock, world);
-        for (final BlockPos newBlockPos : affectedBlocks) {
+        for (final BlockPos blockPos : affectedBlocks) {
             if (getHandler().cancelNature(
                     pistonPos.getWorld(),
                     pistonPos,
-                    getPosition(newBlockPos, world)
+                    getPosition(blockPos.offset(pistonDirection), world)
             )) {
                 return ActionResult.FAIL;
             }
