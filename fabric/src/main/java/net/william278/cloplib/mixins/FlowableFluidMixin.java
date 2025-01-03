@@ -21,6 +21,9 @@ package net.william278.cloplib.mixins;
 
 import net.minecraft.block.BlockState;
 import net.minecraft.fluid.FlowableFluid;
+//#if MC==12101
+//$$ import net.minecraft.fluid.Fluid;
+//#endif
 import net.minecraft.fluid.FluidState;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
@@ -43,6 +46,7 @@ public abstract class FlowableFluidMixin {
     @Unique
     private static final Set<Direction> CLOPLIB_IGNORED_DIRECTIONS = Set.of(Direction.UP, Direction.DOWN);
 
+    //#if MC==12104
     @Inject(method = "canFlowThrough(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/Direction;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/fluid/FluidState;)Z", at = @At("HEAD"), cancellable = true)
     private void canFlowThroughMixin(BlockView blockView, BlockPos toPos, BlockState toState, Direction flowDirection,
                                      BlockPos fromPos, BlockState fromState,
@@ -56,5 +60,32 @@ public abstract class FlowableFluidMixin {
             cir.setReturnValue(false);
         }
     }
+    //#else
+    //$$ @Inject(method = "canFlowThrough", at = @At("HEAD"), cancellable = true)
+    //$$ private void canFlowThroughMixin(BlockView blockView, Fluid fluid, BlockPos toPos, BlockState state, Direction flowDirection, BlockPos fromPos,
+    //$$     BlockState fromState, FluidState fluidState, CallbackInfoReturnable<Boolean> cir) {
+    //$$     if (!(blockView instanceof ServerWorld world) || CLOPLIB_IGNORED_DIRECTIONS.contains(flowDirection)) {
+    //$$         return;
+    //$$     }
+    //$$
+    //$$     final ActionResult result = FluidEvents.BEFORE_FLOW.invoker().flow(world, fromPos, toPos);
+    //$$     if (result == ActionResult.FAIL) {
+    //$$         cir.setReturnValue(false);
+    //$$     }
+    //$$ }
+    //$$
+    //$$ @Inject(method = "canFlow", at = @At("HEAD"), cancellable = true)
+    //$$ private void canFlowMixin(BlockView blockView, BlockPos fromPos, BlockState fluidBlockState, Direction flowDirection, BlockPos toPos,
+    //$$     BlockState flowToBlockState, FluidState fluidState, Fluid fluid, CallbackInfoReturnable<Boolean> cir) {
+    //$$     if (!(blockView instanceof ServerWorld world) || CLOPLIB_IGNORED_DIRECTIONS.contains(flowDirection)) {
+    //$$         return;
+    //$$     }
+    //$$
+    //$$     final ActionResult result = FluidEvents.BEFORE_FLOW.invoker().flow(world, fromPos, toPos);
+    //$$     if (result == ActionResult.FAIL) {
+    //$$         cir.setReturnValue(false);
+    //$$     }
+    //$$ }
+    //#endif
 
 }
