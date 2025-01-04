@@ -17,6 +17,7 @@
  *  limitations under the License.
  */
 
+//#if MC==12104
 package net.william278.cloplib.mixins;
 
 import net.minecraft.util.math.BlockPos;
@@ -41,3 +42,4 @@ public abstract class ExplosionImplMixin {
     }
 
 }
+//#endif

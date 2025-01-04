@@ -57,9 +57,11 @@ public abstract class ProjectileEntityMixin {
 
     @Inject(method = "onBlockHit", at = @At("HEAD"), cancellable = true)
     private void onBlockHitMixin(BlockHitResult hit, CallbackInfo ci) {
+        //#if MC==12104
         if (hit.isAgainstWorldBorder()) {
             return;
         }
+        //#endif
         final ProjectileEntity projectile = (ProjectileEntity) (Object) this;
         final ActionResult result = ProjectileEvents.BEFORE_BLOCK_HIT.invoker().blockHit(
                 hit.getBlockPos(), projectile.getWorld(), projectile, owner,

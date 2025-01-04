@@ -3,6 +3,7 @@ import org.apache.tools.ant.filters.ReplaceTokens
 plugins {
     id 'org.cadixdev.licenser' version '0.6.1' apply false
     id 'fabric-loom' version "$fabric_loom_version" apply false
+    id 'gg.essential.multi-version.root' apply false
     id 'com.github.johnrengelman.shadow' version '8.1.1'
     id 'org.ajoberstar.grgit' version '5.3.0'
     id 'maven-publish'
@@ -51,6 +52,10 @@ publishing {
 }
 
 allprojects {
+    if (project.name == 'fabric') {
+        return
+    }
+
     apply plugin: 'com.github.johnrengelman.shadow'
     apply plugin: 'org.cadixdev.licenser'
     apply plugin: 'java'
@@ -98,12 +103,21 @@ allprojects {
 }
 
 subprojects {
-    if (project.name.startsWith('fabric')) {
+    if (project.name == 'fabric') {
+        return
+    }
+
+    if (project.parent?.name?.equals('fabric')) {
         apply plugin: 'fabric-loom'
     }
 
     version rootProject.version
-    archivesBaseName = "${rootProject.name}-${project.name.capitalize()}"
+    def name = "$rootProject.name"
+    if (rootProject != project.parent) {
+        name += "-${project.parent.name.capitalize()}"
+    }
+    name += "-${project.name.capitalize()}"
+    archivesBaseName = name
 
     jar {
         from '../LICENSE'
@@ -154,12 +168,12 @@ subprojects {
             }
         }
 
-        if (['fabric-1.21.4'].contains(project.name)) {
+        if (project.parent?.name?.equals('fabric')) {
             publications {
-                mavenJavaFabric_1_21_4(MavenPublication) {
+                "mavenJavaFabric_${project.name.replace('.', '_')}"(MavenPublication) {
                     groupId = 'net.william278.cloplib'
                     artifactId = 'cloplib-fabric'
-                    version = "$rootProject.version+1.21.4"
+                    version = "$rootProject.version+$project.name"
                     artifact remapJar
                     artifact sourcesJar
                     artifact javadocJar

@@ -52,7 +52,13 @@ public abstract class ProjectileDispenserBehaviourMixin {
         ServerWorld serverWorld = pointer.world();
         Direction direction = pointer.state().get(DispenserBlock.FACING);
         Position position = this.projectileSettings.positionFunction().getDispensePosition(pointer, direction);
+        //#if MC==12104
         final ProjectileEntity entity = ProjectileEntity.spawnWithVelocity(this.projectile.createEntity(serverWorld, position, stack, direction), serverWorld, stack, direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ(), this.projectileSettings.power(), this.projectileSettings.uncertainty());
+        //#else
+        //$$ ProjectileEntity entity = this.projectile.createEntity(serverWorld, position, stack, direction);
+        //$$ entity.setVelocity(direction.getOffsetX(), direction.getOffsetY(), direction.getOffsetZ(), this.projectileSettings.power(), this.projectileSettings.uncertainty());
+        //$$ serverWorld.spawnEntity(entity);
+        //#endif
         ProjectileUtil.markOrigin(entity, pointer.pos());
         stack.decrement(1);
         cir.setReturnValue(stack);
