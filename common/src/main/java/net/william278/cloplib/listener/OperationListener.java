@@ -22,6 +22,7 @@ package net.william278.cloplib.listener;
 import net.william278.cloplib.handler.Handler;
 import net.william278.cloplib.handler.TypeChecker;
 import net.william278.cloplib.operation.Operation;
+import net.william278.cloplib.operation.OperationTypeRegistry;
 import org.jetbrains.annotations.NotNull;
 
 /**
@@ -31,7 +32,7 @@ import org.jetbrains.annotations.NotNull;
  * @since 1.0
  */
 @SuppressWarnings("unused")
-public interface OperationListener extends InspectorCallbackProvider {
+public interface OperationListener extends InspectorCallbackProvider, OperationTypeRegistry {
 
     String SPECIAL_TYPES_FILE = "data/special_types.yml";
 

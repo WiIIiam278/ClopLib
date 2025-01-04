@@ -276,7 +276,27 @@ public final class OperationType {
     @NotNull
     public static OperationType register(@NotNull OperationType type) {
         assert REGISTRY != null : "Registry was null";
-        return Objects.requireNonNull(REGISTRY.put(type.getKey().asString(), type), "Operation type was null");
+        if (isRegistered(type.getKey())) {
+            throw new IllegalArgumentException("Operation type already registered: %s".formatted(type.getKey()));
+        }
+        REGISTRY.put(type.getKey().asString(), type);
+        return type;
+    }
+
+    /**
+     * Unregister an operation type
+     *
+     * @param key the type to unregister
+     * @return the unregistered operation type
+     * @since 1.1
+     */
+    @NotNull
+    public static OperationType unregister(@NotNull Key key) {
+        assert REGISTRY != null : "Registry was null";
+        if (!isRegistered(key)) {
+            throw new IllegalArgumentException("Operation type not registered: %s".formatted(key));
+        }
+        return REGISTRY.remove(key.asString());
     }
 
     /**
@@ -298,7 +318,7 @@ public final class OperationType {
      *
      * @param key The key of the operation type
      * @return The operation type, or an empty optional if not found
-     * @since 1.0
+     * @since 1.1
      */
     public static Optional<OperationType> get(@NotNull Key key) {
         return Optional.ofNullable(REGISTRY.get(key.asString()));
@@ -309,7 +329,7 @@ public final class OperationType {
      *
      * @param key The key of the operation type
      * @return The operation type, or an empty optional if not found
-     * @since 1.0
+     * @since 1.1
      */
     public static Optional<OperationType> get(@NotNull String key) {
         return Optional.ofNullable(REGISTRY.get(!key.contains(DEFAULT_SEPARATOR + "")
@@ -319,12 +339,24 @@ public final class OperationType {
     /**
      * Get whether an Operation Type has been registered
      *
-     * @param key if the type was registered
-     * @return {@code true if the type was registered}
+     * @param key The key of the operation type
+     * @return {@code true}  if the type was registered
      * @since 1.1
      */
     public static boolean isRegistered(@NotNull Key key) {
         return REGISTRY.containsKey(key.asString());
+    }
+
+    /**
+     * Get whether an Operation Type has been registered
+     *
+     * @param key The key of the operation type
+     * @return {@code true}  if the type was registered
+     * @since 1.1
+     */
+    public static boolean isRegistered(@NotNull String key) {
+        return REGISTRY.containsKey(!key.contains(DEFAULT_SEPARATOR + "")
+                ? "%s%s%s".formatted(DEFAULT_NAMESPACE, DEFAULT_SEPARATOR, key) : key);
     }
 
     /**
