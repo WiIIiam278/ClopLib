@@ -20,130 +20,139 @@
 package net.william278.cloplib.operation;
 
 import lombok.Getter;
+import net.kyori.adventure.key.Key;
+import net.kyori.adventure.key.KeyPattern;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Unmodifiable;
 
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.*;
+
+import static net.kyori.adventure.key.Key.DEFAULT_SEPARATOR;
 
 /**
  * Types of operations triggered by certain events
  * <p>
  * Some operations are silent by default, meaning that they will not notify a player when they are canceled.
  */
-@Getter
-public enum OperationType {
+public final class OperationType {
+
+    // Namespace for built in operation types
+    private static final @KeyPattern.Namespace String DEFAULT_NAMESPACE = "cloplib";
+
+    // The operation type registry map
+    private static final Map<String, OperationType> REGISTRY = new HashMap<>();
 
     /**
      * When a player places a block
      *
      * @since 1.0
      */
-    BLOCK_PLACE,
+    public static final OperationType BLOCK_PLACE = registerBuiltin("block_place");
 
     /**
      * When a player breaks a block
      *
      * @since 1.0
      */
-    BLOCK_BREAK,
+    public static final OperationType BLOCK_BREAK = registerBuiltin("block_break");
 
     /**
      * When a player interacts with a block
      *
      * @since 1.0
      */
-    BLOCK_INTERACT,
+    public static final OperationType BLOCK_INTERACT = registerBuiltin("block_interact");
 
     /**
      * When a player interacts with redstone
      *
      * @since 1.0
      */
-    REDSTONE_INTERACT(true),
+    public static final OperationType REDSTONE_INTERACT = registerBuiltin("redstone_interact", true);
 
     /**
      * When a player breaks a farm block
      *
      * @since 1.0
      */
-    FARM_BLOCK_BREAK,
+    public static final OperationType FARM_BLOCK_BREAK = registerBuiltin("farm_block_break");
 
     /**
      * When a player places a farm block
      *
      * @since 1.0
      */
-    FARM_BLOCK_PLACE,
+    public static final OperationType FARM_BLOCK_PLACE = registerBuiltin("farm_block_place");
 
     /**
      * When a player damages another player
      *
      * @since 1.0
      */
-    PLAYER_DAMAGE_PLAYER,
+    public static final OperationType PLAYER_DAMAGE_PLAYER = registerBuiltin("player_damage_player");
 
     /**
      * When a player damages a hostile monster
      *
      * @since 1.0
      */
-    PLAYER_DAMAGE_MONSTER,
+    public static final OperationType PLAYER_DAMAGE_MONSTER = registerBuiltin("player_damage_monster");
 
     /**
      * When a player damages a (non-hostile) mob
      *
      * @since 1.0
      */
-    PLAYER_DAMAGE_ENTITY,
+    public static final OperationType PLAYER_DAMAGE_ENTITY = registerBuiltin("player_damage_entity");
 
     /**
      * When a player damages a mob that has been name-tagged or marked as persistent
      *
      * @since 1.0
      */
-    PLAYER_DAMAGE_PERSISTENT_ENTITY,
+    public static final OperationType PLAYER_DAMAGE_PERSISTENT_ENTITY = registerBuiltin("player_damage_persistent_entity");
 
     /**
      * When a hostile mob spawns
      *
      * @since 1.0
      */
-    MONSTER_SPAWN(true),
+    public static final OperationType MONSTER_SPAWN = registerBuiltin("monster_spawn", true);
 
     /**
      * When a passive (non-hostile) mob spawns
      *
      * @since 1.0.2
      */
-    PASSIVE_MOB_SPAWN(true),
+    public static final OperationType PASSIVE_MOB_SPAWN = registerBuiltin("passive_mob_spawn", true);
 
     /**
-     * When a mob damages terrain (e.g., an Enderman picking up a block)
+     * When a mob damages terrain (e.g. = register(); an Enderman picking up a block)
      *
      * @since 1.0
      */
-    MONSTER_DAMAGE_TERRAIN(true),
+    public static final OperationType MONSTER_DAMAGE_TERRAIN = registerBuiltin("monster_damage_terrain", true);
 
     /**
      * When an explosion damages terrain (breaks blocks)
      *
      * @since 1.0
      */
-    EXPLOSION_DAMAGE_TERRAIN(true),
+    public static final OperationType EXPLOSION_DAMAGE_TERRAIN = registerBuiltin("explosion_damage_terrain", true);
 
     /**
      * When an explosion causes an entity to take damage
      *
      * @since 1.0
      */
-    EXPLOSION_DAMAGE_ENTITY(true),
+    public static final OperationType EXPLOSION_DAMAGE_ENTITY = registerBuiltin("explosion_damage_entity", true);
 
     /**
      * When fire destroys an ignited block
      *
      * @since 1.0
      */
-    FIRE_BURN(true),
+    public static final OperationType FIRE_BURN = registerBuiltin("fire_burn", true);
 
     /**
      * When fire spreads from an ignited block to another block.
@@ -152,35 +161,35 @@ public enum OperationType {
      *
      * @since 1.0
      */
-    FIRE_SPREAD(true),
+    public static final OperationType FIRE_SPREAD = registerBuiltin("fire_spread", true);
 
     /**
      * When a player fills a bucket
      *
      * @since 1.0
      */
-    FILL_BUCKET,
+    public static final OperationType FILL_BUCKET = registerBuiltin("fill_bucket");
 
     /**
      * When a player empties a bucket
      *
      * @since 1.0
      */
-    EMPTY_BUCKET,
+    public static final OperationType EMPTY_BUCKET = registerBuiltin("empty_bucket");
 
     /**
-     * When a player places a hanging entity (e.g., a Painting)
+     * When a player places a hanging entity (e.g. = register(); a Painting)
      *
      * @since 1.0
      */
-    PLACE_HANGING_ENTITY,
+    public static final OperationType PLACE_HANGING_ENTITY = registerBuiltin("place_hanging_entity");
 
     /**
-     * When a player breaks a hanging entity (e.g., a Painting)
+     * When a player breaks a hanging entity (e.g. = register(); a Painting)
      *
      * @since 1.0
      */
-    BREAK_HANGING_ENTITY,
+    public static final OperationType BREAK_HANGING_ENTITY = registerBuiltin("break_hanging_entity");
 
     /**
      * When a player places a vehicle (e.g. Minecarts or Boats).
@@ -190,7 +199,7 @@ public enum OperationType {
      *
      * @since 1.0.14
      */
-    PLACE_VEHICLE,
+    public static final OperationType PLACE_VEHICLE = registerBuiltin("place_vehicle");
 
     /**
      * When a player breaks a vehicle (e.g. Minecarts or Boats)
@@ -200,64 +209,148 @@ public enum OperationType {
      *
      * @since 1.0.14
      */
-    BREAK_VEHICLE,
+    public static final OperationType BREAK_VEHICLE = registerBuiltin("break_vehicle");
 
     /**
      * When a player interacts with an entity in some way
      *
      * @since 1.0
      */
-    ENTITY_INTERACT,
+    public static final OperationType ENTITY_INTERACT = registerBuiltin("entity_interact");
 
     /**
      * When a player interacts with a farm block
-     * in some way (e.g., Right-clicking crops with Bonemeal)
+     * in some way (e.g. = register(); Right-clicking crops with Bonemeal)
      *
      * @since 1.0
      */
-    FARM_BLOCK_INTERACT,
+    public static final OperationType FARM_BLOCK_INTERACT = registerBuiltin("farm_block_interact");
 
     /**
-     * When a player uses a Spawn Egg, or throws a Chicken Egg to try and hatch a chicken.
+     * When a player uses a Spawn Egg = register(); or throws a Chicken Egg to try and hatch a chicken.
      *
      * @since 1.0
      */
-    USE_SPAWN_EGG,
+    public static final OperationType USE_SPAWN_EGG = registerBuiltin("use_spawn_egg");
 
     /**
      * When a player teleports using an Ender Pearl or Chorus Fruit
      *
      * @since 1.0
      */
-    ENDER_PEARL_TELEPORT,
+    public static final OperationType ENDER_PEARL_TELEPORT = registerBuiltin("ender_pearl_teleport");
 
     /**
      * When a player opens a container (e.g., Chests, Hoppers, Furnaces, etc.)
      *
      * @since 1.0
      */
-    CONTAINER_OPEN,
+    public static final OperationType CONTAINER_OPEN = registerBuiltin("container_open");
 
     /**
      * When a player starts a raid (i.e., by having the bad omen effect and entering a village)
      *
      * @since 1.0.9
      */
-    START_RAID(true);
+    public static final OperationType START_RAID = registerBuiltin("start_raid");
 
-    /**
-     * Indicates whether by default this operation should not notify a player when it is canceled
-     *
-     * @since 1.0
-     */
+    @Getter
     private final boolean silent;
+    @Getter
+    private final Key key;
+    private final int ordinal;
 
-    OperationType(final boolean silent) {
+    private OperationType(@NotNull Key key, boolean silent) {
         this.silent = silent;
+        this.key = key;
+        this.ordinal = REGISTRY.size();
     }
 
-    OperationType() {
-        this.silent = false;
+    /**
+     * Register an operation type
+     *
+     * @param type the type to register
+     * @return the registered operation type
+     * @since 1.1
+     */
+    @NotNull
+    public static OperationType register(@NotNull OperationType type) {
+        assert REGISTRY != null : "Registry was null";
+        return Objects.requireNonNull(REGISTRY.put(type.getKey().asString(), type), "Operation type was null");
+    }
+
+    /**
+     * Create an operation type
+     *
+     * @param key    key to create
+     * @param silent whether the type should be silent. The silent flag indicates whether players should be notified
+     *               when an operation of that type was cancelled by default.
+     * @return the registered operation type
+     * @since 1.1
+     */
+    @NotNull
+    public static OperationType create(@NotNull Key key, boolean silent) {
+        return new OperationType(key, silent);
+    }
+
+    /**
+     * Get an operation type from the given key
+     *
+     * @param key The key of the operation type
+     * @return The operation type, or an empty optional if not found
+     * @since 1.0
+     */
+    public static Optional<OperationType> get(@NotNull Key key) {
+        return Optional.ofNullable(REGISTRY.get(key.asString()));
+    }
+
+    /**
+     * Get an operation type from the given key
+     *
+     * @param key The key of the operation type
+     * @return The operation type, or an empty optional if not found
+     * @since 1.0
+     */
+    public static Optional<OperationType> get(@NotNull String key) {
+        return Optional.ofNullable(REGISTRY.get(!key.contains(DEFAULT_SEPARATOR + "")
+                ? "%s%s%s".formatted(DEFAULT_NAMESPACE, DEFAULT_SEPARATOR, key) : key));
+    }
+
+    /**
+     * Get whether an Operation Type has been registered
+     *
+     * @param key if the type was registered
+     * @return {@code true if the type was registered}
+     * @since 1.1
+     */
+    public static boolean isRegistered(@NotNull Key key) {
+        return REGISTRY.containsKey(key.asString());
+    }
+
+    /**
+     * Get the set of registered {@link OperationType}s
+     *
+     * @return the set of {@link OperationType}s
+     * @since 1.1
+     */
+    @NotNull
+    @Unmodifiable
+    public static Collection<OperationType> getRegistered() {
+        return REGISTRY.values();
+    }
+
+    /**
+     * Get an array of registered OperationTypes
+     *
+     * @return the OperationType value array
+     * @since 1.0
+     * @deprecated use {@link #getRegistered()}
+     */
+    @NotNull
+    @Unmodifiable
+    @Deprecated(since = "1.1")
+    public static OperationType[] values() {
+        return REGISTRY.values().toArray(new OperationType[0]);
     }
 
     /**
@@ -266,10 +359,49 @@ public enum OperationType {
      * @param id The name of the operation type
      * @return The operation type, or an empty optional if not found
      * @since 1.0
+     * @deprecated use {@link #get(Key)} instead
      */
     @SuppressWarnings("unused")
+    @Deprecated(since = "1.1")
     public static Optional<OperationType> fromId(@NotNull String id) {
-        return Arrays.stream(values()).filter(flag -> flag.name().equalsIgnoreCase(id)).findFirst();
+        return get(id);
+    }
+
+    // Register a built-in operation type
+    @NotNull
+    private static OperationType registerBuiltin(@NotNull @KeyPattern.Value String name, boolean silent) {
+        return register(create(Key.key(DEFAULT_NAMESPACE, name), silent));
+    }
+
+    // Register a built-in operation type (defaulting to non-silent)
+    @NotNull
+    private static OperationType registerBuiltin(@NotNull @KeyPattern.Value String name) {
+        return registerBuiltin(name, false);
+    }
+
+    /**
+     * Get the key value string of this OperationType.
+     *
+     * @return the key value string
+     * @since 1.0
+     * @deprecated get the {@link Key} instead
+     */
+    @NotNull
+    @Deprecated(since = "1.1")
+    public String name() {
+        return key.value().toUpperCase(Locale.ENGLISH);
+    }
+
+    /**
+     * Get the registration ordinal of this OperationType
+     *
+     * @return The ordinal (index order of when this operation type was registered)
+     * @since 1.0
+     * @deprecated unused since 1.1
+     */
+    @Deprecated(since = "1.1")
+    public int ordinal() {
+        return ordinal;
     }
 
 }
