@@ -40,7 +40,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 //#if MC==12104
 @Mixin(value = {BoatDispenserBehavior.class, MinecartDispenserBehavior.class})
 //#else
-//$$ @Mixin(BoatDispenserBehavior.class)
+//$$ @Mixin(value = BoatDispenserBehavior.class, targets = "net/minecraft/item/MinecartItem$1")
 //#endif
 public abstract class VehiclePlaceDispenserBehaviourMixin {
 
