@@ -25,7 +25,7 @@ import com.google.gson.stream.JsonWriter;
 
 import java.io.IOException;
 
-public class OperationTypeSerializer extends TypeAdapter<OperationType> {
+public final class OperationTypeGsonTypeAdapter extends TypeAdapter<OperationType> {
 
     @Override
     public void write(JsonWriter out, OperationType value) throws IOException {

@@ -19,6 +19,7 @@
 
 package net.william278.cloplib.operation;
 
+import de.exlll.configlib.SerializeWith;
 import lombok.Getter;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.KeyPattern;
@@ -37,6 +38,7 @@ import static net.kyori.adventure.key.Key.DEFAULT_SEPARATOR;
  * <p>
  * Some operations are silent by default, meaning that they will not notify a player when they are canceled.
  */
+@SerializeWith(serializer = OperationTypeConfigSerializer.class)
 public final class OperationType {
 
     // Namespace for built in operation types
