@@ -335,8 +335,7 @@ public final class OperationType {
      * @since 1.1
      */
     public static Optional<OperationType> get(@NotNull String key) {
-        return Optional.ofNullable(REGISTRY.get(!key.contains(DEFAULT_SEPARATOR + "")
-                ? "%s%s%s".formatted(DEFAULT_NAMESPACE, DEFAULT_SEPARATOR, key) : key));
+        return Optional.ofNullable(REGISTRY.get(formatKeyString(key)));
     }
 
     /**
@@ -358,8 +357,7 @@ public final class OperationType {
      * @since 1.1
      */
     public static boolean isRegistered(@NotNull String key) {
-        return REGISTRY.containsKey(!key.contains(DEFAULT_SEPARATOR + "")
-                ? "%s%s%s".formatted(DEFAULT_NAMESPACE, DEFAULT_SEPARATOR, key) : key);
+        return REGISTRY.containsKey(formatKeyString(key));
     }
 
     /**
@@ -406,13 +404,22 @@ public final class OperationType {
     @NotNull
     @ApiStatus.Internal
     static OperationType getOrCreate(@Nullable String key) {
-        assert key != null : "Operation Type key is null";
-        @Subst("ignored") final String keyString = !key.contains(DEFAULT_SEPARATOR + "")
-                ? "%s%s%s".formatted(DEFAULT_NAMESPACE, DEFAULT_SEPARATOR, key) : key;
+        @Subst("ignored") final String keyString = formatKeyString(key);
+        return REGISTRY.getOrDefault(keyString, create(Key.key(keyString), false));
+    }
+
+    @NotNull
+    private static String formatKeyString(@Nullable String key) {
+        if (key != null) {
+            throw new IllegalArgumentException("Operation Type key is null");
+        }
+        final String keyString = !key.contains(DEFAULT_SEPARATOR + "")
+                ? DEFAULT_NAMESPACE + DEFAULT_SEPARATOR + key.toLowerCase(Locale.ENGLISH)
+                : key.toLowerCase(Locale.ENGLISH);
         if (!Key.parseable(keyString)) {
             throw new IllegalArgumentException("Invalid operation type key: %s".formatted(key));
         }
-        return REGISTRY.getOrDefault(keyString, create(Key.key(keyString), false));
+        return keyString;
     }
 
     // Register a built-in operation type
