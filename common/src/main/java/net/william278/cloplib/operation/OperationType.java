@@ -22,7 +22,10 @@ package net.william278.cloplib.operation;
 import lombok.Getter;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.KeyPattern;
+import org.intellij.lang.annotations.Subst;
+import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
 
 import java.util.*;
@@ -399,6 +402,19 @@ public final class OperationType {
         return get(id);
     }
 
+    // Get or create a key
+    @NotNull
+    @ApiStatus.Internal
+    static OperationType getOrCreate(@Nullable String key) {
+        assert key != null : "Operation Type key is null";
+        @Subst("ignored") final String keyString = !key.contains(DEFAULT_SEPARATOR + "")
+                ? "%s%s%s".formatted(DEFAULT_NAMESPACE, DEFAULT_SEPARATOR, key) : key;
+        if (!Key.parseable(keyString)) {
+            throw new IllegalArgumentException("Invalid operation type key: %s".formatted(key));
+        }
+        return REGISTRY.getOrDefault(keyString, create(Key.key(keyString), false));
+    }
+
     // Register a built-in operation type
     @NotNull
     private static OperationType registerBuiltin(@NotNull @KeyPattern.Value String name, boolean silent) {
@@ -434,6 +450,18 @@ public final class OperationType {
     @Deprecated(since = "1.1")
     public int ordinal() {
         return ordinal;
+    }
+
+    /**
+     * Get the string representation of an OperationType (the key)
+     *
+     * @return the operation type key
+     * @since 1.1
+     */
+    @Override
+    @NotNull
+    public String toString() {
+        return getKey().asString();
     }
 
 }
