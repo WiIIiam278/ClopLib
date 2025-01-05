@@ -20,7 +20,6 @@
 package net.william278.cloplib.operation;
 
 import net.kyori.adventure.key.Key;
-import net.kyori.adventure.key.KeyPattern;
 import net.william278.cloplib.handler.Handler;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Unmodifiable;
@@ -65,7 +64,7 @@ public interface OperationTypeRegistry {
      * @return The operation type, or an empty optional if not found
      * @since 2.0
      */
-    default Optional<OperationType> getOperationType(@NotNull @KeyPattern String key) {
+    default Optional<OperationType> getOperationType(@NotNull String key) {
         return OperationType.get(key);
     }
 
