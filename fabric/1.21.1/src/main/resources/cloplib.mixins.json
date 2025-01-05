@@ -18,8 +18,7 @@
     "ServerPlayNetworkHandlerMixin",
     "SetBlockPropertiesEnchantmentEffectMixin",
     "SpawnHelperMixin",
-    "VehiclePlaceDispenserBehaviourMixin",
-    "MinecartItemDispenserBehaviorMixin"
+    "VehiclePlaceDispenserBehaviourMixin"
   ],
   "client": [],
   "injectors": {
