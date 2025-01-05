@@ -456,6 +456,34 @@ public final class OperationType {
     }
 
     /**
+     * Get the string representation of an OperationType (the key)
+     *
+     * @return the operation type key
+     * @since 2.0
+     */
+    @Override
+    @NotNull
+    public String toString() {
+        return getKey().asString();
+    }
+
+    /**
+     * Get the minimal string representation of this key.
+     * <p>
+     * If the namespace of the key is {@link #DEFAULT_NAMESPACE}, only the key value will be returned.
+     *
+     * @return the minimal string key representation
+     * @since 2.0
+     */
+    @NotNull
+    public String asMinimalString() {
+        if (getKey().namespace().equals(DEFAULT_NAMESPACE)) {
+            return getKey().value();
+        }
+        return getKey().asString();
+    }
+
+    /**
      * Get the key value string of this OperationType.
      *
      * @return the key value string
@@ -478,18 +506,6 @@ public final class OperationType {
     @Deprecated(since = "2.0")
     public int ordinal() {
         return ordinal;
-    }
-
-    /**
-     * Get the string representation of an OperationType (the key)
-     *
-     * @return the operation type key
-     * @since 2.0
-     */
-    @Override
-    @NotNull
-    public String toString() {
-        return getKey().asString();
     }
 
 }

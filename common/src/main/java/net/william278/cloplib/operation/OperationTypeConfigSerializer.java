@@ -25,7 +25,7 @@ public final class OperationTypeConfigSerializer implements Serializer<Operation
 
     @Override
     public String serialize(OperationType type) {
-        return type.getKey().asString();
+        return type.asMinimalString();
     }
 
     @Override

@@ -33,7 +33,7 @@ public final class OperationTypeGsonTypeAdapter extends TypeAdapter<OperationTyp
             out.nullValue();
             return;
         }
-        out.value(value.getKey().asString());
+        out.value(value.getKey().asMinimalString());
     }
 
     @Override
