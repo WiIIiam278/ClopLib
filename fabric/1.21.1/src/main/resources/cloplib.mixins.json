@@ -6,7 +6,6 @@
   "server": [
     "AbstractBlockStateMixin",
     "BlockDispenserBehaviourMixin",
-    "ExplosionImplMixin",
     "ExplosionBehaviourMixin",
     "FireBlockMixin",
     "FlowableFluidMixin",
@@ -19,7 +18,8 @@
     "ServerPlayNetworkHandlerMixin",
     "SetBlockPropertiesEnchantmentEffectMixin",
     "SpawnHelperMixin",
-    "VehiclePlaceDispenserBehaviourMixin"
+    "VehiclePlaceDispenserBehaviourMixin",
+    "MinecartItemDispenserBehaviorMixin"
   ],
   "client": [],
   "injectors": {
