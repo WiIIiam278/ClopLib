@@ -39,7 +39,7 @@ public interface OperationTypeRegistry {
      * Get the set of registered {@link OperationType}s
      *
      * @return the set of {@link OperationType}s
-     * @since 1.1
+     * @since 2.0
      */
     @Unmodifiable
     @NotNull
@@ -52,7 +52,7 @@ public interface OperationTypeRegistry {
      *
      * @param key The key of the operation type
      * @return The operation type, or an empty optional if not found
-     * @since 1.1
+     * @since 2.0
      */
     default Optional<OperationType> getOperationType(@NotNull Key key) {
         return OperationType.get(key);
@@ -63,7 +63,7 @@ public interface OperationTypeRegistry {
      *
      * @param key The stringified key of the operation type
      * @return The operation type, or an empty optional if not found
-     * @since 1.1
+     * @since 2.0
      */
     default Optional<OperationType> getOperationType(@NotNull @KeyPattern String key) {
         return OperationType.get(key);
@@ -74,7 +74,7 @@ public interface OperationTypeRegistry {
      *
      * @param key The key of the operation type
      * @return {@code true}  if the type was registered
-     * @since 1.1
+     * @since 2.0
      */
     default boolean isRegisteredOperationType(@NotNull Key key) {
         return OperationType.isRegistered(key);
@@ -85,7 +85,7 @@ public interface OperationTypeRegistry {
      *
      * @param key The stringified key of the operation type
      * @return {@code true}  if the type was registered
-     * @since 1.1
+     * @since 2.0
      */
     default boolean isRegisteredOperationType(@NotNull String key) {
         return OperationType.isRegistered(key);
@@ -98,7 +98,7 @@ public interface OperationTypeRegistry {
      * @param silent whether the type should be silent. The silent flag indicates whether players should be notified
      *               when an operation of that type was cancelled by default.
      * @return the registered operation type
-     * @since 1.1
+     * @since 2.0
      */
     @NotNull
     default OperationType createOperationType(@NotNull Key key, boolean silent) {
@@ -110,7 +110,7 @@ public interface OperationTypeRegistry {
      *
      * @param key key to create
      * @return the registered operation type
-     * @since 1.1
+     * @since 2.0
      */
     @NotNull
     default OperationType createOperationType(@NotNull Key key) {
@@ -121,7 +121,7 @@ public interface OperationTypeRegistry {
      * Register an operation type
      *
      * @param type the type to register
-     * @since 1.1
+     * @since 2.0
      */
     default void registerOperationType(@NotNull OperationType type) {
         OperationType.register(type);
@@ -133,7 +133,7 @@ public interface OperationTypeRegistry {
      * @param key    key to create
      * @param silent whether the type should be silent. The silent flag indicates whether players should be notified
      *               when an operation of that type was cancelled by default.
-     * @since 1.1
+     * @since 2.0
      */
     default void registerOperationType(@NotNull Key key, boolean silent) {
         registerOperationType(createOperationType(key, silent));
@@ -143,7 +143,7 @@ public interface OperationTypeRegistry {
      * Create and register an operation type (defaults to non-silent)
      *
      * @param key key to create
-     * @since 1.1
+     * @since 2.0
      */
     default void registerOperationType(@NotNull Key key) {
         registerOperationType(createOperationType(key));
@@ -153,7 +153,7 @@ public interface OperationTypeRegistry {
      * Unregister an operation type
      *
      * @param key the type to unregister
-     * @since 1.1
+     * @since 2.0
      */
     default void unregisterOperationType(@NotNull Key key) {
         OperationType.unregister(key);
@@ -162,7 +162,7 @@ public interface OperationTypeRegistry {
     /**
      * Get the platform handler which is implemented by the claim plugin to check whether operations can be performed.
      *
-     * @since 1.1
+     * @since 2.0
      */
     @NotNull
     Handler getHandler();

@@ -276,7 +276,7 @@ public final class OperationType {
      *
      * @param type the type to register
      * @return the registered operation type
-     * @since 1.1
+     * @since 2.0
      */
     @NotNull
     public static OperationType register(@NotNull OperationType type) {
@@ -293,7 +293,7 @@ public final class OperationType {
      *
      * @param key the type to unregister
      * @return the unregistered operation type
-     * @since 1.1
+     * @since 2.0
      */
     @NotNull
     public static OperationType unregister(@NotNull Key key) {
@@ -311,7 +311,7 @@ public final class OperationType {
      * @param silent whether the type should be silent. The silent flag indicates whether players should be notified
      *               when an operation of that type was cancelled by default.
      * @return the registered operation type
-     * @since 1.1
+     * @since 2.0
      */
     @NotNull
     public static OperationType create(@NotNull Key key, boolean silent) {
@@ -323,7 +323,7 @@ public final class OperationType {
      *
      * @param key The key of the operation type
      * @return The operation type, or an empty optional if not found
-     * @since 1.1
+     * @since 2.0
      */
     public static Optional<OperationType> get(@NotNull Key key) {
         return Optional.ofNullable(REGISTRY.get(key.asString()));
@@ -334,7 +334,7 @@ public final class OperationType {
      *
      * @param key The key of the operation type
      * @return The operation type, or an empty optional if not found
-     * @since 1.1
+     * @since 2.0
      */
     public static Optional<OperationType> get(@NotNull String key) {
         return Optional.ofNullable(REGISTRY.get(formatKeyString(key)));
@@ -345,7 +345,7 @@ public final class OperationType {
      *
      * @param key The key of the operation type
      * @return {@code true}  if the type was registered
-     * @since 1.1
+     * @since 2.0
      */
     public static boolean isRegistered(@NotNull Key key) {
         return REGISTRY.containsKey(key.asString());
@@ -356,7 +356,7 @@ public final class OperationType {
      *
      * @param key The key of the operation type
      * @return {@code true}  if the type was registered
-     * @since 1.1
+     * @since 2.0
      */
     public static boolean isRegistered(@NotNull String key) {
         return REGISTRY.containsKey(formatKeyString(key));
@@ -366,7 +366,7 @@ public final class OperationType {
      * Get the set of registered {@link OperationType}s
      *
      * @return the set of {@link OperationType}s
-     * @since 1.1
+     * @since 2.0
      */
     @NotNull
     @Unmodifiable
@@ -383,7 +383,7 @@ public final class OperationType {
      */
     @NotNull
     @Unmodifiable
-    @Deprecated(since = "1.1")
+    @Deprecated(since = "2.0")
     public static OperationType[] values() {
         return REGISTRY.values().toArray(new OperationType[0]);
     }
@@ -397,7 +397,7 @@ public final class OperationType {
      * @deprecated use {@link #get(Key)} instead
      */
     @SuppressWarnings("unused")
-    @Deprecated(since = "1.1")
+    @Deprecated(since = "2.0")
     public static Optional<OperationType> fromId(@NotNull String id) {
         return get(id);
     }
@@ -444,7 +444,7 @@ public final class OperationType {
      * @deprecated get the {@link Key} instead
      */
     @NotNull
-    @Deprecated(since = "1.1")
+    @Deprecated(since = "2.0")
     public String name() {
         return key.value().toUpperCase(Locale.ENGLISH);
     }
@@ -454,9 +454,9 @@ public final class OperationType {
      *
      * @return The ordinal (index order of when this operation type was registered)
      * @since 1.0
-     * @deprecated unused since 1.1
+     * @deprecated unused since 2.0
      */
-    @Deprecated(since = "1.1")
+    @Deprecated(since = "2.0")
     public int ordinal() {
         return ordinal;
     }
@@ -465,7 +465,7 @@ public final class OperationType {
      * Get the string representation of an OperationType (the key)
      *
      * @return the operation type key
-     * @since 1.1
+     * @since 2.0
      */
     @Override
     @NotNull

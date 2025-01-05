@@ -152,7 +152,7 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
      * @param yaw   the yaw
      * @param pitch the pitch
      * @return the OperationPosition of the location
-     * @since 1.1
+     * @since 2.0
      */
     @NotNull
     public abstract OperationPosition getPosition(@NotNull Vec3d pos, @NotNull net.minecraft.world.World world,
@@ -163,7 +163,7 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
      *
      * @param player the player
      * @return the OperationUser of the player
-     * @since 1.1
+     * @since 2.0
      */
     @NotNull
     public abstract OperationUser getUser(@NotNull PlayerEntity player);
@@ -173,7 +173,7 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
      *
      * @param tool     the tool the user must be holding to trigger the callback
      * @param callback the callback to set
-     * @since 1.1
+     * @since 2.0
      */
     @Override
     public void setInspectorCallback(@NotNull InspectorCallbackProvider.InspectionTool tool,
