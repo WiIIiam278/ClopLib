@@ -24,7 +24,6 @@ import lombok.Getter;
 import net.kyori.adventure.key.Key;
 import net.kyori.adventure.key.KeyPattern;
 import org.intellij.lang.annotations.Subst;
-import org.jetbrains.annotations.ApiStatus;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.jetbrains.annotations.Unmodifiable;
@@ -296,6 +295,7 @@ public final class OperationType {
      * @since 2.0
      */
     @NotNull
+    @SuppressWarnings("UnusedReturnValue")
     public static OperationType unregister(@NotNull Key key) {
         assert REGISTRY != null : "Registry was null";
         if (!isRegistered(key)) {
@@ -338,6 +338,19 @@ public final class OperationType {
      */
     public static Optional<OperationType> get(@NotNull String key) {
         return Optional.ofNullable(REGISTRY.get(formatKeyString(key)));
+    }
+
+    /**
+     * Get an operation type from the given key - from the registry if it is registered, otherwise create it
+     *
+     * @param key The key of the operation type
+     * @return The operation type
+     * @since 2.0
+     */
+    @NotNull
+    public static OperationType getOrCreate(@Nullable String key) {
+        @Subst("ignored") final String keyString = formatKeyString(key);
+        return REGISTRY.getOrDefault(keyString, create(Key.key(keyString), false));
     }
 
     /**
@@ -396,26 +409,32 @@ public final class OperationType {
      * @since 1.0
      * @deprecated use {@link #get(Key)} instead
      */
-    @SuppressWarnings("unused")
     @Deprecated(since = "2.0")
     public static Optional<OperationType> fromId(@NotNull String id) {
         return get(id);
     }
 
-    // Get or create a key
-    @NotNull
-    @ApiStatus.Internal
-    static OperationType getOrCreate(@Nullable String key) {
-        @Subst("ignored") final String keyString = formatKeyString(key);
-        return REGISTRY.getOrDefault(keyString, create(Key.key(keyString), false));
+    /**
+     * Get an operation type from the given name
+     *
+     * @param id The name of the operation type
+     * @return The operation type
+     * @throws IllegalArgumentException if an invalid operation id is passed
+     * @since 1.0
+     * @deprecated use {@link #get(Key)} instead
+     */
+    @Deprecated(since = "2.0")
+    public static OperationType valueOf(@NotNull String id) {
+        return get(id).orElseThrow(() -> new IllegalArgumentException("Invalid operation ID: %s".formatted(id)));
     }
 
     @NotNull
+    @KeyPattern
     private static String formatKeyString(@Nullable String key) {
-        if (key != null) {
+        if (key == null) {
             throw new IllegalArgumentException("Operation Type key is null");
         }
-        final String keyString = !key.contains(DEFAULT_SEPARATOR + "")
+        @Subst("bar") final String keyString = !key.contains(DEFAULT_SEPARATOR + "")
                 ? DEFAULT_NAMESPACE + DEFAULT_SEPARATOR + key.toLowerCase(Locale.ENGLISH)
                 : key.toLowerCase(Locale.ENGLISH);
         if (!Key.parseable(keyString)) {
