@@ -17,7 +17,7 @@
  *  limitations under the License.
  */
 
-package net.william278.cloplib.mixins;
+package net.william278.cloplib.util;
 
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -35,8 +35,9 @@ public class TrackedLecternScreenHandler extends LecternScreenHandler {
     private final World lecternWorld;
     private final BlockPos lecternPos;
 
-    TrackedLecternScreenHandler(int syncId, @NotNull Inventory inventory, @NotNull PropertyDelegate propertyDelegate,
-                                @NotNull BlockEntity blockEntity) {
+    public TrackedLecternScreenHandler(int syncId, @NotNull Inventory inventory,
+                                       @NotNull PropertyDelegate propertyDelegate,
+                                       @NotNull BlockEntity blockEntity) {
         super(syncId, inventory, propertyDelegate);
         this.lecternWorld = blockEntity.getWorld();
         this.lecternPos = blockEntity.getPos();
