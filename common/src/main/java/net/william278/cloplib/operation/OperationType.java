@@ -488,6 +488,7 @@ public final class OperationType {
      *
      * @param obj another object
      * @return {@code true} if this operation type matches the identifier of {@code obj}
+     * @since 2.0.1
      */
     @Override
     public boolean equals(Object obj) {
@@ -495,6 +496,17 @@ public final class OperationType {
             return asMinimalString().equals(other.asMinimalString());
         }
         return false;
+    }
+
+    /**
+     * Get the hash code of the operation type identifier (equivalent to {@link #asMinimalString}->{@code #hashCode()}
+     *
+     * @return the hash code
+     * @since 2.0.3
+     */
+    @Override
+    public int hashCode() {
+        return asMinimalString().hashCode();
     }
 
     /**
