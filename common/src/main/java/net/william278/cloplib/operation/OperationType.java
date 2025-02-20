@@ -484,6 +484,20 @@ public final class OperationType {
     }
 
     /**
+     * Return whether this OperationType is equal to another OperationType
+     *
+     * @param obj another object
+     * @return {@code true} if this operation type matches the identifier of {@code obj}
+     */
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof OperationType other) {
+            return asMinimalString().equals(other.asMinimalString());
+        }
+        return false;
+    }
+
+    /**
      * Get the key value string of this OperationType.
      *
      * @return the key value string
