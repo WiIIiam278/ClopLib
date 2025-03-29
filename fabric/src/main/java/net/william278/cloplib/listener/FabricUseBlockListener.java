@@ -105,7 +105,7 @@ public interface FabricUseBlockListener extends FabricListener {
 
         // Check precalculated block operation map
         operationType = getPrecalculatedBlockMap().get(Registries.BLOCK.getId(blockState.getBlock()).toString());
-        final ItemStack heldItem = playerEntity.getStackInHand(hand);
+        final ItemStack held = playerEntity.getStackInHand(hand);
         if (operationType != null && getHandler().cancelOperation(Operation.of(
                 getUser(player),
                 operationType,
@@ -113,9 +113,9 @@ public interface FabricUseBlockListener extends FabricListener {
                 hand == Hand.OFF_HAND
         ))) {
             return ActionResult.FAIL;
-        } else if (heldItem != null && heldItem.getItem() instanceof BlockItem && getHandler().cancelOperation(Operation.of(
+        } else if (held != null && held.getItem() instanceof BlockItem && getHandler().cancelOperation(Operation.of(
                 getUser(player),
-                getPrecalculatedItemMap().getOrDefault(heldItem.toString(), OperationType.BLOCK_PLACE),
+                getPrecalculatedItemMap().getOrDefault(held.toString(), OperationType.BLOCK_PLACE),
                 getPosition(BlockPos.ofFloored(blockHit.getPos().offset(blockHit.getSide(), 1.0d)), world)
         ))){
             return ActionResult.FAIL;
