@@ -15,7 +15,7 @@
 
 **ClopLib** (_**Cl**aim **Op**erations **Lib**rary_) is a Minecraft server library for handling events that take place in varying positions within game worlds, to allow developers to contextually cancel or modify the outcome of operations such as block placement, block breaking, entity spawning, based on whether the type of operation was performed within a claimed region.
 
-Currently, ClopLib targets `bukkit` servers running **Spigot/Paper 1.17.1+** (requires Java 17) and **Fabric 1.21.1/1.21.4** (requires Java 21).
+Currently, ClopLib targets `bukkit` servers running **Spigot/Paper 1.17.1+** (requires Java 17) and **Fabric 1.21.1/1.21.4/1.21.5** (requires Java 21).
 
 ## Setup
 ClopLib is available [on Maven](https://repo.william278.net/#/releases/net/william278/cloplib/). You can browse the Javadocs [here](https://repo.william278.net/javadoc/releases/net/william278/cloplib/latest).
