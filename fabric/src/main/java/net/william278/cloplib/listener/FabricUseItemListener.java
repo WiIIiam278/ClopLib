@@ -77,14 +77,14 @@ public interface FabricUseItemListener extends FabricListener {
     }
 
     @NotNull
-    //#if MC==12104
+    //#if MC>=12104
     default ActionResult onPlayerUseItem(PlayerEntity playerEntity, World world, Hand hand) {
     //#else
     //$$ default TypedActionResult<ItemStack> onPlayerUseItem(PlayerEntity playerEntity, World world, Hand hand) {
     //#endif
         final ItemStack item = playerEntity.getStackInHand(hand);
         if (item.isEmpty() || !(playerEntity instanceof ServerPlayerEntity player)) {
-            //#if MC==12104
+            //#if MC>=12104
             return ActionResult.PASS;
             //#else
             //$$ return TypedActionResult.pass(ItemStack.EMPTY);
@@ -99,7 +99,7 @@ public interface FabricUseItemListener extends FabricListener {
         // Check precalculated item operation map
         final OperationType operationType = getPrecalculatedItemMap().get(item.getItem());
         if (operationType == null) {
-            //#if MC==12104
+            //#if MC>=12104
             return ActionResult.PASS;
             //#else
             //$$ return TypedActionResult.pass(ItemStack.EMPTY);
@@ -112,13 +112,13 @@ public interface FabricUseItemListener extends FabricListener {
                 getUseItemPosition(player, world, hand, item),
                 hand == Hand.OFF_HAND
         ))) {
-            //#if MC==12104
+            //#if MC>=12104
             return ActionResult.FAIL;
             //#else
             //$$ return TypedActionResult.fail(ItemStack.EMPTY);
             //#endif
         }
-        //#if MC==12104
+        //#if MC>=12104
         return ActionResult.PASS;
         //#else
         //$$ return TypedActionResult.pass(ItemStack.EMPTY);
@@ -169,14 +169,14 @@ public interface FabricUseItemListener extends FabricListener {
 
     // Handle claim inspection callbacks
     @NotNull
-    //#if MC==12104
+    //#if MC>=12104
     default ActionResult handleInspectionCallbacks(ServerPlayerEntity player, World world, ItemStack item) {
     //#else
     //$$ default TypedActionResult<ItemStack> handleInspectionCallbacks(ServerPlayerEntity player, World world, ItemStack item) {
     //#endif
         final InspectionTool tool = getTool(item);
         if (!getInspectionToolHandlers().containsKey(tool)) {
-            //#if MC==12104
+            //#if MC>=12104
             return ActionResult.PASS;
             //#else
             //$$ return TypedActionResult.pass(ItemStack.EMPTY);
@@ -189,7 +189,7 @@ public interface FabricUseItemListener extends FabricListener {
         if (hit.getType() == HitResult.Type.BLOCK) {
             callback.accept(getUser(player), getPosition(((BlockHitResult) hit).getBlockPos(), world));
         }
-        //#if MC==12104
+        //#if MC>=12104
         return ActionResult.FAIL;
         //#else
         //$$ return TypedActionResult.fail(ItemStack.EMPTY);
@@ -202,7 +202,7 @@ public interface FabricUseItemListener extends FabricListener {
                 .InspectionTool.builder()
                 .material(FabricListener.getId(item.getItem()));
         CustomModelDataComponent customModelDataComponent = item.getComponents().get(DataComponentTypes.CUSTOM_MODEL_DATA);
-        //#if MC==12104
+        //#if MC>=12104
         if (customModelDataComponent != null && !customModelDataComponent.floats().isEmpty()) {
             builder.useCustomModelData(true).customModelData(customModelDataComponent.floats().get(0).intValue());
         }

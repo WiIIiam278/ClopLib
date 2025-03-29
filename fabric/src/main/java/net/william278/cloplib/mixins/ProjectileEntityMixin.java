@@ -57,7 +57,7 @@ public abstract class ProjectileEntityMixin {
 
     @Inject(method = "onBlockHit", at = @At("HEAD"), cancellable = true)
     private void onBlockHitMixin(BlockHitResult hit, CallbackInfo ci) {
-        //#if MC==12104
+        //#if MC>=12104
         if (hit.isAgainstWorldBorder()) {
             return;
         }

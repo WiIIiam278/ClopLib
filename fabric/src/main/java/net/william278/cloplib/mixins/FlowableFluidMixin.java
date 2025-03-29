@@ -46,7 +46,7 @@ public abstract class FlowableFluidMixin {
     @Unique
     private static final Set<Direction> CLOPLIB_IGNORED_DIRECTIONS = Set.of(Direction.UP, Direction.DOWN);
 
-    //#if MC==12104
+    //#if MC>=12104
     @Inject(method = "canFlowThrough(Lnet/minecraft/world/BlockView;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/util/math/Direction;Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/block/BlockState;Lnet/minecraft/fluid/FluidState;)Z", at = @At("HEAD"), cancellable = true)
     private void canFlowThroughMixin(BlockView blockView, BlockPos toPos, BlockState toState, Direction flowDirection,
                                      BlockPos fromPos, BlockState fromState,

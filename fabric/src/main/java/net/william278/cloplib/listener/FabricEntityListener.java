@@ -64,7 +64,7 @@ public interface FabricEntityListener extends FabricListener {
                     getPlayerSource(explosion.getCausingEntity()).map(this::getUser).orElse(null),
                     isMonster(explosion.getCausingEntity())
                             ? OperationType.MONSTER_DAMAGE_TERRAIN : OperationType.EXPLOSION_DAMAGE_TERRAIN,
-                    //#if MC==12104
+                    //#if MC>=12104
                     getPosition(pos, explosion.getWorld())
                     //#else
                     //$$ getPosition(pos, explosion.world)

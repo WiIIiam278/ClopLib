@@ -77,11 +77,11 @@ public abstract class ServerPlayNetworkHandlerMixin {
         }
     }
 
-    @Inject(method = "onVehicleMove", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/world/ServerWorld;isSpaceEmpty(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;)Z", ordinal = 0))
+    @Inject(method = "onVehicleMove", at = @At(value = "INVOKE_ASSIGN", target = "Lnet/minecraft/server/world/ServerWorld;isSpaceEmpty(Lnet/minecraft/entity/Entity;Lnet/minecraft/util/math/Box;)Z", ordinal = 0), cancellable = true)
     private void onVehicleMoveMixin(VehicleMoveC2SPacket packet, CallbackInfo ci) {
         // Determine change in distance
         final Vec3d from = new Vec3d(this.lastTickRiddenX, this.lastTickRiddenY, this.lastTickRiddenZ);
-        //#if MC==12104
+        //#if MC>=12104
         final Vec3d to = packet.position();
         //#else
         //$$ final Vec3d to = new Vec3d(packet.getX(), packet.getY(), packet.getZ());

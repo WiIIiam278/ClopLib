@@ -23,7 +23,7 @@ import net.minecraft.block.DispenserBlock;
 import net.minecraft.block.dispenser.BoatDispenserBehavior;
 import net.minecraft.block.dispenser.DispenserBehavior;
 import net.minecraft.block.dispenser.ItemDispenserBehavior;
-//#if MC==12104
+//#if MC>=12104
 import net.minecraft.block.dispenser.MinecartDispenserBehavior;
 //#endif
 import net.minecraft.item.ItemStack;
@@ -37,7 +37,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-//#if MC==12104
+//#if MC>=12104
 @Mixin(value = {BoatDispenserBehavior.class, MinecartDispenserBehavior.class})
 //#else
 //$$ @Mixin(value = BoatDispenserBehavior.class, targets = "net/minecraft/item/MinecartItem$1")

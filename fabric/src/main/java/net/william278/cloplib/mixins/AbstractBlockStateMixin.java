@@ -22,20 +22,27 @@ package net.william278.cloplib.mixins;
 import net.minecraft.block.AbstractBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
-import net.minecraft.util.ActionResult;
+//#if MC>=12105
+import net.minecraft.entity.EntityCollisionHandler;
+//#endif
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import net.minecraft.util.ActionResult;
 import net.william278.cloplib.events.PressureBlockEvents;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(AbstractBlock.AbstractBlockState.class)
 public abstract class AbstractBlockStateMixin {
 
     @Inject(method = "onEntityCollision", at = @At("HEAD"), cancellable = true)
-    private void onEntityCollisionMixin(World world, BlockPos pos, Entity entity, CallbackInfo ci) {
+    //#if MC==12105
+    private void onEntityCollisionMixin(World world, BlockPos pos, Entity entity, EntityCollisionHandler ech, CallbackInfo ci) {
+    //#else
+    //$$ private void onEntityCollisionMixin(World world, BlockPos pos, Entity entity, CallbackInfo ci) {
+    //#endif
         final BlockState state = world.getBlockState(pos);
         if (state == null || state.isAir()) {
             return;
