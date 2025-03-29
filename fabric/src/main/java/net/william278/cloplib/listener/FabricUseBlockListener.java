@@ -72,8 +72,7 @@ public interface FabricUseBlockListener extends FabricListener {
 
     @NotNull
     default ActionResult onPlayerUseBlock(PlayerEntity playerEntity, World world, Hand hand, BlockHitResult blockHit) {
-        if (blockHit.getType() != HitResult.Type.BLOCK || !(playerEntity instanceof ServerPlayerEntity player)
-                || player.isSneaking()) {
+        if (blockHit.getType() != HitResult.Type.BLOCK || !(playerEntity instanceof ServerPlayerEntity player)) {
             return ActionResult.PASS;
         }
 
