@@ -19,6 +19,7 @@
 
 package net.william278.cloplib.listener;
 
+import com.google.common.collect.Maps;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.entity.Entity;
@@ -54,16 +55,16 @@ import java.util.function.BiPredicate;
 public interface FabricUseItemListener extends FabricListener {
 
     // Map of use item predicates to operation types
-    Map<BiPredicate<Item, TypeChecker>, OperationType> USE_ITEM_PREDICATE_MAP = Map.of(
+    Map<BiPredicate<Item, TypeChecker>, OperationType> USE_ITEM_PREDICATE_MAP = Maps.newLinkedHashMap(Map.of(
+            (i, c) -> i instanceof DecorationItem, OperationType.PLACE_HANGING_ENTITY,
             (i, c) -> c.isFarmMaterial(Registries.ITEM.getId(i).toString()), OperationType.FARM_BLOCK_PLACE,
-            (i, c) -> i instanceof BlockItem && !c.isFarmMaterial(FabricListener.getId(i)), OperationType.BLOCK_PLACE,
+            (i, c) -> i instanceof BlockItem, OperationType.BLOCK_PLACE,
             (i, c) -> i instanceof BucketItem b && ((BucketItemMixin) b).getFluid() == Fluids.EMPTY , OperationType.FILL_BUCKET,
             (i, c) -> i instanceof BucketItem b && ((BucketItemMixin) b).getFluid() != Fluids.EMPTY, OperationType.EMPTY_BUCKET,
             (i, c) -> i instanceof EnderPearlItem || i == Items.CHORUS_FRUIT, OperationType.ENDER_PEARL_TELEPORT,
             (i, c) -> i instanceof BoatItem || i instanceof MinecartItem, OperationType.PLACE_VEHICLE,
-            (i, c) -> i instanceof DecorationItem, OperationType.PLACE_HANGING_ENTITY,
             (i, c) -> i instanceof SpawnEggItem || i instanceof EggItem, OperationType.USE_SPAWN_EGG
-    );
+    ));
 
     @NotNull
     Map<Item, OperationType> getPrecalculatedItemMap();
