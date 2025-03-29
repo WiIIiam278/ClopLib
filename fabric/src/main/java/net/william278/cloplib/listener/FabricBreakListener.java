@@ -20,19 +20,48 @@
 package net.william278.cloplib.listener;
 
 import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.listener.ClientPlayPacketListener;
 import net.minecraft.network.packet.Packet;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
+import java.util.UUID;
+
 public interface FabricBreakListener extends FabricListener {
+
+    @NotNull
+    Map<UUID, BlockPos> getLastBreakPositions();
+
+    // When a player starts breaking a block
+    default ActionResult onPlayerStartBreakBlock(PlayerEntity playerEntity, World world, Hand ignoredHand,
+                                                 BlockPos pos, Direction ignoredDirection) {
+        final BlockState state = world.getBlockState(pos);
+        final boolean isBlock = state != null && !Blocks.AIR.getDefaultState().equals(state);
+        final BlockPos lastPos = getLastBreakPositions().get(playerEntity.getUuid());
+        if (isBlock && getHandler().cancelOperation(Operation.of(
+                getUser(playerEntity),
+                getChecker().isFarmMaterial(FabricListener.getId(state.getBlock()))
+                        ? OperationType.FARM_BLOCK_BREAK : OperationType.BLOCK_BREAK,
+                getPosition(pos, world),
+                pos.equals(lastPos)
+        ))) {
+            getLastBreakPositions().put(playerEntity.getUuid(), pos);
+            return ActionResult.FAIL;
+        }
+        return ActionResult.PASS;
+    }
 
     // After a block is broken
     default boolean onPlayerBreakBlock(World world, PlayerEntity playerEntity, BlockPos pos,

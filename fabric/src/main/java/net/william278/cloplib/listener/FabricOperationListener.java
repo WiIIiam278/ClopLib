@@ -21,6 +21,7 @@ package net.william278.cloplib.listener;
 
 import com.google.common.collect.Maps;
 import lombok.Getter;
+import net.fabricmc.fabric.api.event.Event;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.*;
 import net.fabricmc.loader.api.ModContainer;
@@ -29,6 +30,8 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.resource.LifecycledResourceManager;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Vec3d;
 import net.william278.cloplib.events.*;
 import net.william278.cloplib.handler.Handler;
@@ -47,6 +50,7 @@ import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import java.util.function.BiConsumer;
 
 /**
@@ -57,9 +61,12 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
         FabricUseItemListener, FabricUseBlockListener, FabricUseEntityListener, FabricEntityDamageListener,
         FabricEntityListener, FabricBlockMoveListener, FabricFireListener, FabricMoveListener {
 
+    public static final Identifier CLOPLIB_LISTENERS = Identifier.of("cloplib", "listeners");
+
     private final Handler handler;
     private final TypeChecker checker;
     private final Map<InspectorCallbackProvider.InspectionTool, BiConsumer<OperationUser, OperationPosition>> inspectionToolHandlers;
+    private final Map<UUID, BlockPos> lastBreakPositions;
 
     // Maps of registry blocks to operation types, precalculated on data (re)load for perf
     private final Map<Item, OperationType> precalculatedItemMap = Maps.newHashMap();
@@ -83,15 +90,18 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
         this.handler = handler;
         this.checker = checker;
         this.inspectionToolHandlers = map;
+        this.lastBreakPositions = Maps.newHashMap();
         this.registerCallbacks();
     }
 
     private void registerCallbacks() {
         // Register implemented callback event handlers
         PlayerBlockBreakEvents.BEFORE.register(this::onPlayerBreakBlock);
+        AttackBlockCallback.EVENT.register(this::onPlayerStartBreakBlock);
         AttackEntityCallback.EVENT.register(this::onPlayerAttackEntity);
         UseItemCallback.EVENT.register(this::onPlayerUseItem);
-        UseBlockCallback.EVENT.register(this::onPlayerUseBlock);
+        UseBlockCallback.EVENT.addPhaseOrdering(CLOPLIB_LISTENERS, Event.DEFAULT_PHASE); // Prevents weirdness
+        UseBlockCallback.EVENT.register(CLOPLIB_LISTENERS, this::onPlayerUseBlock);
         UseEntityCallback.EVENT.register(this::onPlayerUseEntity);
         LecternEvents.BEFORE_BOOK_TAKEN.register(this::onPlayerTakeLecternBook);
         PressureBlockEvents.BEFORE_COLLISION.register(this::onEntityPhysicallyInteract);

@@ -23,6 +23,7 @@ import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.CustomModelDataComponent;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.fluid.Fluids;
 import net.minecraft.item.*;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -38,6 +39,7 @@ import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import net.william278.cloplib.handler.TypeChecker;
+import net.william278.cloplib.mixins.BucketItemMixin;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
@@ -55,8 +57,8 @@ public interface FabricUseItemListener extends FabricListener {
     Map<BiPredicate<Item, TypeChecker>, OperationType> USE_ITEM_PREDICATE_MAP = Map.of(
             (i, c) -> c.isFarmMaterial(Registries.ITEM.getId(i).toString()), OperationType.FARM_BLOCK_PLACE,
             (i, c) -> i instanceof BlockItem && !c.isFarmMaterial(FabricListener.getId(i)), OperationType.BLOCK_PLACE,
-            (i, c) -> i instanceof BucketItem b && b == Items.BUCKET, OperationType.FILL_BUCKET,
-            (i, c) -> i instanceof BucketItem b && b != Items.BUCKET, OperationType.EMPTY_BUCKET,
+            (i, c) -> i instanceof BucketItem b && ((BucketItemMixin) b).getFluid() == Fluids.EMPTY , OperationType.FILL_BUCKET,
+            (i, c) -> i instanceof BucketItem b && ((BucketItemMixin) b).getFluid() != Fluids.EMPTY, OperationType.EMPTY_BUCKET,
             (i, c) -> i instanceof EnderPearlItem || i == Items.CHORUS_FRUIT, OperationType.ENDER_PEARL_TELEPORT,
             (i, c) -> i instanceof BoatItem || i instanceof MinecartItem, OperationType.PLACE_VEHICLE,
             (i, c) -> i instanceof DecorationItem, OperationType.PLACE_HANGING_ENTITY,
