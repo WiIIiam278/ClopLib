@@ -62,7 +62,7 @@ public interface FabricUseBlockListener extends FabricListener {
     );
 
     @NotNull
-    Map<String, OperationType> getPrecalculatedBlockMap();
+    Map<Block, OperationType> getPrecalculatedBlockMap();
 
     @NotNull
     Map<String, OperationType> getPrecalculatedItemMap();
@@ -73,8 +73,8 @@ public interface FabricUseBlockListener extends FabricListener {
                 .map(Map.Entry::getValue).findFirst();
     }
 
-    default void precalculateBlocks(@NotNull Map<String, OperationType> map) {
-        Registries.BLOCK.forEach(i -> testBlockPredicate(i).ifPresent(type -> map.put(i.toString(), type)));
+    default void precalculateBlocks(@NotNull Map<Block, OperationType> map) {
+        Registries.BLOCK.forEach(i -> testBlockPredicate(i).ifPresent(type -> map.put(i, type)));
     }
 
     @NotNull
@@ -101,7 +101,8 @@ public interface FabricUseBlockListener extends FabricListener {
         }
 
         // Check precalculated block operation map
-        operationType = getPrecalculatedBlockMap().get(blockState.getBlock().toString());
+        operationType = getPrecalculatedBlockMap().get(blockState.getBlock());
+        System.out.printf("Got %s for block state %s of type %s%n", operationType, blockState, blockState.getBlock());
         final ItemStack heldItem = playerEntity.getStackInHand(hand);
         if (operationType != null && getHandler().cancelOperation(Operation.of(
                 getUser(player),

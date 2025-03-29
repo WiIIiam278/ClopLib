@@ -27,7 +27,6 @@ import net.fabricmc.fabric.api.event.player.*;
 import net.fabricmc.loader.api.ModContainer;
 import net.minecraft.block.Block;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.Item;
 import net.minecraft.resource.LifecycledResourceManager;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.util.Identifier;
@@ -70,7 +69,7 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
 
     // Maps of registry blocks to operation types, precalculated on data (re)load for perf
     private final Map<String, OperationType> precalculatedItemMap = Maps.newHashMap();
-    private final Map<String, OperationType> precalculatedBlockMap = Maps.newHashMap();
+    private final Map<Block, OperationType> precalculatedBlockMap = Maps.newHashMap();
 
     @SuppressWarnings("unused")
     public FabricOperationListener(@NotNull Handler handler, @NotNull ModContainer modContainer) {
