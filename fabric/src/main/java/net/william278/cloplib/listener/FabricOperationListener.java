@@ -69,8 +69,8 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
     private final Map<UUID, BlockPos> lastBreakPositions;
 
     // Maps of registry blocks to operation types, precalculated on data (re)load for perf
-    private final Map<Item, OperationType> precalculatedItemMap = Maps.newHashMap();
-    private final Map<Block, OperationType> precalculatedBlockMap = Maps.newHashMap();
+    private final Map<String, OperationType> precalculatedItemMap = Maps.newHashMap();
+    private final Map<String, OperationType> precalculatedBlockMap = Maps.newHashMap();
 
     @SuppressWarnings("unused")
     public FabricOperationListener(@NotNull Handler handler, @NotNull ModContainer modContainer) {

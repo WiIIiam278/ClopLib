@@ -67,7 +67,7 @@ public interface FabricUseItemListener extends FabricListener {
     ));
 
     @NotNull
-    Map<Item, OperationType> getPrecalculatedItemMap();
+    Map<String, OperationType> getPrecalculatedItemMap();
 
     private Optional<OperationType> testItemPredicate(@NotNull Item item) {
         return USE_ITEM_PREDICATE_MAP.entrySet().stream()
@@ -75,8 +75,8 @@ public interface FabricUseItemListener extends FabricListener {
                 .map(Map.Entry::getValue).findFirst();
     }
 
-    default void precalculateItems(@NotNull Map<Item, OperationType> map) {
-        Registries.ITEM.forEach(i -> testItemPredicate(i).ifPresent(type -> map.put(i, type)));
+    default void precalculateItems(@NotNull Map<String, OperationType> map) {
+        Registries.ITEM.forEach(i -> testItemPredicate(i).ifPresent(type -> map.put(i.toString(), type)));
     }
 
     @NotNull
@@ -95,12 +95,16 @@ public interface FabricUseItemListener extends FabricListener {
         }
 
         // Check inspection items
-        if (hand == Hand.MAIN_HAND) {
-            return this.handleInspectionCallbacks(player, world, item);
+        if (hand == Hand.MAIN_HAND && this.handleInspectionCallbacks(player, world, item)) {
+            //#if MC>=12104
+            return ActionResult.FAIL;
+            //#else
+            //$$ return TypedActionResult.fail(ItemStack.EMPTY);
+            //#endif
         }
 
         // Check precalculated item operation map
-        final OperationType operationType = getPrecalculatedItemMap().get(item.getItem());
+        final OperationType operationType = getPrecalculatedItemMap().get(item.getItem().toString());
         if (operationType == null) {
             //#if MC>=12104
             return ActionResult.PASS;
@@ -171,19 +175,10 @@ public interface FabricUseItemListener extends FabricListener {
     }
 
     // Handle claim inspection callbacks
-    @NotNull
-    //#if MC>=12104
-    default ActionResult handleInspectionCallbacks(ServerPlayerEntity player, World world, ItemStack item) {
-    //#else
-    //$$ default TypedActionResult<ItemStack> handleInspectionCallbacks(ServerPlayerEntity player, World world, ItemStack item) {
-    //#endif
+    default boolean handleInspectionCallbacks(ServerPlayerEntity player, World world, ItemStack item) {
         final InspectionTool tool = getTool(item);
         if (!getInspectionToolHandlers().containsKey(tool)) {
-            //#if MC>=12104
-            return ActionResult.PASS;
-            //#else
-            //$$ return TypedActionResult.pass(ItemStack.EMPTY);
-            //#endif
+            return true;
         }
 
         // Execute the callback
@@ -192,11 +187,7 @@ public interface FabricUseItemListener extends FabricListener {
         if (hit.getType() == HitResult.Type.BLOCK) {
             callback.accept(getUser(player), getPosition(((BlockHitResult) hit).getBlockPos(), world));
         }
-        //#if MC>=12104
-        return ActionResult.FAIL;
-        //#else
-        //$$ return TypedActionResult.fail(ItemStack.EMPTY);
-        //#endif
+        return false;
     }
 
     @NotNull

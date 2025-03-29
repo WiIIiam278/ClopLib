@@ -58,7 +58,7 @@ public interface FabricUseBlockListener extends FabricListener {
     );
 
     @NotNull
-    Map<Block, OperationType> getPrecalculatedBlockMap();
+    Map<String, OperationType> getPrecalculatedBlockMap();
 
     private Optional<OperationType> testBlockPredicate(@NotNull Block block) {
         return USE_BLOCK_PREDICATE_MAP.entrySet().stream()
@@ -66,8 +66,8 @@ public interface FabricUseBlockListener extends FabricListener {
                 .map(Map.Entry::getValue).findFirst();
     }
 
-    default void precalculateBlocks(@NotNull Map<Block, OperationType> map) {
-        Registries.BLOCK.forEach(i -> testBlockPredicate(i).ifPresent(type -> map.put(i, type)));
+    default void precalculateBlocks(@NotNull Map<String, OperationType> map) {
+        Registries.BLOCK.forEach(i -> testBlockPredicate(i).ifPresent(type -> map.put(i.toString(), type)));
     }
 
     @NotNull
@@ -94,7 +94,7 @@ public interface FabricUseBlockListener extends FabricListener {
         }
 
         // Check precalculated block operation map
-        operationType = getPrecalculatedBlockMap().get(blockState.getBlock());
+        operationType = getPrecalculatedBlockMap().get(blockState.getBlock().toString());
         if (getHandler().cancelOperation(Operation.of(
                 getUser(player),
                 operationType != null ? operationType : OperationType.BLOCK_INTERACT,
