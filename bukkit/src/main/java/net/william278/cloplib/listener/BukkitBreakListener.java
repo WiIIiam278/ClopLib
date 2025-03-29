@@ -35,7 +35,7 @@ public interface BukkitBreakListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onPlayerBreakBlock(@NotNull BlockBreakEvent e) {
-        if (getHandler().cancelOperation(Operation.of(
+        if (!isPlayerNpc(e.getPlayer()) && getHandler().cancelOperation(Operation.of(
                 getUser(e.getPlayer()),
                 getChecker().isFarmMaterial(e.getBlock().getType().getKey().toString())
                         ? OperationType.FARM_BLOCK_BREAK : OperationType.BLOCK_BREAK,
@@ -47,7 +47,7 @@ public interface BukkitBreakListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onPlayerFillBucket(@NotNull PlayerBucketFillEvent e) {
-        if (getHandler().cancelOperation(Operation.of(
+        if (!isPlayerNpc(e.getPlayer()) &&getHandler().cancelOperation(Operation.of(
                 getUser(e.getPlayer()),
                 OperationType.FILL_BUCKET,
                 getPosition(e.getBlock().getLocation())

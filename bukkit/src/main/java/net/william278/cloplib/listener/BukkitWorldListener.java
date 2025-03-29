@@ -29,7 +29,7 @@ public interface BukkitWorldListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onRaidTriggered(@NotNull RaidTriggerEvent e) {
-        if (getHandler().cancelOperation(Operation.of(
+        if (!isPlayerNpc(e.getPlayer()) && getHandler().cancelOperation(Operation.of(
                 getUser(e.getPlayer()),
                 OperationType.START_RAID,
                 getPosition(e.getRaid().getLocation())

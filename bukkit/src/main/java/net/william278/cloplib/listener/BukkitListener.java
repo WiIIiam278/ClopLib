@@ -51,7 +51,7 @@ public interface BukkitListener extends Listener, InspectorCallbackProvider {
         if (e == null) {
             return Optional.empty();
         }
-        if (e instanceof Player player) {
+        if (e instanceof Player player && !isPlayerNpc(player)) {
             return Optional.of(player);
         }
         if (e instanceof Projectile projectile && projectile.getShooter() instanceof Player player) {
@@ -61,6 +61,11 @@ public interface BukkitListener extends Listener, InspectorCallbackProvider {
                 .filter(p -> p instanceof Player)
                 .map(p -> (Player) p)
                 .findFirst();
+    }
+
+    // Check if the player is a Citizens NPC
+    default boolean isPlayerNpc(@NotNull Player player) {
+        return player.hasMetadata("NPC");
     }
 
 }

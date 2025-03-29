@@ -31,7 +31,7 @@ public interface BukkitPlaceListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onPlayerPlaceBlock(@NotNull BlockPlaceEvent e) {
-        if (getHandler().cancelOperation(Operation.of(
+        if (!isPlayerNpc(e.getPlayer()) && getHandler().cancelOperation(Operation.of(
                 getUser(e.getPlayer()),
                 getChecker().isFarmMaterial(e.getBlockPlaced().getType().getKey().toString())
                         ? OperationType.FARM_BLOCK_PLACE : OperationType.BLOCK_PLACE,
@@ -44,7 +44,7 @@ public interface BukkitPlaceListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onPlayerEmptyBucket(@NotNull PlayerBucketEmptyEvent e) {
-        if (getHandler().cancelOperation(Operation.of(
+        if (!isPlayerNpc(e.getPlayer()) && getHandler().cancelOperation(Operation.of(
                 getUser(e.getPlayer()),
                 OperationType.EMPTY_BUCKET,
                 getPosition(e.getBlock().getLocation())
@@ -55,7 +55,7 @@ public interface BukkitPlaceListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onPlayerPlaceHangingEntity(@NotNull HangingPlaceEvent e) {
-        if (e.getPlayer() == null) {
+        if (e.getPlayer() == null || isPlayerNpc(e.getPlayer())) {
             return;
         }
 

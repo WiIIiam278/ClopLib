@@ -97,7 +97,7 @@ public interface BukkitInteractListener extends BukkitListener {
                 final Block block = e.getClickedBlock();
                 if (block != null && block.getType() != Material.AIR) {
                     if (getChecker().isPressureSensitiveMaterial(block.getType().getKey().toString())) {
-                        if (getHandler().cancelOperation(Operation.of(
+                        if (!isPlayerNpc(e.getPlayer()) && getHandler().cancelOperation(Operation.of(
                                 getUser(e.getPlayer()),
                                 OperationType.REDSTONE_INTERACT,
                                 getPosition(block.getLocation()),
@@ -108,7 +108,7 @@ public interface BukkitInteractListener extends BukkitListener {
                         return;
                     }
 
-                    if (getHandler().cancelOperation(Operation.of(
+                    if (!isPlayerNpc(e.getPlayer()) && getHandler().cancelOperation(Operation.of(
                             getUser(e.getPlayer()),
                             OperationType.BLOCK_INTERACT,
                             getPosition(block.getLocation())
@@ -166,7 +166,7 @@ public interface BukkitInteractListener extends BukkitListener {
     default boolean handleSpawnEggs(@NotNull PlayerInteractEvent e) {
         final Material item = e.getPlayer().getInventory().getItemInMainHand().getType();
         if (item.getKey().toString().toLowerCase().contains(SPAWN_EGG_NAME)) {
-            if (getHandler().cancelOperation(Operation.of(
+            if (!isPlayerNpc(e.getPlayer()) && getHandler().cancelOperation(Operation.of(
                     getUser(e.getPlayer()),
                     OperationType.USE_SPAWN_EGG,
                     getPosition(e.getPlayer().getLocation())
@@ -187,7 +187,7 @@ public interface BukkitInteractListener extends BukkitListener {
         }
 
         // Check against interacting with container vehicles
-        if (entity instanceof Vehicle && entity instanceof InventoryHolder
+        if (entity instanceof Vehicle && entity instanceof InventoryHolder && !isPlayerNpc(e.getPlayer())
             && getHandler().cancelOperation(Operation.of(
                 getUser(e.getPlayer()),
                 OperationType.CONTAINER_OPEN,
@@ -198,7 +198,7 @@ public interface BukkitInteractListener extends BukkitListener {
             return;
         }
 
-        if (getHandler().cancelOperation(Operation.of(
+        if (!isPlayerNpc(e.getPlayer()) && getHandler().cancelOperation(Operation.of(
                 getUser(e.getPlayer()),
                 OperationType.ENTITY_INTERACT,
                 getPosition(e.getRightClicked().getLocation()),
@@ -210,7 +210,7 @@ public interface BukkitInteractListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onPlayerArmorStand(@NotNull PlayerArmorStandManipulateEvent e) {
-        if (getHandler().cancelOperation(Operation.of(
+        if (!isPlayerNpc(e.getPlayer()) && getHandler().cancelOperation(Operation.of(
                 getUser(e.getPlayer()),
                 OperationType.CONTAINER_OPEN,
                 getPosition(e.getRightClicked().getLocation()),

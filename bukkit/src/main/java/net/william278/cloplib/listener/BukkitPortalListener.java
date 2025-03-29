@@ -54,7 +54,7 @@ public interface BukkitPortalListener extends BukkitListener {
         }
 
         // Cancel the portal creation operation, specifying the player if applicable
-        final OperationUser player = e.getEntity() instanceof Player ? getUser((Player) e.getEntity()) : null;
+        final OperationUser player = e.getEntity() instanceof Player p && !isPlayerNpc(p) ? getUser(p) : null;
         for (OperationPosition position : locations) {
             if (getHandler().cancelOperation(Operation.of(
                     player,

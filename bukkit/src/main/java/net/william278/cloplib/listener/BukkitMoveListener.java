@@ -33,7 +33,7 @@ public interface BukkitMoveListener extends BukkitListener {
     default void onPlayerMove(@NotNull PlayerMoveEvent e) {
         final Location fromLocation = e.getFrom();
         final Location toLocation = e.getTo();
-        if (toLocation == null || fromLocation.getBlock().equals(toLocation.getBlock())) {
+        if (toLocation == null || fromLocation.getBlock().equals(toLocation.getBlock()) || isPlayerNpc(e.getPlayer())) {
             return;
         }
 
@@ -45,7 +45,7 @@ public interface BukkitMoveListener extends BukkitListener {
 
     @EventHandler
     default void onPlayerEnderPearl(@NotNull PlayerTeleportEvent e) {
-        if (e.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL
+        if (isPlayerNpc(e.getPlayer()) || e.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL
                 || e.getCause() == PlayerTeleportEvent.TeleportCause.CHORUS_FRUIT) {
             if (getHandler().cancelOperation(Operation.of(
                     getUser(e.getPlayer()),
