@@ -30,6 +30,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.BlockItem;
+import net.minecraft.item.BucketItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -113,11 +114,12 @@ public interface FabricUseBlockListener extends FabricListener {
                 hand == Hand.OFF_HAND
         ))) {
             return ActionResult.FAIL;
-        } else if (held != null && held.getItem() instanceof BlockItem && getHandler().cancelOperation(Operation.of(
-                getUser(player),
-                getPrecalculatedItemMap().getOrDefault(held.toString(), OperationType.BLOCK_PLACE),
-                getPosition(BlockPos.ofFloored(blockHit.getPos().offset(blockHit.getSide(), 1.0d)), world)
-        ))){
+        } else if (held != null && (held.getItem() instanceof BlockItem || held.getItem() instanceof BucketItem) &&
+                getHandler().cancelOperation(Operation.of(
+                        getUser(player),
+                        getPrecalculatedItemMap().getOrDefault(held.toString(), OperationType.BLOCK_PLACE),
+                        getPosition(BlockPos.ofFloored(blockHit.getPos().offset(blockHit.getSide(), 1.0d)), world)
+                ))) {
             return ActionResult.FAIL;
         }
         return ActionResult.PASS;
