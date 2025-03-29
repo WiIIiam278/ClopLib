@@ -20,6 +20,7 @@
 package net.william278.cloplib.listener;
 
 import net.minecraft.block.*;
+import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.entity.CampfireBlockEntity;
 import net.minecraft.block.entity.SignBlockEntity;
@@ -27,6 +28,8 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.ProjectileEntity;
 import net.minecraft.inventory.Inventory;
+import net.minecraft.item.BlockItem;
+import net.minecraft.item.ItemStack;
 import net.minecraft.registry.Registries;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.ActionResult;
@@ -50,15 +53,19 @@ public interface FabricUseBlockListener extends FabricListener {
 
     // Map of use block predicates to operation types
     Map<BiPredicate<Block, TypeChecker>, OperationType> USE_BLOCK_PREDICATE_MAP = Map.of(
-            (b, c) -> b instanceof CampfireBlock, OperationType.CONTAINER_OPEN,
+            (b, c) -> b instanceof CampfireBlock || b instanceof BeaconBlock, OperationType.CONTAINER_OPEN,
             (b, c) -> b instanceof AbstractSignBlock, OperationType.BLOCK_PLACE,
             (b, c) -> c.isFarmMaterial(FabricListener.getId(b)), OperationType.FARM_BLOCK_INTERACT,
+            (b, c) -> c instanceof DoorBlock || c instanceof TrapdoorBlock || c instanceof FenceGateBlock, OperationType.BLOCK_INTERACT,
             (b, c) -> c.isPressureSensitiveMaterial(FabricListener.getId(b)) || b instanceof LeverBlock ||
                     b instanceof ButtonBlock || b instanceof RedstoneOreBlock, OperationType.REDSTONE_INTERACT
     );
 
     @NotNull
     Map<String, OperationType> getPrecalculatedBlockMap();
+
+    @NotNull
+    Map<String, OperationType> getPrecalculatedItemMap();
 
     private Optional<OperationType> testBlockPredicate(@NotNull Block block) {
         return USE_BLOCK_PREDICATE_MAP.entrySet().stream()
@@ -95,12 +102,19 @@ public interface FabricUseBlockListener extends FabricListener {
 
         // Check precalculated block operation map
         operationType = getPrecalculatedBlockMap().get(blockState.getBlock().toString());
-        if (getHandler().cancelOperation(Operation.of(
+        final ItemStack heldItem = playerEntity.getStackInHand(hand);
+        if (operationType != null && getHandler().cancelOperation(Operation.of(
                 getUser(player),
-                operationType != null ? operationType : OperationType.BLOCK_INTERACT,
+                operationType,
                 getPosition(blockHit.getBlockPos(), world),
                 hand == Hand.OFF_HAND
         ))) {
+            return ActionResult.FAIL;
+        } else if (heldItem != null && heldItem.getItem() instanceof BlockItem && getHandler().cancelOperation(Operation.of(
+                getUser(player),
+                getPrecalculatedItemMap().getOrDefault(heldItem.toString(), OperationType.BLOCK_PLACE),
+                getPosition(BlockPos.ofFloored(blockHit.getPos().offset(blockHit.getSide(), 1.0d)), world)
+        ))){
             return ActionResult.FAIL;
         }
         return ActionResult.PASS;
@@ -113,7 +127,7 @@ public interface FabricUseBlockListener extends FabricListener {
             return null;
         }
         if (blockEntity instanceof InventoryProvider || blockEntity instanceof Inventory ||
-                blockEntity instanceof CampfireBlockEntity) {
+                blockEntity instanceof CampfireBlockEntity || blockEntity instanceof BeaconBlockEntity) {
             return OperationType.CONTAINER_OPEN;
         }
         if (blockEntity instanceof SignBlockEntity) {
