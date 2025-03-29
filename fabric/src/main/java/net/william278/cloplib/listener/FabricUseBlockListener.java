@@ -19,6 +19,7 @@
 
 package net.william278.cloplib.listener;
 
+import com.google.common.collect.Maps;
 import net.minecraft.block.*;
 import net.minecraft.block.entity.BeaconBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
@@ -52,17 +53,18 @@ import java.util.function.BiPredicate;
 public interface FabricUseBlockListener extends FabricListener {
 
     // Map of use block predicates to operation types
-    Map<BiPredicate<Block, TypeChecker>, OperationType> USE_BLOCK_PREDICATE_MAP = Map.of(
+    Map<BiPredicate<Block, TypeChecker>, OperationType> USE_BLOCK_PREDICATE_MAP = Maps.newLinkedHashMap(Map.of(
             (b, c) -> b instanceof CampfireBlock || b instanceof BeaconBlock, OperationType.CONTAINER_OPEN,
             (b, c) -> b instanceof AbstractSignBlock, OperationType.BLOCK_PLACE,
             (b, c) -> c.isFarmMaterial(FabricListener.getId(b)), OperationType.FARM_BLOCK_INTERACT,
-            (b, c) -> c instanceof DoorBlock || c instanceof TrapdoorBlock || c instanceof FenceGateBlock, OperationType.BLOCK_INTERACT,
+            (b, c) -> b instanceof DoorBlock || b instanceof TrapdoorBlock
+                    || b instanceof FenceGateBlock, OperationType.BLOCK_INTERACT,
             (b, c) -> c.isPressureSensitiveMaterial(FabricListener.getId(b)) || b instanceof LeverBlock ||
                     b instanceof ButtonBlock || b instanceof RedstoneOreBlock, OperationType.REDSTONE_INTERACT
-    );
+    ));
 
     @NotNull
-    Map<Block, OperationType> getPrecalculatedBlockMap();
+    Map<String, OperationType> getPrecalculatedBlockMap();
 
     @NotNull
     Map<String, OperationType> getPrecalculatedItemMap();
@@ -73,8 +75,9 @@ public interface FabricUseBlockListener extends FabricListener {
                 .map(Map.Entry::getValue).findFirst();
     }
 
-    default void precalculateBlocks(@NotNull Map<Block, OperationType> map) {
-        Registries.BLOCK.forEach(i -> testBlockPredicate(i).ifPresent(type -> map.put(i, type)));
+    default void precalculateBlocks(@NotNull Map<String, OperationType> map) {
+        Registries.BLOCK.forEach((i) -> testBlockPredicate(i).ifPresent(
+                type -> map.put(Registries.BLOCK.getId(i).toString(), type)));
     }
 
     @NotNull
@@ -101,8 +104,7 @@ public interface FabricUseBlockListener extends FabricListener {
         }
 
         // Check precalculated block operation map
-        operationType = getPrecalculatedBlockMap().get(blockState.getBlock());
-        System.out.printf("Got %s for block state %s of type %s%n", operationType, blockState, blockState.getBlock());
+        operationType = getPrecalculatedBlockMap().get(Registries.BLOCK.getId(blockState.getBlock()).toString());
         final ItemStack heldItem = playerEntity.getStackInHand(hand);
         if (operationType != null && getHandler().cancelOperation(Operation.of(
                 getUser(player),
