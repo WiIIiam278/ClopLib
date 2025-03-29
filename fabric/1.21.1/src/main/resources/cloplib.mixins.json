@@ -6,6 +6,7 @@
   "server": [
     "AbstractBlockStateMixin",
     "BlockDispenserBehaviourMixin",
+    "BucketItemMixin",
     "ExplosionBehaviourMixin",
     "ExplosionMixin",
     "FireBlockMixin",
