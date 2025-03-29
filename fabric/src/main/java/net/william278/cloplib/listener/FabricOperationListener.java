@@ -98,11 +98,11 @@ public abstract class FabricOperationListener implements OperationListener, Fabr
         // Register implemented callback event handlers
         PlayerBlockBreakEvents.BEFORE.register(this::onPlayerBreakBlock);
         AttackBlockCallback.EVENT.register(this::onPlayerStartBreakBlock);
-        AttackEntityCallback.EVENT.register(this::onPlayerAttackEntity);
-        UseItemCallback.EVENT.register(this::onPlayerUseItem);
         UseBlockCallback.EVENT.addPhaseOrdering(CLOPLIB_LISTENERS, Event.DEFAULT_PHASE); // Prevents weirdness
         UseBlockCallback.EVENT.register(CLOPLIB_LISTENERS, this::onPlayerUseBlock);
         UseEntityCallback.EVENT.register(this::onPlayerUseEntity);
+        AttackEntityCallback.EVENT.register(this::onPlayerAttackEntity);
+        UseItemCallback.EVENT.register(this::onPlayerUseItem); // Registered last
         LecternEvents.BEFORE_BOOK_TAKEN.register(this::onPlayerTakeLecternBook);
         PressureBlockEvents.BEFORE_COLLISION.register(this::onEntityPhysicallyInteract);
         ProjectileEvents.BEFORE_BLOCK_HIT.register(this::onProjectileHitBlock);
