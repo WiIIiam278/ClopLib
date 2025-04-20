@@ -130,7 +130,7 @@ public interface BukkitEntityDamageListener extends BukkitListener {
         if (getHandler().cancelOperation(Operation.of(
                 getPlayerSource(e.getVehicle()).map(this::getUser).orElse(null),
                 OperationType.MONSTER_DAMAGE_TERRAIN,
-                getPosition(e.getVehicle().getLocation())
+                getPosition(e.getEntity().getLocation())
         ))) {
             e.setCancelled(true);
         }
