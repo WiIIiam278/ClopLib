@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    api 'de.exlll:configlib-yaml:4.5.0'
+    api 'de.exlll:configlib-yaml:4.6.1'
     implementation 'net.kyori:adventure-key:4.20.0'
     implementation 'com.google.code.gson:gson:2.13.0'
 
