@@ -60,7 +60,7 @@ public interface BukkitEntityDamageListener extends BukkitListener {
         final EntityDamageEvent.DamageCause cause = e.getCause();
         if (cause == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION
                 || cause == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION
-                && !(e.getEntity() instanceof Monster)) {
+                && !isMonster(e.getEntity())) {
             if (getHandler().cancelOperation(Operation.of(
                     OperationType.EXPLOSION_DAMAGE_ENTITY,
                     getPosition(e.getEntity().getLocation())
@@ -178,8 +178,8 @@ public interface BukkitEntityDamageListener extends BukkitListener {
         }
 
         // Prevent projectiles shot by mobs from harming passive mobs, hanging entities & armor stands
-        if (!(entity instanceof Player || entity instanceof Monster)
-                && proj.getShooter() instanceof Monster) {
+        if (!(entity instanceof Player || isMonster(entity))
+                && isMonster(proj.getShooter())) {
             if (getHandler().cancelOperation(Operation.of(
                     OperationType.MONSTER_DAMAGE_TERRAIN,
                     getPosition(entity.getLocation())
@@ -214,7 +214,7 @@ public interface BukkitEntityDamageListener extends BukkitListener {
     @NotNull
     private OperationType getPlayerDamageType(@NotNull Entity entity) {
         OperationType type = OperationType.PLAYER_DAMAGE_ENTITY;
-        if (entity instanceof Monster) {
+        if (isMonster(entity)) {
             type = OperationType.PLAYER_DAMAGE_MONSTER;
         } else if (entity instanceof Vehicle vehicle && !(entity instanceof Mob)) {
             type = vehicle instanceof InventoryHolder ? OperationType.BLOCK_BREAK : OperationType.BREAK_VEHICLE;

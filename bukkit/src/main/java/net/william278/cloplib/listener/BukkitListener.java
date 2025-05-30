@@ -24,9 +24,7 @@ import net.william278.cloplib.handler.TypeChecker;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationUser;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.event.Listener;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -61,6 +59,10 @@ public interface BukkitListener extends Listener, InspectorCallbackProvider {
                 .filter(p -> p instanceof Player)
                 .map(p -> (Player) p)
                 .findFirst();
+    }
+
+    default <T> boolean isMonster(@Nullable T entity) {
+        return entity instanceof Monster || entity instanceof Phantom || entity instanceof Slime;
     }
 
     // Check if the player is a Citizens NPC

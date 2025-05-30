@@ -178,9 +178,7 @@ public interface BukkitEntityListener extends BukkitListener {
 
         // Cancel mob spawning
         if (getHandler().cancelOperation(Operation.of(
-                e.getEntity() instanceof Monster
-                        ? OperationType.MONSTER_SPAWN
-                        : OperationType.PASSIVE_MOB_SPAWN,
+                isMonster(e.getEntity()) ? OperationType.MONSTER_SPAWN : OperationType.PASSIVE_MOB_SPAWN,
                 getPosition(e.getLocation())
         ))) {
             e.setCancelled(true);
