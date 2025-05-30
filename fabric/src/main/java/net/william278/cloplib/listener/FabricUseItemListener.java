@@ -62,6 +62,7 @@ public interface FabricUseItemListener extends FabricListener {
             (i, c) -> i instanceof BucketItem b && ((BucketItemMixin) b).getFluid() == Fluids.EMPTY , OperationType.FILL_BUCKET,
             (i, c) -> i instanceof BucketItem b && ((BucketItemMixin) b).getFluid() != Fluids.EMPTY, OperationType.EMPTY_BUCKET,
             (i, c) -> i instanceof EnderPearlItem || i == Items.CHORUS_FRUIT, OperationType.ENDER_PEARL_TELEPORT,
+            (i, c) -> i instanceof ProjectileItem, OperationType.REDSTONE_INTERACT,
             (i, c) -> i instanceof BoatItem || i instanceof MinecartItem, OperationType.PLACE_VEHICLE,
             (i, c) -> i instanceof SpawnEggItem || i instanceof EggItem, OperationType.USE_SPAWN_EGG
     ));
@@ -178,7 +179,7 @@ public interface FabricUseItemListener extends FabricListener {
     default boolean handleInspectionCallbacks(ServerPlayerEntity player, World world, ItemStack item) {
         final InspectionTool tool = getTool(item);
         if (!getInspectionToolHandlers().containsKey(tool)) {
-            return true;
+            return false;
         }
 
         // Execute the callback
@@ -186,6 +187,7 @@ public interface FabricUseItemListener extends FabricListener {
         final HitResult hit = player.raycast(getInspectionDistance(), 0.0f, false);
         if (hit.getType() == HitResult.Type.BLOCK) {
             callback.accept(getUser(player), getPosition(((BlockHitResult) hit).getBlockPos(), world));
+            return true;
         }
         return false;
     }
