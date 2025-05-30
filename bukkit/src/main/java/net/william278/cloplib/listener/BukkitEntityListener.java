@@ -27,7 +27,9 @@ import net.william278.cloplib.operation.OperationUser;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Monster;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.entity.Vehicle;
+import org.bukkit.entity.minecart.ExplosiveMinecart;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.block.BlockExplodeEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -40,6 +42,7 @@ import org.bukkit.projectiles.BlockProjectileSource;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -57,21 +60,18 @@ public interface BukkitEntityListener extends BukkitListener {
 
     @EventHandler(ignoreCancelled = true)
     default void onBlockExplosion(@NotNull BlockExplodeEvent e) {
-        final HashSet<Block> blocksToRemove = Sets.newHashSet();
-        for (Block block : e.blockList()) {
-            if (getHandler().cancelOperation(Operation.of(
-                    OperationType.EXPLOSION_DAMAGE_TERRAIN,
-                    getPosition(block.getLocation())
-            ))) {
-                blocksToRemove.add(block);
-            }
-        }
-        // Don't destroy protected blocks (but allow the explosion to continue)
-        blocksToRemove.forEach(e.blockList()::remove);
+        this.handleBlockExplosion(e.blockList());
     }
 
     @EventHandler(ignoreCancelled = true)
     default void onEntityExplode(@NotNull EntityExplodeEvent e) {
+        // Handle explosive blocks under the much more intuitive EXPLOSION_DAMAGE_TERRAIN flag
+        if (e.getEntity() instanceof TNTPrimed || e.getEntity() instanceof ExplosiveMinecart) {
+            this.handleBlockExplosion(e.blockList());
+            return;
+        }
+
+        // Otherwise, other explosive entities (wither, creeper) fall under monsters damaging terrain
         final HashSet<Block> blocksToRemove = Sets.newHashSet();
         for (Block block : e.blockList()) {
             if (getHandler().cancelOperation(Operation.of(
@@ -84,6 +84,20 @@ public interface BukkitEntityListener extends BukkitListener {
         for (Block block : blocksToRemove) {
             e.blockList().remove(block);
         }
+    }
+
+    private void handleBlockExplosion(List<Block> blockList) {
+        final HashSet<Block> blocksToRemove = Sets.newHashSet();
+        for (Block block : blockList) {
+            if (getHandler().cancelOperation(Operation.of(
+                    OperationType.EXPLOSION_DAMAGE_TERRAIN,
+                    getPosition(block.getLocation())
+            ))) {
+                blocksToRemove.add(block);
+            }
+        }
+        // Don't destroy protected blocks (but allow the explosion to continue)
+        blocksToRemove.forEach(blockList::remove);
     }
 
     @EventHandler(ignoreCancelled = true)
