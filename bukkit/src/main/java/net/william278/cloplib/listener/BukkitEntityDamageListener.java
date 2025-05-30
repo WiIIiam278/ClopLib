@@ -127,9 +127,10 @@ public interface BukkitEntityDamageListener extends BukkitListener {
     // Treat boat collision breaking entities (e.g. running over an item frame) like a monster damaging terrain
     @EventHandler(ignoreCancelled = true)
     default void onVehicleCollision(@NotNull VehicleEntityCollisionEvent e) {
+        final Optional<Player> damager = getPlayerSource(e.getVehicle());
         if (getHandler().cancelOperation(Operation.of(
-                getPlayerSource(e.getVehicle()).map(this::getUser).orElse(null),
-                OperationType.MONSTER_DAMAGE_TERRAIN,
+                damager.map(this::getUser).orElse(null),
+                damager.isPresent() ? OperationType.ENTITY_INTERACT : OperationType.MONSTER_DAMAGE_TERRAIN,
                 getPosition(e.getEntity().getLocation())
         ))) {
             e.setCancelled(true);
