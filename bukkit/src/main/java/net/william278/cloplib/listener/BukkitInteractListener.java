@@ -26,6 +26,7 @@ import net.william278.cloplib.operation.OperationUser;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
+import org.bukkit.block.Lectern;
 import org.bukkit.block.Sign;
 import org.bukkit.block.data.type.Switch;
 import org.bukkit.entity.Entity;
@@ -37,6 +38,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerTakeLecternBookEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
@@ -208,6 +210,7 @@ public interface BukkitInteractListener extends BukkitListener {
         }
     }
 
+    // When a player manipulates an armour stand
     @EventHandler(ignoreCancelled = true)
     default void onPlayerArmorStand(@NotNull PlayerArmorStandManipulateEvent e) {
         if (!isPlayerNpc(e.getPlayer()) && getHandler().cancelOperation(Operation.of(
@@ -220,10 +223,25 @@ public interface BukkitInteractListener extends BukkitListener {
         }
     }
 
+    // When a player takes a book from a lectern
+    @EventHandler(ignoreCancelled = true)
+    default void onPlayerTakeLecternBook(@NotNull PlayerTakeLecternBookEvent e) {
+        if (!isPlayerNpc(e.getPlayer()) && getHandler().cancelOperation(Operation.of(
+                getUser(e.getPlayer()),
+                OperationType.CONTAINER_OPEN,
+                getPosition(e.getLectern().getLocation())
+        ))) {
+            e.setCancelled(true);
+        }
+    }
+
     // Get the behaviour of a block
     @NotNull
     private BukkitInteractListener.InteractBehaviour getInteractBehaviour(@NotNull Block block) {
         final String blockId = block.getType().getKey().toString();
+        if (block.getState() instanceof Lectern) {
+            return InteractBehaviour.LECTERN_OPENS;
+        }
         if (getChecker().isFarmMaterial(blockId)) {
             return InteractBehaviour.FARM_BLOCK;
         }
@@ -243,6 +261,7 @@ public interface BukkitInteractListener extends BukkitListener {
     enum InteractBehaviour {
         EDIT_SIGN,
         FARM_BLOCK,
+        LECTERN_OPENS,
         CONTAINER_OPENS,
         REDSTONE_SWITCHED,
         STANDARD
