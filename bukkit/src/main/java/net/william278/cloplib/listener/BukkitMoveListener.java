@@ -22,10 +22,14 @@ package net.william278.cloplib.listener;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationType;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.vehicle.VehicleMoveEvent;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.Optional;
 
 public interface BukkitMoveListener extends BukkitListener {
 
@@ -40,6 +44,32 @@ public interface BukkitMoveListener extends BukkitListener {
         // Handle cancelling moving, if needed
         if (getHandler().cancelMovement(getUser(e.getPlayer()), getPosition(fromLocation), getPosition(toLocation))) {
             e.setCancelled(true);
+            if (e.getPlayer().isInsideVehicle()) {
+                e.getPlayer().leaveVehicle();
+            }
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    default void onVehicleMove(@NotNull VehicleMoveEvent e) {
+        final Location fromLocation = e.getFrom();
+        final Location toLocation = e.getTo();
+        if (fromLocation.getBlock().equals(toLocation.getBlock())) {
+            return;
+        }
+
+        // Only handle players
+        final Optional<Player> optionalPlayer = getPlayerSource(e.getVehicle());
+        if (optionalPlayer.isEmpty() || isPlayerNpc(optionalPlayer.get())) {
+            return;
+        }
+
+        // Dismount if cancelled
+        final Player player = optionalPlayer.get();
+        if (player.isInsideVehicle() && getHandler().cancelMovement(
+                getUser(player), getPosition(fromLocation), getPosition(toLocation))) {
+            player.leaveVehicle();
+            e.getVehicle().teleport(fromLocation);
         }
     }
 

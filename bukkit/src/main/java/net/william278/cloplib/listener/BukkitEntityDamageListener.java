@@ -33,7 +33,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.vehicle.VehicleDamageEvent;
 import org.bukkit.event.vehicle.VehicleDestroyEvent;
-import org.bukkit.event.vehicle.VehicleEntityCollisionEvent;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.projectiles.BlockProjectileSource;
 import org.jetbrains.annotations.NotNull;
@@ -122,19 +121,6 @@ public interface BukkitEntityDamageListener extends BukkitListener {
     @EventHandler(ignoreCancelled = true)
     default void onVehicleDestroy(@NotNull VehicleDestroyEvent e) {
         this.handleVehicleDamage(e.getVehicle(), e.getAttacker(), e);
-    }
-
-    // Treat boat collision breaking entities (e.g. running over an item frame) like a monster damaging terrain
-    @EventHandler(ignoreCancelled = true)
-    default void onVehicleCollision(@NotNull VehicleEntityCollisionEvent e) {
-        final Optional<Player> damager = getPlayerSource(e.getVehicle());
-        if (getHandler().cancelOperation(Operation.of(
-                damager.map(this::getUser).orElse(null),
-                damager.isPresent() ? OperationType.ENTITY_INTERACT : OperationType.MONSTER_DAMAGE_TERRAIN,
-                getPosition(e.getEntity().getLocation())
-        ))) {
-            e.setCancelled(true);
-        }
     }
 
     private <E extends Event & Cancellable> void handlePlayerDamager(@NotNull Player damager, @NotNull Entity entity,
