@@ -23,6 +23,7 @@ import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.raid.RaidTriggerEvent;
+import org.bukkit.event.weather.LightningStrikeEvent;
 import org.jetbrains.annotations.NotNull;
 
 public interface BukkitWorldListener extends BukkitListener {
@@ -33,6 +34,20 @@ public interface BukkitWorldListener extends BukkitListener {
                 getUser(e.getPlayer()),
                 OperationType.START_RAID,
                 getPosition(e.getRaid().getLocation())
+        ))) {
+            e.setCancelled(true);
+        }
+    }
+
+    @EventHandler(ignoreCancelled = true)
+    default void onLightningStrike(@NotNull LightningStrikeEvent e) {
+        if (!getHandler().cancelOperation(Operation.of(
+                switch (e.getCause()) {
+                    case TRIDENT -> OperationType.BLOCK_BREAK;
+                    case TRAP -> OperationType.MONSTER_DAMAGE_TERRAIN;
+                    default -> OperationType.FIRE_SPREAD;
+                },
+                getPosition(e.getLightning().getLocation())
         ))) {
             e.setCancelled(true);
         }
