@@ -23,11 +23,14 @@ import net.minecraft.network.packet.c2s.play.PlayerMoveC2SPacket;
 import net.minecraft.network.packet.c2s.play.VehicleMoveC2SPacket;
 import net.minecraft.server.network.ServerPlayNetworkHandler;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.Vec3d;
 import net.william278.cloplib.events.PlayerMovementEvents;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -68,7 +71,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
         // Cancel the action
         if ((delta > 1f / 256) && !this.player.isImmobile()) {
             final ActionResult result = PlayerMovementEvents.BEFORE_MOVE.invoker().move(
-                    player, player.getServerWorld(), from, to
+                    player, getServerWorld(player), from, to
             );
             if (result == ActionResult.FAIL) {
                 player.setVelocity(Vec3d.ZERO);
@@ -93,12 +96,22 @@ public abstract class ServerPlayNetworkHandlerMixin {
         // Cancel the action
         if ((delta > 1f / 256)) {
             final ActionResult result = PlayerMovementEvents.BEFORE_MOVE.invoker().move(
-                    player, player.getServerWorld(), from, to
+                    player, getServerWorld(player), from, to
             );
             if (result == ActionResult.FAIL) {
                 ci.cancel();
             }
         }
+    }
+
+    @Unique
+    @NotNull
+    private ServerWorld getServerWorld(ServerPlayerEntity player) {
+//#if MC>=12106
+        return player.getWorld();
+//#else
+//$$    return player.getServerWorld();
+//#endif
     }
 
 }

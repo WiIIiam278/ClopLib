@@ -36,13 +36,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ProjectileEntity.class)
 public abstract class ProjectileEntityMixin {
 
-    @Shadow
-    @Nullable
-    private Entity owner; // The shooter
+//#if MC>=12106
+      @Shadow @Nullable
+      public abstract Entity getOwner();
+//#else
+//$$  @Shadow @Nullable
+//$$  private Entity owner; // The shooter
+//#endif
 
     @Inject(method = "onEntityHit", at = @At("HEAD"), cancellable = true)
     protected void onEntityHitMixin(EntityHitResult hit, CallbackInfo ci) {
         final Entity entity = hit.getEntity();
+        //#if MC>=12106
+        final Entity owner = getOwner();
+        //#endif
         if (entity == owner) {
             return;
         }
@@ -63,6 +70,9 @@ public abstract class ProjectileEntityMixin {
         }
         //#endif
         final ProjectileEntity projectile = (ProjectileEntity) (Object) this;
+        //#if MC>=12106
+        final Entity owner = getOwner();
+        //#endif
         final ActionResult result = ProjectileEvents.BEFORE_BLOCK_HIT.invoker().blockHit(
                 hit.getBlockPos(), projectile.getWorld(), projectile, owner,
                 ProjectileUtil.getOrigin(projectile)

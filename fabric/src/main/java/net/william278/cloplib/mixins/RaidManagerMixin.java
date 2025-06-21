@@ -20,12 +20,15 @@
 package net.william278.cloplib.mixins;
 
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.village.raid.Raid;
 import net.minecraft.village.raid.RaidManager;
 import net.william278.cloplib.events.RaidEvents;
+import org.jetbrains.annotations.NotNull;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
@@ -35,11 +38,21 @@ public abstract class RaidManagerMixin {
 
     @Inject(method = "startRaid", at = @At(value = "INVOKE", target = "Lnet/minecraft/village/raid/RaidManager;getOrCreateRaid(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/util/math/BlockPos;)Lnet/minecraft/village/raid/Raid;"), cancellable = true)
     private void startRaidMixin(ServerPlayerEntity player, BlockPos pos, CallbackInfoReturnable<Raid> cir) {
-        final ActionResult result = RaidEvents.BEFORE_START.invoker().starts(player.getServerWorld(), pos, player);
+        final ActionResult result = RaidEvents.BEFORE_START.invoker().starts(getServerWorld(player), pos, player);
         if (result == ActionResult.FAIL) {
             cir.setReturnValue(null);
             cir.cancel();
         }
+    }
+
+    @Unique
+    @NotNull
+    private ServerWorld getServerWorld(ServerPlayerEntity player) {
+//#if MC>=12106
+        return player.getWorld();
+//#else
+//$$    return player.getServerWorld();
+//#endif
     }
 
 }
