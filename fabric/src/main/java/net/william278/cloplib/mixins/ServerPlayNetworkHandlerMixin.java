@@ -107,7 +107,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
     @Unique
     @NotNull
     private ServerWorld getServerWorld(ServerPlayerEntity player) {
-//#if MC>=12106
+//#if MC>=12107
         return player.getWorld();
 //#else
 //$$    return player.getServerWorld();
