@@ -37,7 +37,11 @@ public interface BukkitMoveListener extends BukkitListener {
     default void onPlayerMove(@NotNull PlayerMoveEvent e) {
         final Location fromLocation = e.getFrom();
         final Location toLocation = e.getTo();
-        if (toLocation == null || fromLocation.getBlock().equals(toLocation.getBlock()) || isPlayerNpc(e.getPlayer())) {
+        if (toLocation == null || isPlayerNpc(e.getPlayer())) {
+            return;
+        }
+
+        if (fromLocation.getBlock().equals(toLocation.getBlock()) && fromLocation.distance(toLocation) < 0.1) {
             return;
         }
 
@@ -54,7 +58,8 @@ public interface BukkitMoveListener extends BukkitListener {
     default void onVehicleMove(@NotNull VehicleMoveEvent e) {
         final Location fromLocation = e.getFrom();
         final Location toLocation = e.getTo();
-        if (fromLocation.getBlock().equals(toLocation.getBlock())) {
+
+        if (fromLocation.getBlock().equals(toLocation.getBlock()) && fromLocation.distance(toLocation) < 0.1) {
             return;
         }
 
