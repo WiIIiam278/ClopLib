@@ -19,7 +19,9 @@
 
 package net.william278.cloplib.listener;
 
+import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationPosition;
+import net.william278.cloplib.operation.OperationType;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.Directional;
@@ -52,6 +54,16 @@ public interface BukkitBlockMoveListener extends BukkitListener {
     @EventHandler(ignoreCancelled = true)
     default void onPistonPush(@NotNull BlockPistonExtendEvent e) {
         final OperationPosition pistonLocation = getPosition(e.getBlock().getLocation());
+
+        if (getHandler().cancelOperation(Operation.of(
+                OperationType.REDSTONE_OUTSIDE_CLAIMS,
+                pistonLocation,
+                true
+        ))) {
+            e.setCancelled(true);
+            return;
+        }
+
         for (final Block pushed : e.getBlocks()) {
             if (getHandler().cancelNature(
                     pistonLocation.getWorld(),
@@ -68,6 +80,16 @@ public interface BukkitBlockMoveListener extends BukkitListener {
     @EventHandler(ignoreCancelled = true)
     default void onPistonPull(@NotNull BlockPistonRetractEvent e) {
         final OperationPosition pistonLocation = getPosition(e.getBlock().getLocation());
+
+        if (getHandler().cancelOperation(Operation.of(
+                OperationType.REDSTONE_OUTSIDE_CLAIMS,
+                pistonLocation,
+                true
+        ))) {
+            e.setCancelled(true);
+            return;
+        }
+
         for (final Block pulled : e.getBlocks()) {
             if (getHandler().cancelNature(
                     pistonLocation.getWorld(),
@@ -84,6 +106,16 @@ public interface BukkitBlockMoveListener extends BukkitListener {
     @EventHandler(ignoreCancelled = true)
     default void onBlockDispense(@NotNull BlockDispenseEvent e) {
         final OperationPosition blockPosition = getPosition(e.getBlock().getLocation());
+
+        if (getHandler().cancelOperation(Operation.of(
+                OperationType.REDSTONE_OUTSIDE_CLAIMS,
+                blockPosition,
+                true
+        ))) {
+            e.setCancelled(true);
+            return;
+        }
+
         final OperationPosition facingPosition = getPosition(e.getBlock().getRelative(
                 ((Directional) e.getBlock().getBlockData()).getFacing()
         ).getLocation());

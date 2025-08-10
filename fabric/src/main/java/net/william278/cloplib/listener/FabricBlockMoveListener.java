@@ -48,6 +48,15 @@ public interface FabricBlockMoveListener extends FabricListener {
     default ActionResult onPistonActuate(World world, BlockPos pistonBlock, Direction pistonDirection,
                                          List<BlockPos> affectedBlocks) {
         final OperationPosition pistonPos = getPosition(pistonBlock, world);
+        
+        if (getHandler().cancelOperation(Operation.of(
+                OperationType.REDSTONE_OUTSIDE_CLAIMS,
+                pistonPos,
+                true
+        ))) {
+            return ActionResult.FAIL;
+        }
+        
         for (final BlockPos blockPos : affectedBlocks) {
             if (getHandler().cancelNature(
                     pistonPos.getWorld(),
