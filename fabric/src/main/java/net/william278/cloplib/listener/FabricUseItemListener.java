@@ -214,9 +214,9 @@ public interface FabricUseItemListener extends FabricListener {
     default ActionResult onDispenserPlace(World world, BlockPos dispenserPos, BlockPos blockPos) {
         final OperationPosition dispenserPosition = getPosition(dispenserPos, world);
         
-        // Check if redstone operations are allowed outside claims
+        // Check if redstone operations are allowed
         if (getHandler().cancelOperation(Operation.of(
-                OperationType.REDSTONE_OUTSIDE_CLAIMS,
+                OperationType.REDSTONE_ACTUATE,
                 dispenserPosition,
                 true
         ))) {

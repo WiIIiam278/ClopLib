@@ -56,7 +56,7 @@ public interface BukkitBlockMoveListener extends BukkitListener {
         final OperationPosition pistonLocation = getPosition(e.getBlock().getLocation());
 
         if (getHandler().cancelOperation(Operation.of(
-                OperationType.REDSTONE_OUTSIDE_CLAIMS,
+                OperationType.REDSTONE_ACTUATE,
                 pistonLocation,
                 true
         ))) {
@@ -82,7 +82,7 @@ public interface BukkitBlockMoveListener extends BukkitListener {
         final OperationPosition pistonLocation = getPosition(e.getBlock().getLocation());
 
         if (getHandler().cancelOperation(Operation.of(
-                OperationType.REDSTONE_OUTSIDE_CLAIMS,
+                OperationType.REDSTONE_ACTUATE,
                 pistonLocation,
                 true
         ))) {
@@ -108,7 +108,7 @@ public interface BukkitBlockMoveListener extends BukkitListener {
         final OperationPosition blockPosition = getPosition(e.getBlock().getLocation());
 
         if (getHandler().cancelOperation(Operation.of(
-                OperationType.REDSTONE_OUTSIDE_CLAIMS,
+                OperationType.REDSTONE_ACTUATE,
                 blockPosition,
                 true
         ))) {

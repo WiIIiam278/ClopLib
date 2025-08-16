@@ -23,7 +23,9 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.world.World;
+import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationPosition;
+import net.william278.cloplib.operation.OperationType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
@@ -50,7 +52,7 @@ public interface FabricBlockMoveListener extends FabricListener {
         final OperationPosition pistonPos = getPosition(pistonBlock, world);
         
         if (getHandler().cancelOperation(Operation.of(
-                OperationType.REDSTONE_OUTSIDE_CLAIMS,
+                OperationType.REDSTONE_ACTUATE,
                 pistonPos,
                 true
         ))) {

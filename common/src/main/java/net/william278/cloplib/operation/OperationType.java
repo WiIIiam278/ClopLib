@@ -75,14 +75,15 @@ public final class OperationType {
     public static final OperationType REDSTONE_INTERACT = registerBuiltin("redstone_interact", true);
 
     /**
-     * When redstone operates outside of claims (e.g., pistons, dispensers, redstone circuits)
+     * When redstone actuates (e.g., pistons, dispensers, redstone circuits)
      * <p>
-     * This operation type is used to control whether redstone mechanisms can function
-     * in wilderness/unprotected areas, similar to GriefPrevention's redstone restrictions.
+     * This operation type is used to control whether redstone mechanisms can function,
+     * regardless of location. It's the role of ClopLib and the implementor to determine
+     * where an action happened and cancel appropriately.
      *
      * @since 1.0
      */
-    public static final OperationType REDSTONE_OUTSIDE_CLAIMS = registerBuiltin("redstone_outside_claims", true);
+    public static final OperationType REDSTONE_ACTUATE = registerBuiltin("redstone_actuate", true);
 
     /**
      * When a player breaks a farm block
