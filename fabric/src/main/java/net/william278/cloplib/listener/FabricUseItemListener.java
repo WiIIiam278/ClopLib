@@ -212,10 +212,21 @@ public interface FabricUseItemListener extends FabricListener {
 
     @NotNull
     default ActionResult onDispenserPlace(World world, BlockPos dispenserPos, BlockPos blockPos) {
+        final OperationPosition dispenserPosition = getPosition(dispenserPos, world);
+        
+        // Check if redstone operations are allowed
+        if (getHandler().cancelOperation(Operation.of(
+                OperationType.REDSTONE_ACTUATE,
+                dispenserPosition,
+                true
+        ))) {
+            return ActionResult.FAIL;
+        }
+        
         final OperationPosition block = getPosition(blockPos, world);
         return getHandler().cancelNature(
                 block.getWorld(),
-                getPosition(dispenserPos, world),
+                dispenserPosition,
                 block
         ) ? ActionResult.FAIL : ActionResult.PASS;
     }
