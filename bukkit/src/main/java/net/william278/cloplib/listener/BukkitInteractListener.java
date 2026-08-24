@@ -22,7 +22,6 @@ package net.william278.cloplib.listener;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
-import net.william278.cloplib.operation.OperationUser;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -43,8 +42,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
-
-import java.util.function.BiConsumer;
 
 public interface BukkitInteractListener extends BukkitListener {
 
@@ -141,15 +138,18 @@ public interface BukkitInteractListener extends BukkitListener {
             return false;
         }
 
+        final Block block = e.getPlayer().getTargetBlockExact(getInspectionDistance(), FluidCollisionMode.NEVER);
+        final OperationPosition position = getPosition(block != null ? block.getLocation() : e.getPlayer().getLocation());
+        if (!getHandler().handleInspection(position)) {
+            return false;
+        }
+
         // Consume the item interact event
         e.setUseInteractedBlock(Event.Result.DENY);
         e.setUseItemInHand(Event.Result.DENY);
 
-        // Execute the callback
-        final BiConsumer<OperationUser, OperationPosition> callback = getInspectionToolHandlers().get(tool);
-        final Block block = e.getPlayer().getTargetBlockExact(getInspectionDistance(), FluidCollisionMode.NEVER);
         if (block != null) {
-            callback.accept(getUser(e.getPlayer()), getPosition(block.getLocation()));
+            getInspectionToolHandlers().get(tool).accept(getUser(e.getPlayer()), position);
         }
         return true;
     }

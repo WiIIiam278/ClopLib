@@ -44,12 +44,10 @@ import net.william278.cloplib.mixins.BucketItemMixin;
 import net.william278.cloplib.operation.Operation;
 import net.william278.cloplib.operation.OperationPosition;
 import net.william278.cloplib.operation.OperationType;
-import net.william278.cloplib.operation.OperationUser;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
 
 public interface FabricUseItemListener extends FabricListener {
@@ -182,11 +180,13 @@ public interface FabricUseItemListener extends FabricListener {
             return false;
         }
 
-        // Execute the callback
-        final BiConsumer<OperationUser, OperationPosition> callback = getInspectionToolHandlers().get(tool);
         final HitResult hit = player.raycast(getInspectionDistance(), 0.0f, false);
         if (hit.getType() == HitResult.Type.BLOCK) {
-            callback.accept(getUser(player), getPosition(((BlockHitResult) hit).getBlockPos(), world));
+            final OperationPosition position = getPosition(((BlockHitResult) hit).getBlockPos(), world);
+            if (!getHandler().handleInspection(position)) {
+                return false;
+            }
+            getInspectionToolHandlers().get(tool).accept(getUser(player), position);
             return true;
         }
         return false;

@@ -65,4 +65,15 @@ public interface Handler {
     boolean cancelNature(@NotNull OperationWorld world,
                          @NotNull OperationPosition position1, @NotNull OperationPosition position2);
 
+    /**
+     * Returns whether an inspection tool should be handled at this position
+     *
+     * @param position the inspected position
+     * @return whether the inspection tool should be handled
+     * @since 2.0.13
+     */
+    default boolean handleInspection(@NotNull OperationPosition position) {
+        return true;
+    }
+
 }
